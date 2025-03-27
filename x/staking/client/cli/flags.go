@@ -28,6 +28,11 @@ const (
 
 	FlagMinSelfDelegation = "min-self-delegation"
 
+	FlagNftContractAddress   = "nft-contract"
+	FlagTokenId              = "token-id"
+	FlagNftAmount            = "nft-amount"
+	FlagMinNftSelfDelegation = "min-nft-self-delegation"
+
 	FlagGenesisFormat = "genesis-format"
 	FlagNodeID        = "node-id"
 	FlagIP            = "ip"
@@ -98,5 +103,33 @@ func flagSetCommissionUpdate() *flag.FlagSet {
 
 	fs.String(FlagCommissionRate, "", "The new commission rate percentage")
 
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetMinNftSelfDelegation() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagMinNftSelfDelegation, "", "The minimum self delegation required on the validator")
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetNftContract() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagNftContractAddress, "", "Contract of NFT to Bond")
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetNftTokenId() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagTokenId, "", "TokenID of NFT to Bond")
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetNftAmount() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagNftAmount, "", "The amount of NFTs to bond is required")
 	return fs
 }

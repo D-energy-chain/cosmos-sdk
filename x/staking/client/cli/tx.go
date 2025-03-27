@@ -31,6 +31,10 @@ var (
 	defaultCommissionMaxRate       = "0.2"
 	defaultCommissionMaxChangeRate = "0.01"
 	defaultMinSelfDelegation       = "1"
+	defaultNftContract             = "0x0"
+	defaultTokenId                 = "1"
+	defaultNftAmount               = "1000"
+	defaultMinNftSelfDelegation    = "1000"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/staking transaction commands.
@@ -395,7 +399,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 		return txf, nil, err
 	}
 	msg, err := types.NewMsgCreateValidator(
-		valStr, val.PubKey, val.Amount, description, val.CommissionRates, val.MinSelfDelegation,
+		valStr, val.PubKey, val.Amount, description, val.CommissionRates, val.MinSelfDelegation, val.NftContractAddress, val.TokenId, val.NftAmount, val.MinNftSelfDelegation,
 	)
 	if err != nil {
 		return txf, nil, err
@@ -434,6 +438,10 @@ func CreateValidatorMsgFlagSet(ipDefault string) (fs *flag.FlagSet, defaultsDesc
 	fsCreateValidator.AddFlagSet(FlagSetMinSelfDelegation())
 	fsCreateValidator.AddFlagSet(FlagSetAmount())
 	fsCreateValidator.AddFlagSet(FlagSetPublicKey())
+	fsCreateValidator.AddFlagSet(FlagSetNftContract())
+	fsCreateValidator.AddFlagSet(FlagSetNftTokenId())
+	fsCreateValidator.AddFlagSet(FlagSetNftAmount())
+	fsCreateValidator.AddFlagSet(FlagSetMinNftSelfDelegation())
 
 	defaultsDesc = fmt.Sprintf(`
 	delegation amount:           %s
@@ -459,6 +467,11 @@ type TxCreateValidatorConfig struct {
 	CommissionMaxRate       string
 	CommissionMaxChangeRate string
 	MinSelfDelegation       string
+
+	NftContractAddress   string
+	TokenId              string
+	NftAmount            string
+	MinNftSelfDelegation string
 
 	PubKey cryptotypes.PubKey
 
@@ -532,6 +545,11 @@ func PrepareConfigForTxCreateValidator(flagSet *flag.FlagSet, moniker, nodeID, c
 		return c, err
 	}
 
+	c.MinNftSelfDelegation, err = flagSet.GetString(FlagMinNftSelfDelegation)
+	if err != nil {
+		return c, err
+	}
+
 	c.IP = ip
 	c.P2PPort = p2pPort
 	c.Website = website
@@ -566,6 +584,19 @@ func PrepareConfigForTxCreateValidator(flagSet *flag.FlagSet, moniker, nodeID, c
 		c.MinSelfDelegation = defaultMinSelfDelegation
 	}
 
+	if c.NftContractAddress == "" {
+		c.NftContractAddress = defaultNftContract
+	}
+	if c.TokenId == "" {
+		c.TokenId = defaultTokenId
+	}
+	if c.NftAmount == "" {
+		c.NftAmount = defaultNftAmount
+	}
+	if c.MinNftSelfDelegation == "" {
+		c.MinNftSelfDelegation = defaultMinNftSelfDelegation
+	}
+
 	return c, nil
 }
 
@@ -598,6 +629,10 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 	// get the initial validator min self delegation
 	msbStr := config.MinSelfDelegation
 	minSelfDelegation, ok := math.NewIntFromString(msbStr)
+	nftContractAddress := config.NftContractAddress
+	tokenId, ok := math.NewIntFromString(config.TokenId)
+	nftAmount, ok := math.NewIntFromString(config.NftAmount)
+	minNftSelfDelegation, ok := math.NewIntFromString(config.MinNftSelfDelegation)
 
 	if !ok {
 		return txBldr, nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
@@ -614,7 +649,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		amount,
 		description,
 		commissionRates,
-		minSelfDelegation,
+		minSelfDelegation, nftContractAddress, tokenId, nftAmount, minNftSelfDelegation,
 	)
 	if err != nil {
 		return txBldr, msg, err

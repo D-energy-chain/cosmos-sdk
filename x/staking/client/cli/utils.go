@@ -18,15 +18,19 @@ import (
 
 // validator struct to define the fields of the validator
 type validator struct {
-	Amount            sdk.Coin
-	PubKey            cryptotypes.PubKey
-	Moniker           string
-	Identity          string
-	Website           string
-	Security          string
-	Details           string
-	CommissionRates   types.CommissionRates
-	MinSelfDelegation math.Int
+	Amount               sdk.Coin
+	PubKey               cryptotypes.PubKey
+	Moniker              string
+	Identity             string
+	Website              string
+	Security             string
+	Details              string
+	CommissionRates      types.CommissionRates
+	MinSelfDelegation    math.Int
+	NftContractAddress   string
+	TokenId              math.Int
+	NftAmount            math.Int
+	MinNftSelfDelegation math.Int
 }
 
 func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, error) {

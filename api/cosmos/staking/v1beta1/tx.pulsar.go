@@ -20,14 +20,18 @@ import (
 )
 
 var (
-	md_MsgCreateValidator                     protoreflect.MessageDescriptor
-	fd_MsgCreateValidator_description         protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_commission          protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_min_self_delegation protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_delegator_address   protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_validator_address   protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_pubkey              protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_value               protoreflect.FieldDescriptor
+	md_MsgCreateValidator                         protoreflect.MessageDescriptor
+	fd_MsgCreateValidator_description             protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_commission              protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_min_self_delegation     protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_delegator_address       protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_validator_address       protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_pubkey                  protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_value                   protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_nft_contract_address    protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_token_id                protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_nft_amount              protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_min_self_nft_delegation protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -40,6 +44,10 @@ func init() {
 	fd_MsgCreateValidator_validator_address = md_MsgCreateValidator.Fields().ByName("validator_address")
 	fd_MsgCreateValidator_pubkey = md_MsgCreateValidator.Fields().ByName("pubkey")
 	fd_MsgCreateValidator_value = md_MsgCreateValidator.Fields().ByName("value")
+	fd_MsgCreateValidator_nft_contract_address = md_MsgCreateValidator.Fields().ByName("nft_contract_address")
+	fd_MsgCreateValidator_token_id = md_MsgCreateValidator.Fields().ByName("token_id")
+	fd_MsgCreateValidator_nft_amount = md_MsgCreateValidator.Fields().ByName("nft_amount")
+	fd_MsgCreateValidator_min_self_nft_delegation = md_MsgCreateValidator.Fields().ByName("min_self_nft_delegation")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgCreateValidator)(nil)
@@ -149,6 +157,30 @@ func (x *fastReflection_MsgCreateValidator) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
+	if x.NftContractAddress != "" {
+		value := protoreflect.ValueOfString(x.NftContractAddress)
+		if !f(fd_MsgCreateValidator_nft_contract_address, value) {
+			return
+		}
+	}
+	if x.TokenId != "" {
+		value := protoreflect.ValueOfString(x.TokenId)
+		if !f(fd_MsgCreateValidator_token_id, value) {
+			return
+		}
+	}
+	if x.NftAmount != "" {
+		value := protoreflect.ValueOfString(x.NftAmount)
+		if !f(fd_MsgCreateValidator_nft_amount, value) {
+			return
+		}
+	}
+	if x.MinSelfNftDelegation != "" {
+		value := protoreflect.ValueOfString(x.MinSelfNftDelegation)
+		if !f(fd_MsgCreateValidator_min_self_nft_delegation, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -178,6 +210,14 @@ func (x *fastReflection_MsgCreateValidator) Has(fd protoreflect.FieldDescriptor)
 		return x.Pubkey != nil
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		return x.Value != nil
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_contract_address":
+		return x.NftContractAddress != ""
+	case "cosmos.staking.v1beta1.MsgCreateValidator.token_id":
+		return x.TokenId != ""
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_amount":
+		return x.NftAmount != ""
+	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_nft_delegation":
+		return x.MinSelfNftDelegation != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -208,6 +248,14 @@ func (x *fastReflection_MsgCreateValidator) Clear(fd protoreflect.FieldDescripto
 		x.Pubkey = nil
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		x.Value = nil
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_contract_address":
+		x.NftContractAddress = ""
+	case "cosmos.staking.v1beta1.MsgCreateValidator.token_id":
+		x.TokenId = ""
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_amount":
+		x.NftAmount = ""
+	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_nft_delegation":
+		x.MinSelfNftDelegation = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -245,6 +293,18 @@ func (x *fastReflection_MsgCreateValidator) Get(descriptor protoreflect.FieldDes
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		value := x.Value
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_contract_address":
+		value := x.NftContractAddress
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.token_id":
+		value := x.TokenId
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_amount":
+		value := x.NftAmount
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_nft_delegation":
+		value := x.MinSelfNftDelegation
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -279,6 +339,14 @@ func (x *fastReflection_MsgCreateValidator) Set(fd protoreflect.FieldDescriptor,
 		x.Pubkey = value.Message().Interface().(*anypb.Any)
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		x.Value = value.Message().Interface().(*v1beta1.Coin)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_contract_address":
+		x.NftContractAddress = value.Interface().(string)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.token_id":
+		x.TokenId = value.Interface().(string)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_amount":
+		x.NftAmount = value.Interface().(string)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_nft_delegation":
+		x.MinSelfNftDelegation = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -325,6 +393,14 @@ func (x *fastReflection_MsgCreateValidator) Mutable(fd protoreflect.FieldDescrip
 		panic(fmt.Errorf("field delegator_address of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
 	case "cosmos.staking.v1beta1.MsgCreateValidator.validator_address":
 		panic(fmt.Errorf("field validator_address of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_contract_address":
+		panic(fmt.Errorf("field nft_contract_address of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
+	case "cosmos.staking.v1beta1.MsgCreateValidator.token_id":
+		panic(fmt.Errorf("field token_id of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_amount":
+		panic(fmt.Errorf("field nft_amount of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
+	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_nft_delegation":
+		panic(fmt.Errorf("field min_self_nft_delegation of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -356,6 +432,14 @@ func (x *fastReflection_MsgCreateValidator) NewField(fd protoreflect.FieldDescri
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		m := new(v1beta1.Coin)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_contract_address":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.MsgCreateValidator.token_id":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.MsgCreateValidator.nft_amount":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_nft_delegation":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -453,6 +537,22 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 			l = options.Size(x.Value)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.NftContractAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.TokenId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.NftAmount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.MinSelfNftDelegation)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -481,6 +581,34 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.MinSelfNftDelegation) > 0 {
+			i -= len(x.MinSelfNftDelegation)
+			copy(dAtA[i:], x.MinSelfNftDelegation)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MinSelfNftDelegation)))
+			i--
+			dAtA[i] = 0x5a
+		}
+		if len(x.NftAmount) > 0 {
+			i -= len(x.NftAmount)
+			copy(dAtA[i:], x.NftAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NftAmount)))
+			i--
+			dAtA[i] = 0x52
+		}
+		if len(x.TokenId) > 0 {
+			i -= len(x.TokenId)
+			copy(dAtA[i:], x.TokenId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TokenId)))
+			i--
+			dAtA[i] = 0x4a
+		}
+		if len(x.NftContractAddress) > 0 {
+			i -= len(x.NftContractAddress)
+			copy(dAtA[i:], x.NftContractAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NftContractAddress)))
+			i--
+			dAtA[i] = 0x42
 		}
 		if x.Value != nil {
 			encoded, err := options.Marshal(x.Value)
@@ -847,6 +975,134 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Value); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
+				iNdEx = postIndex
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NftContractAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.NftContractAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 9:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.TokenId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 10:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NftAmount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.NftAmount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 11:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinSelfNftDelegation", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.MinSelfNftDelegation = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -7133,6 +7389,14 @@ type MsgCreateValidator struct {
 	ValidatorAddress string        `protobuf:"bytes,5,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty"`
 	Pubkey           *anypb.Any    `protobuf:"bytes,6,opt,name=pubkey,proto3" json:"pubkey,omitempty"`
 	Value            *v1beta1.Coin `protobuf:"bytes,7,opt,name=value,proto3" json:"value,omitempty"`
+	// nft_contract_address is the NFT contract address.
+	NftContractAddress string `protobuf:"bytes,8,opt,name=nft_contract_address,json=nftContractAddress,proto3" json:"nft_contract_address,omitempty"`
+	// token_id is the token identifier (as a cosmos.Int scalar).
+	TokenId string `protobuf:"bytes,9,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	// amount is the amount being self delegated (as a cosmos.Int scalar).
+	NftAmount string `protobuf:"bytes,10,opt,name=nft_amount,json=nftAmount,proto3" json:"nft_amount,omitempty"`
+	// min_self_nft_delegation
+	MinSelfNftDelegation string `protobuf:"bytes,11,opt,name=min_self_nft_delegation,json=minSelfNftDelegation,proto3" json:"min_self_nft_delegation,omitempty"`
 }
 
 func (x *MsgCreateValidator) Reset() {
@@ -7203,6 +7467,34 @@ func (x *MsgCreateValidator) GetValue() *v1beta1.Coin {
 		return x.Value
 	}
 	return nil
+}
+
+func (x *MsgCreateValidator) GetNftContractAddress() string {
+	if x != nil {
+		return x.NftContractAddress
+	}
+	return ""
+}
+
+func (x *MsgCreateValidator) GetTokenId() string {
+	if x != nil {
+		return x.TokenId
+	}
+	return ""
+}
+
+func (x *MsgCreateValidator) GetNftAmount() string {
+	if x != nil {
+		return x.NftAmount
+	}
+	return ""
+}
+
+func (x *MsgCreateValidator) GetMinSelfNftDelegation() string {
+	if x != nil {
+		return x.MinSelfNftDelegation
+	}
+	return ""
 }
 
 // MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
@@ -7793,7 +8085,7 @@ var file_cosmos_staking_v1beta1_tx_proto_rawDesc = []byte{
 	0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x17, 0x63, 0x6f,
 	0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x6d, 0x73, 0x67, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x73, 0x67, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69,
-	0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xfb, 0x04, 0x0a, 0x12, 0x4d, 0x73, 0x67,
+	0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xbb, 0x07, 0x0a, 0x12, 0x4d, 0x73, 0x67,
 	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x12,
 	0x50, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74,
@@ -7829,7 +8121,27 @@ var file_cosmos_staking_v1beta1_tx_proto_rawDesc = []byte{
 	0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f,
 	0x69, 0x6e, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x05, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x3a, 0x40, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7,
+	0x61, 0x6c, 0x75, 0x65, 0x12, 0x37, 0x0a, 0x14, 0x6e, 0x66, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x74,
+	0x72, 0x61, 0x63, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x08, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x12, 0x6e, 0x66, 0x74, 0x43, 0x6f,
+	0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x4b, 0x0a,
+	0x08, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
+	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4,
+	0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x07, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x64, 0x12, 0x4f, 0x0a, 0x0a, 0x6e, 0x66,
+	0x74, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30,
+	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
+	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d,
+	0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x09, 0x6e, 0x66, 0x74, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x67, 0x0a, 0x17, 0x6d,
+	0x69, 0x6e, 0x5f, 0x73, 0x65, 0x6c, 0x66, 0x5f, 0x6e, 0x66, 0x74, 0x5f, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x42, 0x30, 0xc8, 0xde,
+	0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,
+	0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x14,
+	0x6d, 0x69, 0x6e, 0x53, 0x65, 0x6c, 0x66, 0x4e, 0x66, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x3a, 0x40, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7,
 	0xb0, 0x2a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64,
 	0x72, 0x65, 0x73, 0x73, 0x8a, 0xe7, 0xb0, 0x2a, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d,
 	0x73, 0x64, 0x6b, 0x2f, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x56, 0x61, 0x6c,
