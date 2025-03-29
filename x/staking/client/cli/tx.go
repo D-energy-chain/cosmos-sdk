@@ -33,8 +33,8 @@ var (
 	defaultMinSelfDelegation       = "1"
 	defaultNftContract             = "0x0"
 	defaultTokenId                 = "1"
-	defaultNftAmount               = "1000"
-	defaultMinNftSelfDelegation    = "1000"
+	defaultNftAmount               = "0"
+	defaultMinNftSelfDelegation    = "0"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/staking transaction commands.
