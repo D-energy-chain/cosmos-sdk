@@ -86,8 +86,8 @@ Where validator.json contains:
 	"min-self-delegation": "1",
 	"nft-contract": "0x0",
 	"token-id": 1,
-	"nft-amount": 1000,
-	"min-nft-self-delegation": 1000
+	"nft-amount": 0,
+	"min-nft-self-delegation": 0
 }
 
 where we can get the pubkey using "%s tendermint show-validator"

@@ -84,10 +84,17 @@ func (msg MsgCreateValidator) Validate(ac address.Codec) error {
 		)
 	}
 
-	if !msg.MinSelfNftDelegation.IsPositive() {
+	if !msg.NftAmount.GTE(math.ZeroInt()) {
 		return errorsmod.Wrap(
 			sdkerrors.ErrInvalidRequest,
-			"minimum nft self delegation must be a positive integer",
+			"nft amount must be a zero or positive integer",
+		)
+	}
+
+	if !msg.MinSelfNftDelegation.GTE(math.ZeroInt()) {
+		return errorsmod.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			"minimum nft self delegation must be a zero or positive integer",
 		)
 	}
 
