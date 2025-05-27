@@ -83,21 +83,64 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 // AllocateTokensToValidator allocate tokens to a particular validator,
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {
-	// split tokens between validator and delegators according to commission
-	commission := tokens.MulDec(val.GetCommission())
-	shared := tokens.Sub(commission)
+	// Get the validator's NFT and native token shares
+	// nftShares := val.GetDelegatorNftShares()
+	nftShares := math.LegacyZeroDec()
+	nativeShares := val.GetDelegatorShares()
+	totalShares := nftShares.Add(nativeShares)
+
+	// If there are no shares at all, no rewards can be allocated
+	if totalShares.IsZero() {
+		return nil
+	}
 
 	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 	if err != nil {
 		return err
 	}
 
-	// update current commission
+	// Determine how to split the rewards
+	var nftRewards, nativeRewards sdk.DecCoins
+	var nftCommission, nativeCommission sdk.DecCoins
+	var nftShared, nativeShared sdk.DecCoins
+
+	// If there are no NFT shares, all rewards go to native token stakers
+	if nftShares.IsZero() {
+		// All rewards go to native token stakers
+		nativeRewards = tokens
+		nativeCommission = tokens.MulDec(val.GetCommission())
+		nativeShared = tokens.Sub(nativeCommission)
+	} else if nativeShares.IsZero() {
+		// All rewards go to NFT stakers
+		nftRewards = tokens
+		nftCommission = tokens.MulDec(val.GetCommission())
+		nftShared = tokens.Sub(nftCommission)
+	} else {
+		// Split rewards between NFT stakers (75%) and native token stakers (25%)
+		nftStakingRatio := math.LegacyNewDecWithPrec(75, 2)    // 75%
+		nativeStakingRatio := math.LegacyNewDecWithPrec(25, 2) // 25%
+
+		// Calculate rewards for each type
+		nftRewards = tokens.MulDecTruncate(nftStakingRatio)
+		nativeRewards = tokens.MulDecTruncate(nativeStakingRatio)
+
+		// Apply commission to each reward type
+		nftCommission = nftRewards.MulDec(val.GetCommission())
+		nftShared = nftRewards.Sub(nftCommission)
+
+		nativeCommission = nativeRewards.MulDec(val.GetCommission())
+		nativeShared = nativeRewards.Sub(nativeCommission)
+	}
+
+	// Combine commissions from both reward types
+	totalCommission := nftCommission.Add(nativeCommission...)
+
+	// Update current commission
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeCommission,
-			sdk.NewAttribute(sdk.AttributeKeyAmount, commission.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, totalCommission.String()),
 			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator()),
 		),
 	)
@@ -106,25 +149,26 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		return err
 	}
 
-	currentCommission.Commission = currentCommission.Commission.Add(commission...)
+	currentCommission.Commission = currentCommission.Commission.Add(totalCommission...)
 	err = k.SetValidatorAccumulatedCommission(ctx, valBz, currentCommission)
 	if err != nil {
 		return err
 	}
 
-	// update current rewards
+	// Update current rewards - combine both native and NFT rewards
+	totalShared := nftShared.Add(nativeShared...)
 	currentRewards, err := k.GetValidatorCurrentRewards(ctx, valBz)
 	if err != nil {
 		return err
 	}
 
-	currentRewards.Rewards = currentRewards.Rewards.Add(shared...)
+	currentRewards.Rewards = currentRewards.Rewards.Add(totalShared...)
 	err = k.SetValidatorCurrentRewards(ctx, valBz, currentRewards)
 	if err != nil {
 		return err
 	}
 
-	// update outstanding rewards
+	// Update outstanding rewards
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeRewards,

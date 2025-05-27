@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtestutil "github.com/cosmos/cosmos-sdk/x/distribution/testutil"
+	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -56,6 +57,11 @@ func TestAllocateTokensToValidatorWithCommission(t *testing.T) {
 	val, err := distrtestutil.CreateValidator(valConsPk0, math.NewInt(100))
 	require.NoError(t, err)
 	val.Commission = stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0))
+
+	// Set delegator shares (only native tokens, no NFT)
+	val.DelegatorShares = math.LegacyNewDec(100)
+	val.DelegatorNftShares = math.LegacyZeroDec()
+
 	stakingKeeper.EXPECT().ValidatorByConsAddr(gomock.Any(), sdk.GetConsAddress(valConsPk0)).Return(val, nil).AnyTimes()
 
 	// allocate tokens
@@ -80,6 +86,158 @@ func TestAllocateTokensToValidatorWithCommission(t *testing.T) {
 	currentRewards, err := distrKeeper.GetValidatorCurrentRewards(ctx, valBz)
 	require.NoError(t, err)
 	require.Equal(t, expected, currentRewards.Rewards)
+}
+
+// Test with both native token and NFT delegations
+func TestAllocateTokensToValidatorWithNFTAndNative(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	key := storetypes.NewKVStoreKey(disttypes.StoreKey)
+	storeService := runtime.NewKVStoreService(key)
+	testCtx := testutil.DefaultContextWithDB(t, key, storetypes.NewTransientStoreKey("transient_test"))
+	encCfg := moduletestutil.MakeTestEncodingConfig(distribution.AppModuleBasic{})
+	ctx := testCtx.Ctx.WithBlockHeader(cmtproto.Header{Time: time.Now()})
+
+	bankKeeper := distrtestutil.NewMockBankKeeper(ctrl)
+	stakingKeeper := distrtestutil.NewMockStakingKeeper(ctrl)
+	accountKeeper := distrtestutil.NewMockAccountKeeper(ctrl)
+
+	valCodec := address.NewBech32Codec("cosmosvaloper")
+
+	accountKeeper.EXPECT().GetModuleAddress("distribution").Return(distrAcc.GetAddress())
+	stakingKeeper.EXPECT().ValidatorAddressCodec().Return(valCodec).AnyTimes()
+
+	distrKeeper := keeper.NewKeeper(
+		encCfg.Codec,
+		storeService,
+		accountKeeper,
+		bankKeeper,
+		stakingKeeper,
+		"fee_collector",
+		authtypes.NewModuleAddress("gov").String(),
+	)
+
+	// create validator with 50% commission
+	val, err := distrtestutil.CreateValidator(valConsPk0, math.NewInt(100))
+	require.NoError(t, err)
+	val.Commission = stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0))
+
+	// Set both native token and NFT delegations
+	val.DelegatorShares = math.LegacyNewDec(100)
+	val.DelegatorNftShares = math.LegacyNewDec(100)
+
+	stakingKeeper.EXPECT().ValidatorByConsAddr(gomock.Any(), sdk.GetConsAddress(valConsPk0)).Return(val, nil).AnyTimes()
+
+	// allocate tokens
+	tokens := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(100)},
+	}
+	require.NoError(t, distrKeeper.AllocateTokensToValidator(ctx, val, tokens))
+
+	valBz, err := valCodec.StringToBytes(val.GetOperator())
+	require.NoError(t, err)
+
+	// Check commission
+	// 75% to NFT stakers: 75 tokens, 50% commission = 37.5 tokens
+	// 25% to native stakers: 25 tokens, 50% commission = 12.5 tokens
+	// Total commission: 50 tokens
+	expectedCommission := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(50)},
+	}
+	valCommission, err := distrKeeper.GetValidatorAccumulatedCommission(ctx, valBz)
+	require.NoError(t, err)
+	require.Equal(t, expectedCommission, valCommission.Commission)
+
+	// Check current rewards
+	// 75% to NFT stakers: 75 tokens - 37.5 commission = 37.5 tokens
+	// 25% to native stakers: 25 tokens - 12.5 commission = 12.5 tokens
+	// Total shared rewards: 50 tokens
+	expectedRewards := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(50)},
+	}
+	currentRewards, err := distrKeeper.GetValidatorCurrentRewards(ctx, valBz)
+	require.NoError(t, err)
+	require.Equal(t, expectedRewards, currentRewards.Rewards)
+
+	// Check outstanding rewards - should be the full 100 tokens
+	expectedOutstanding := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(100)},
+	}
+	outstandingRewards, err := distrKeeper.GetValidatorOutstandingRewards(ctx, valBz)
+	require.NoError(t, err)
+	require.Equal(t, expectedOutstanding, outstandingRewards.Rewards)
+}
+
+// Test with only NFT delegations
+func TestAllocateTokensToValidatorWithOnlyNFT(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	key := storetypes.NewKVStoreKey(disttypes.StoreKey)
+	storeService := runtime.NewKVStoreService(key)
+	testCtx := testutil.DefaultContextWithDB(t, key, storetypes.NewTransientStoreKey("transient_test"))
+	encCfg := moduletestutil.MakeTestEncodingConfig(distribution.AppModuleBasic{})
+	ctx := testCtx.Ctx.WithBlockHeader(cmtproto.Header{Time: time.Now()})
+
+	bankKeeper := distrtestutil.NewMockBankKeeper(ctrl)
+	stakingKeeper := distrtestutil.NewMockStakingKeeper(ctrl)
+	accountKeeper := distrtestutil.NewMockAccountKeeper(ctrl)
+
+	valCodec := address.NewBech32Codec("cosmosvaloper")
+
+	accountKeeper.EXPECT().GetModuleAddress("distribution").Return(distrAcc.GetAddress())
+	stakingKeeper.EXPECT().ValidatorAddressCodec().Return(valCodec).AnyTimes()
+
+	distrKeeper := keeper.NewKeeper(
+		encCfg.Codec,
+		storeService,
+		accountKeeper,
+		bankKeeper,
+		stakingKeeper,
+		"fee_collector",
+		authtypes.NewModuleAddress("gov").String(),
+	)
+
+	// create validator with 50% commission
+	val, err := distrtestutil.CreateValidator(valConsPk0, math.NewInt(100))
+	require.NoError(t, err)
+	val.Commission = stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0))
+
+	// Set only NFT delegations, no native tokens
+	val.DelegatorShares = math.LegacyZeroDec()
+	val.DelegatorNftShares = math.LegacyNewDec(100)
+
+	stakingKeeper.EXPECT().ValidatorByConsAddr(gomock.Any(), sdk.GetConsAddress(valConsPk0)).Return(val, nil).AnyTimes()
+
+	// allocate tokens
+	tokens := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(100)},
+	}
+	require.NoError(t, distrKeeper.AllocateTokensToValidator(ctx, val, tokens))
+
+	valBz, err := valCodec.StringToBytes(val.GetOperator())
+	require.NoError(t, err)
+
+	// Check commission - 50% of 100 = 50
+	expectedCommission := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(50)},
+	}
+	valCommission, err := distrKeeper.GetValidatorAccumulatedCommission(ctx, valBz)
+	require.NoError(t, err)
+	require.Equal(t, expectedCommission, valCommission.Commission)
+
+	// Check current rewards - 100 - 50 commission = 50
+	expectedRewards := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(50)},
+	}
+	currentRewards, err := distrKeeper.GetValidatorCurrentRewards(ctx, valBz)
+	require.NoError(t, err)
+	require.Equal(t, expectedRewards, currentRewards.Rewards)
+
+	// Check outstanding rewards - should be the full 100 tokens
+	expectedOutstanding := sdk.DecCoins{
+		{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(100)},
+	}
+	outstandingRewards, err := distrKeeper.GetValidatorOutstandingRewards(ctx, valBz)
+	require.NoError(t, err)
+	require.Equal(t, expectedOutstanding, outstandingRewards.Rewards)
 }
 
 func TestAllocateTokensToManyValidators(t *testing.T) {
@@ -338,4 +496,137 @@ func TestAllocateTokensTruncation(t *testing.T) {
 	val2OutstandingRewards, err := distrKeeper.GetValidatorOutstandingRewards(ctx, valAddr2)
 	require.NoError(t, err)
 	require.True(t, val2OutstandingRewards.Rewards.IsValid())
+}
+
+func TestAllocateTokensWithNFTStaking(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	key := storetypes.NewKVStoreKey(disttypes.StoreKey)
+	storeService := runtime.NewKVStoreService(key)
+	testCtx := testutil.DefaultContextWithDB(t, key, storetypes.NewTransientStoreKey("transient_test"))
+	encCfg := moduletestutil.MakeTestEncodingConfig(distribution.AppModuleBasic{})
+	ctx := testCtx.Ctx.WithBlockHeader(cmtproto.Header{Time: time.Now()})
+
+	bankKeeper := distrtestutil.NewMockBankKeeper(ctrl)
+	stakingKeeper := distrtestutil.NewMockStakingKeeper(ctrl)
+	accountKeeper := distrtestutil.NewMockAccountKeeper(ctrl)
+
+	feeCollectorAcc := authtypes.NewEmptyModuleAccount("fee_collector")
+	accountKeeper.EXPECT().GetModuleAddress("distribution").Return(distrAcc.GetAddress())
+	accountKeeper.EXPECT().GetModuleAccount(gomock.Any(), "fee_collector").Return(feeCollectorAcc)
+	stakingKeeper.EXPECT().ValidatorAddressCodec().Return(address.NewBech32Codec("cosmosvaloper")).AnyTimes()
+
+	distrKeeper := keeper.NewKeeper(
+		encCfg.Codec,
+		storeService,
+		accountKeeper,
+		bankKeeper,
+		stakingKeeper,
+		"fee_collector",
+		authtypes.NewModuleAddress("gov").String(),
+	)
+
+	// reset fee pool & set params
+	require.NoError(t, distrKeeper.Params.Set(ctx, disttypes.DefaultParams()))
+	require.NoError(t, distrKeeper.FeePool.Set(ctx, disttypes.InitialFeePool()))
+
+	// create validator with 50% commission and NFT delegations
+	valAddr0 := sdk.ValAddress(valConsAddr0)
+	val0, err := distrtestutil.CreateValidator(valConsPk0, math.NewInt(100))
+	require.NoError(t, err)
+	val0.Commission = stakingtypes.NewCommission(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0))
+
+	// Set NFT delegation shares
+	val0.DelegatorNftShares = math.LegacyNewDec(100)
+	stakingKeeper.EXPECT().ValidatorByConsAddr(gomock.Any(), sdk.GetConsAddress(valConsPk0)).Return(val0, nil).AnyTimes()
+	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr0).Return(val0, nil).AnyTimes()
+
+	// create second validator with 0% commission and NFT delegations
+	valAddr1 := sdk.ValAddress(valConsAddr1)
+	val1, err := distrtestutil.CreateValidator(valConsPk1, math.NewInt(100))
+	require.NoError(t, err)
+	val1.Commission = stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec())
+
+	// Set NFT delegation shares
+	val1.DelegatorNftShares = math.LegacyNewDec(100)
+	stakingKeeper.EXPECT().ValidatorByConsAddr(gomock.Any(), sdk.GetConsAddress(valConsPk1)).Return(val1, nil).AnyTimes()
+	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr1).Return(val1, nil).AnyTimes()
+
+	// set up validator rewards
+	distrKeeper.SetValidatorOutstandingRewards(ctx, valAddr0, types.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+	distrKeeper.SetValidatorOutstandingRewards(ctx, valAddr1, types.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+
+	// set up validator commission
+	distrKeeper.SetValidatorAccumulatedCommission(ctx, valAddr0, types.ValidatorAccumulatedCommission{Commission: sdk.DecCoins{}})
+	distrKeeper.SetValidatorAccumulatedCommission(ctx, valAddr1, types.ValidatorAccumulatedCommission{Commission: sdk.DecCoins{}})
+
+	// set up validator current rewards
+	distrKeeper.SetValidatorCurrentRewards(ctx, valAddr0, types.ValidatorCurrentRewards{Rewards: sdk.DecCoins{}, Period: uint64(1)})
+	distrKeeper.SetValidatorCurrentRewards(ctx, valAddr1, types.ValidatorCurrentRewards{Rewards: sdk.DecCoins{}, Period: uint64(1)})
+
+	// allocate tokens
+	fees := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100)))
+
+	// create voting power
+	abciValA := abci.Validator{Address: valConsAddr0, Power: 100}
+	abciValB := abci.Validator{Address: valConsAddr1, Power: 100}
+
+	// expected rewards:
+	// 20% to community pool
+	// 20% to native token stakers (split equally between validators)
+	// 60% to NFT stakers (split equally between validators)
+
+	// simulate fee collection
+	bankKeeper.EXPECT().GetAllBalances(gomock.Any(), feeCollectorAcc.GetAddress()).Return(fees)
+	bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), "fee_collector", disttypes.ModuleName, fees)
+
+	votes := []abci.VoteInfo{
+		{
+			Validator: abciValA,
+		},
+		{
+			Validator: abciValB,
+		},
+	}
+	require.NoError(t, distrKeeper.AllocateTokens(ctx, 200, votes))
+
+	// Check rewards distribution
+	// 20% to community pool
+	feePool, err := distrKeeper.FeePool.Get(ctx)
+	require.NoError(t, err)
+	require.Equal(t, sdk.DecCoins{{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(20)}}, feePool.CommunityPool)
+
+	// Check validator outstanding rewards
+	// Each validator should get:
+	// - 10% of native token rewards (20% / 2 validators)
+	// - 30% of NFT rewards (60% / 2 validators)
+	// = 40% total per validator
+	val0OutstandingRewards, err := distrKeeper.GetValidatorOutstandingRewards(ctx, valAddr0)
+	require.NoError(t, err)
+	require.Equal(t, sdk.DecCoins{{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(40)}}, val0OutstandingRewards.Rewards)
+
+	val1OutstandingRewards, err := distrKeeper.GetValidatorOutstandingRewards(ctx, valAddr1)
+	require.NoError(t, err)
+	require.Equal(t, sdk.DecCoins{{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(40)}}, val1OutstandingRewards.Rewards)
+
+	// Check validator commission
+	// Validator 0: 50% commission on 40 = 20
+	val0Commission, err := distrKeeper.GetValidatorAccumulatedCommission(ctx, valAddr0)
+	require.NoError(t, err)
+	require.Equal(t, sdk.DecCoins{{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(20)}}, val0Commission.Commission)
+
+	// Validator 1: 0% commission
+	val1Commission, err := distrKeeper.GetValidatorAccumulatedCommission(ctx, valAddr1)
+	require.NoError(t, err)
+	require.True(t, val1Commission.Commission.IsZero())
+
+	// Check current rewards
+	// Validator 0: 40 - 20 (commission) = 20
+	val0CurrentRewards, err := distrKeeper.GetValidatorCurrentRewards(ctx, valAddr0)
+	require.NoError(t, err)
+	require.Equal(t, sdk.DecCoins{{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(20)}}, val0CurrentRewards.Rewards)
+
+	// Validator 1: 40 (no commission)
+	val1CurrentRewards, err := distrKeeper.GetValidatorCurrentRewards(ctx, valAddr1)
+	require.NoError(t, err)
+	require.Equal(t, sdk.DecCoins{{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(40)}}, val1CurrentRewards.Rewards)
 }
