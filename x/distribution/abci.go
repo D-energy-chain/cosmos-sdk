@@ -25,16 +25,14 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, ek exported.EpochKeeper) err
 		return err
 	}
 
-	// Check if any epoch has ended
-	epochs := ek.AllEpochInfos(ctx)
-	for _, epoch := range epochs {
-		if ek.IsEpochEnd(ctx, epoch.Identifier) {
-			// At epoch end, distribute all accumulated rewards
-			if err := k.AllocateTokens(ctx, previousTotalPower, ctx.VoteInfos()); err != nil {
-				return err
-			}
-			return nil
+	// TODO fix the hardcoded epoch identifier later
+	// Check if the epoch has ended
+	if ek.IsEpochEnd(ctx, "inflation") {
+		// At epoch end, distribute all accumulated rewards
+		if err := k.AllocateTokens(ctx, previousTotalPower, ctx.VoteInfos()); err != nil {
+			return err
 		}
+		return nil
 	}
 
 	// If not at epoch end, just collect fees but don't distribute them

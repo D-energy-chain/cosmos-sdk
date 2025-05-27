@@ -20,13 +20,6 @@ type (
 // EpochKeeper defines the expected epoch keeper interface that the parent codebase
 // should implement to enable epoch-based reward distribution in the distribution module.
 type EpochKeeper interface {
-	// AllEpochInfos returns all the epoch infos
-	AllEpochInfos(ctx sdk.Context) []EpochInfo
 	// IsEpochEnd returns true if the current block is the end of an epoch
 	IsEpochEnd(ctx sdk.Context, identifier string) bool
-}
-
-// EpochInfo defines the epoch info structure
-type EpochInfo struct {
-	Identifier string
 }

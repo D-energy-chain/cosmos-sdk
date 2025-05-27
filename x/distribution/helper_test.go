@@ -70,11 +70,6 @@ func TestDistributionHelper(t *testing.T) {
 	simpleKeeper := distribution.NewSimpleEpochKeeper([]string{"day", "week"})
 
 	// Check initial state
-	epochs := simpleKeeper.AllEpochInfos(sdkCtx)
-	require.Len(t, epochs, 2)
-	require.Equal(t, "day", epochs[0].Identifier)
-	require.Equal(t, "week", epochs[1].Identifier)
-
 	require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "day"))
 	require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "week"))
 

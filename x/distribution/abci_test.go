@@ -19,7 +19,6 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/distribution/exported"
 	"github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtestutil "github.com/cosmos/cosmos-sdk/x/distribution/testutil"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -27,12 +26,7 @@ import (
 
 // Mock EpochKeeper for testing
 type mockEpochKeeper struct {
-	epochs     []exported.EpochInfo
 	isEpochEnd bool
-}
-
-func (m *mockEpochKeeper) AllEpochInfos(ctx sdk.Context) []exported.EpochInfo {
-	return m.epochs
 }
 
 func (m *mockEpochKeeper) IsEpochEnd(ctx sdk.Context, identifier string) bool {
@@ -81,9 +75,6 @@ func TestEpochBasedDistribution(t *testing.T) {
 
 	// Create mock epoch keeper
 	mockEpoch := &mockEpochKeeper{
-		epochs: []exported.EpochInfo{
-			{Identifier: "day"},
-		},
 		isEpochEnd: false,
 	}
 
