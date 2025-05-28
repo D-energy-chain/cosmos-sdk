@@ -84,8 +84,9 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {
 	// Get the validator's NFT and native token shares
+	// TODO: Uncomment the line below when the GetDelegatorNftShares method is available in ValidatorI interface
 	// nftShares := val.GetDelegatorNftShares()
-	nftShares := math.LegacyZeroDec()
+	nftShares := math.LegacyZeroDec() // For now, assume no NFT shares until interface is updated
 	nativeShares := val.GetDelegatorShares()
 	totalShares := nftShares.Add(nativeShares)
 
@@ -95,6 +96,16 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 	}
 
 	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
+	if err != nil {
+		return err
+	}
+
+	// Get the configurable staking ratios
+	nftStakingRatio, err := k.GetNftStakingRatio(ctx)
+	if err != nil {
+		return err
+	}
+	nativeStakingRatio, err := k.GetNativeStakingRatio(ctx)
 	if err != nil {
 		return err
 	}
@@ -116,11 +127,8 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		nftCommission = tokens.MulDec(val.GetCommission())
 		nftShared = tokens.Sub(nftCommission)
 	} else {
-		// Split rewards between NFT stakers (75%) and native token stakers (25%)
-		nftStakingRatio := math.LegacyNewDecWithPrec(75, 2)    // 75%
-		nativeStakingRatio := math.LegacyNewDecWithPrec(25, 2) // 25%
-
-		// Calculate rewards for each type
+		// Split rewards based on the configured ratios
+		// Calculate rewards for each type based on the total staking allocation (80%)
 		nftRewards = tokens.MulDecTruncate(nftStakingRatio)
 		nativeRewards = tokens.MulDecTruncate(nativeStakingRatio)
 

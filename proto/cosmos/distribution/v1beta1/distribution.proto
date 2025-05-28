@@ -41,6 +41,35 @@ message Params {
   ];
 
   bool withdraw_addr_enabled = 4;
+
+  // nft_staking_ratio defines the fraction of staking rewards allocated to NFT stakers.
+  // This is a percentage of the staking rewards (after community tax is deducted).
+  // Default: 75% (0.75) of staking rewards, which equals 56.25% of total newly minted coins
+  string nft_staking_ratio = 5 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (amino.dont_omitempty) = true,
+    (gogoproto.nullable)   = false
+  ];
+
+  // native_staking_ratio defines the fraction of staking rewards allocated to native token stakers.
+  // This is a percentage of the staking rewards (after community tax is deducted).
+  // Default: 25% (0.25) of staking rewards, which equals 18.75% of total newly minted coins
+  string native_staking_ratio = 6 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (amino.dont_omitempty) = true,
+    (gogoproto.nullable)   = false
+  ];
+
+  // separate_pool_ratio defines the fraction of total rewards allocated to a separate pool.
+  // Default: 5% (0.05) of total newly minted coins
+  string separate_pool_ratio = 7 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (amino.dont_omitempty) = true,
+    (gogoproto.nullable)   = false
+  ];
 }
 
 // ValidatorHistoricalRewards represents historical rewards for a validator.
