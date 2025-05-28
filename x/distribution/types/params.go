@@ -30,13 +30,22 @@ func (p Params) ValidateBasic() error {
 	if err := validateStakingRatio(p.NativeStakingRatio, "native_staking_ratio"); err != nil {
 		return err
 	}
+	if err := validateStakingRatio(p.SeparatePoolRatio, "separate_pool_ratio"); err != nil {
+		return err
+	}
 
 	// Validate that the sum of staking ratios equals 100% (1.0) of the staking rewards
-	// Note: The staking rewards are the portion after community tax is deducted
+	// Note: The staking rewards are the portion after community tax and separate pool are deducted
 	totalStakingRatio := p.NftStakingRatio.Add(p.NativeStakingRatio)
 	expectedTotalStakingRatio := math.LegacyOneDec() // 100% of staking rewards
 	if !totalStakingRatio.Equal(expectedTotalStakingRatio) {
 		return fmt.Errorf("nft_staking_ratio + native_staking_ratio must equal 100%% (1.0) of staking rewards, got: %s", totalStakingRatio)
+	}
+
+	// Validate that community tax + separate pool ratio is less than or equal to 100%
+	totalDeductions := p.CommunityTax.Add(p.SeparatePoolRatio)
+	if totalDeductions.GT(math.LegacyOneDec()) {
+		return fmt.Errorf("community_tax + separate_pool_ratio must be less than or equal to 100%%, got: %s", totalDeductions)
 	}
 
 	return nil
