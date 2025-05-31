@@ -84,6 +84,17 @@ func (msg MsgCreateValidator) Validate(ac address.Codec) error {
 		)
 	}
 
+	// Initialize NFT fields if they are nil to prevent panic
+	if msg.NftAmount.IsNil() {
+		msg.NftAmount = math.ZeroInt()
+	}
+	if msg.MinSelfNftDelegation.IsNil() {
+		msg.MinSelfNftDelegation = math.ZeroInt()
+	}
+	if msg.TokenId.IsNil() {
+		msg.TokenId = math.ZeroInt()
+	}
+
 	if !msg.NftAmount.GTE(math.ZeroInt()) {
 		return errorsmod.Wrap(
 			sdkerrors.ErrInvalidRequest,
