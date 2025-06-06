@@ -528,7 +528,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec()),
-			sdkmath.OneInt(), "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(),
+			sdkmath.OneInt(), "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), 30,
 		)
 		if err != nil {
 			return nil, err

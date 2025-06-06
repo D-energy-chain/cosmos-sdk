@@ -26,7 +26,7 @@ var (
 // Delegator address and validator address are the same.
 func NewMsgCreateValidator(
 	valAddr string, pubKey cryptotypes.PubKey,
-	selfDelegation sdk.Coin, description Description, commission CommissionRates, minSelfDelegation math.Int, nftContractAddress string, tokenId, nftAmount, minSelfNftDelegation math.Int,
+	selfDelegation sdk.Coin, description Description, commission CommissionRates, minSelfDelegation math.Int, nftContractAddress string, tokenId, nftAmount, minSelfNftDelegation math.Int, watts uint64,
 ) (*MsgCreateValidator, error) {
 	var pkAny *codectypes.Any
 	if pubKey != nil {
@@ -46,6 +46,7 @@ func NewMsgCreateValidator(
 		TokenId:              tokenId,
 		NftAmount:            nftAmount,
 		MinSelfNftDelegation: minSelfNftDelegation,
+		Watts:                watts,
 	}, nil
 }
 

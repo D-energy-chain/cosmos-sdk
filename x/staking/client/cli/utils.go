@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -31,6 +32,7 @@ type validator struct {
 	TokenId              math.Int
 	NftAmount            math.Int
 	MinNftSelfDelegation math.Int
+	Watts                uint64
 }
 
 func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, error) {
@@ -50,6 +52,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		TokenId              string          `json:"token-id"`
 		NftAmount            string          `json:"nft-amount"`
 		MinNftSelfDelegation string          `json:"min-nft-self-delegation"`
+		Watts                string          `json:"power"`
 	}
 
 	contents, err := os.ReadFile(path)
@@ -115,6 +118,11 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum nft self delegation must be a positive integer")
 	}
 
+	if v.Watts == "" {
+		return validator{}, fmt.Errorf("must specify power of the node")
+	}
+	watts, err := strconv.ParseUint(v.Watts, 10, 64)
+
 	return validator{
 		Amount:               amount,
 		PubKey:               pk,
@@ -129,6 +137,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		TokenId:              tokenId,
 		NftAmount:            nftAmount,
 		MinNftSelfDelegation: minNftSelfDelegation,
+		Watts:                watts,
 	}, nil
 }
 

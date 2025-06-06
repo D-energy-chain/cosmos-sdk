@@ -93,6 +93,8 @@ message MsgCreateValidator {
     (gogoproto.nullable)   = false,
     (amino.dont_omitempty) = true
   ];
+  // watts is the power consumption of the node in watts
+  uint64 watts = 12;
 }
 
 // MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
