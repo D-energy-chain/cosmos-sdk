@@ -35,7 +35,7 @@ var (
 	defaultTokenId                 = "1"
 	defaultNftAmount               = "0"
 	defaultMinNftSelfDelegation    = "0"
-	defaultPower                   = "30"
+	defaultPower                   = "220"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/staking transaction commands.
@@ -89,7 +89,7 @@ Where validator.json contains:
 	"token-id": 1,
 	"nft-amount": 0,
 	"min-nft-self-delegation": 0,
-	"watts": 30
+	"watts": 220
 }
 
 where we can get the pubkey using "%s tendermint show-validator"
