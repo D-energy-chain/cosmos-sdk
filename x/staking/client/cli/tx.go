@@ -448,6 +448,7 @@ func CreateValidatorMsgFlagSet(ipDefault string) (fs *flag.FlagSet, defaultsDesc
 	fsCreateValidator.AddFlagSet(FlagSetNftTokenId())
 	fsCreateValidator.AddFlagSet(FlagSetNftAmount())
 	fsCreateValidator.AddFlagSet(FlagSetMinNftSelfDelegation())
+	fsCreateValidator.AddFlagSet(FlagSetWatts())
 
 	defaultsDesc = fmt.Sprintf(`
 	delegation amount:           %s
