@@ -649,7 +649,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 	tokenId, ok := math.NewIntFromString(config.TokenId)
 	nftAmount, ok := math.NewIntFromString(config.NftAmount)
 	minNftSelfDelegation, ok := math.NewIntFromString(config.MinNftSelfDelegation)
-	power, err := strconv.ParseUint(config.Watts, 10, 64)
+	watts, err := strconv.ParseUint(config.Watts, 10, 64)
 	if err != nil {
 		return txBldr, nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "Watts must be a positive integer")
 	}
@@ -669,7 +669,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		amount,
 		description,
 		commissionRates,
-		minSelfDelegation, nftContractAddress, tokenId, nftAmount, minNftSelfDelegation, power,
+		minSelfDelegation, nftContractAddress, tokenId, nftAmount, minNftSelfDelegation, watts,
 	)
 	if err != nil {
 		return txBldr, msg, err

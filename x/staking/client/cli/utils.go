@@ -52,7 +52,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		TokenId              string          `json:"token-id"`
 		NftAmount            string          `json:"nft-amount"`
 		MinNftSelfDelegation string          `json:"min-nft-self-delegation"`
-		Watts                string          `json:"power"`
+		Watts                string          `json:"watts"`
 	}
 
 	contents, err := os.ReadFile(path)
@@ -119,7 +119,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 	}
 
 	if v.Watts == "" {
-		return validator{}, fmt.Errorf("must specify power of the node")
+		return validator{}, fmt.Errorf("must specify power consumption of the node")
 	}
 	watts, err := strconv.ParseUint(v.Watts, 10, 64)
 
