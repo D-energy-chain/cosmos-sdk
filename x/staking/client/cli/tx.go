@@ -89,7 +89,8 @@ Where validator.json contains:
 	"token-id": 1,
 	"nft-amount": 0,
 	"min-nft-self-delegation": 0,
-	"watts": 220
+	"watts": "220",
+	"country": "UAE"
 }
 
 where we can get the pubkey using "%s tendermint show-validator"
@@ -405,7 +406,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 		return txf, nil, err
 	}
 	msg, err := types.NewMsgCreateValidator(
-		valStr, val.PubKey, val.Amount, description, val.CommissionRates, val.MinSelfDelegation, val.NftContractAddress, val.TokenId, val.NftAmount, val.MinNftSelfDelegation, val.Watts,
+		valStr, val.PubKey, val.Amount, description, val.CommissionRates, val.MinSelfDelegation, val.NftContractAddress, val.TokenId, val.NftAmount, val.MinNftSelfDelegation, val.Watts, val.Country,
 	)
 	if err != nil {
 		return txf, nil, err
@@ -480,6 +481,7 @@ type TxCreateValidatorConfig struct {
 	NftAmount            string
 	MinNftSelfDelegation string
 	Watts                string
+	Country              string
 
 	PubKey cryptotypes.PubKey
 
@@ -559,6 +561,11 @@ func PrepareConfigForTxCreateValidator(flagSet *flag.FlagSet, moniker, nodeID, c
 	}
 
 	c.Watts, err = flagSet.GetString(FlagWatts)
+	if err != nil {
+		return c, err
+	}
+
+	c.Country, err = flagSet.GetString(FlagCountry)
 	if err != nil {
 		return c, err
 	}
@@ -649,6 +656,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 	tokenId, ok := math.NewIntFromString(config.TokenId)
 	nftAmount, ok := math.NewIntFromString(config.NftAmount)
 	minNftSelfDelegation, ok := math.NewIntFromString(config.MinNftSelfDelegation)
+	country := config.Country
 	watts, err := strconv.ParseUint(config.Watts, 10, 64)
 	if err != nil {
 		return txBldr, nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "Watts must be a positive integer")
@@ -669,7 +677,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		amount,
 		description,
 		commissionRates,
-		minSelfDelegation, nftContractAddress, tokenId, nftAmount, minNftSelfDelegation, watts,
+		minSelfDelegation, nftContractAddress, tokenId, nftAmount, minNftSelfDelegation, watts, country,
 	)
 	if err != nil {
 		return txBldr, msg, err
