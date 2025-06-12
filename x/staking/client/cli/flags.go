@@ -135,9 +135,16 @@ func FlagSetNftAmount() *flag.FlagSet {
 	return fs
 }
 
-// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+// FlagSetWatts Returns the FlagSet used for the power of the node in watts
 func FlagSetWatts() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.String(FlagWatts, "", "The power of the node in watts")
+	return fs
+}
+
+// FlagSetCountry Returns the FlagSet used for the country of the node
+func FlagSetCountry() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagCountry, "", "The country of the node")
 	return fs
 }
