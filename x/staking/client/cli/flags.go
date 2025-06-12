@@ -33,6 +33,7 @@ const (
 	FlagNftAmount            = "nft-amount"
 	FlagMinNftSelfDelegation = "min-nft-self-delegation"
 	FlagWatts                = "watts"
+	FlagCountry              = "country"
 	FlagGenesisFormat        = "genesis-format"
 	FlagNodeID               = "node-id"
 	FlagIP                   = "ip"

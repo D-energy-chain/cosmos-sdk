@@ -33,6 +33,7 @@ type validator struct {
 	NftAmount            math.Int
 	MinNftSelfDelegation math.Int
 	Watts                uint64
+	Country              string
 }
 
 func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, error) {
@@ -53,6 +54,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		NftAmount            string          `json:"nft-amount"`
 		MinNftSelfDelegation string          `json:"min-nft-self-delegation"`
 		Watts                string          `json:"watts"`
+		Country              string          `json:"country"`
 	}
 
 	contents, err := os.ReadFile(path)
@@ -117,11 +119,20 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 	if !ok {
 		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum nft self delegation must be a positive integer")
 	}
-
 	if v.Watts == "" {
 		return validator{}, fmt.Errorf("must specify power consumption of the node")
 	}
 	watts, err := strconv.ParseUint(v.Watts, 10, 64)
+	if v.Country == "" {
+		return validator{}, fmt.Errorf("must specify the country of the node")
+	}
+
+	// Validate ISO 3166-1 alpha-3 country code
+	countryCode := CountryByName(v.Country)
+	if countryCode == Unknown {
+		return validator{}, fmt.Errorf("invalid ISO 3166-1 alpha-3 country code: %s", v.Country)
+	}
+	v.Country = countryCode.Alpha3() // Normalize to uppercase alpha-3 code
 
 	return validator{
 		Amount:               amount,
@@ -138,6 +149,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		NftAmount:            nftAmount,
 		MinNftSelfDelegation: minNftSelfDelegation,
 		Watts:                watts,
+		Country:              v.Country,
 	}, nil
 }
 
