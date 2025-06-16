@@ -364,7 +364,13 @@ func (v Validator) ConsensusPower(r math.Int) int64 {
 
 // PotentialConsensusPower returns the potential consensus-engine power.
 func (v Validator) PotentialConsensusPower(r math.Int) int64 {
-	return sdk.TokensToConsensusPower(v.Tokens, r)
+	tokenValue := v.Tokens
+
+	if v.TotalNftDelegation.GT(math.ZeroInt()) {
+		nftToCoinValue := v.TotalNftDelegation.Quo(math.NewInt(1000))
+		tokenValue = tokenValue.Add(nftToCoinValue)
+	}
+	return sdk.TokensToConsensusPower(tokenValue, r)
 }
 
 // UpdateStatus updates the location of the shares within a validator

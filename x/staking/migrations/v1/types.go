@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	v1auth "github.com/cosmos/cosmos-sdk/x/auth/migrations/v1"
@@ -81,8 +82,14 @@ func AddressFromLastValidatorPowerKey(key []byte) []byte {
 func GetValidatorsByPowerIndexKey(validator types.Validator) []byte {
 	// NOTE the address doesn't need to be stored because counter bytes must always be different
 	// NOTE the larger values are of higher value
+	tokenValue := validator.Tokens
 
-	consensusPower := sdk.TokensToConsensusPower(validator.Tokens, sdk.DefaultPowerReduction)
+	if validator.TotalNftDelegation.GT(math.ZeroInt()) {
+		nftToCoinValue := validator.TotalNftDelegation.Quo(math.NewInt(1000))
+		tokenValue = tokenValue.Add(nftToCoinValue)
+	}
+
+	consensusPower := sdk.TokensToConsensusPower(tokenValue, sdk.DefaultPowerReduction)
 	consensusPowerBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(consensusPowerBytes, uint64(consensusPower))
 

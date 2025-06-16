@@ -35,7 +35,7 @@ var (
 	defaultTokenId                 = "1"
 	defaultNftAmount               = "0"
 	defaultMinNftSelfDelegation    = "0"
-	defaultPower                   = "220"
+	defaultWatts                   = "220"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/staking transaction commands.
@@ -618,7 +618,7 @@ func PrepareConfigForTxCreateValidator(flagSet *flag.FlagSet, moniker, nodeID, c
 		c.MinNftSelfDelegation = defaultMinNftSelfDelegation
 	}
 	if c.Watts == "" {
-		c.Watts = defaultPower
+		c.Watts = defaultWatts
 	}
 
 	return c, nil
