@@ -82,14 +82,7 @@ func AddressFromLastValidatorPowerKey(key []byte) []byte {
 func GetValidatorsByPowerIndexKey(validator types.Validator) []byte {
 	// NOTE the address doesn't need to be stored because counter bytes must always be different
 	// NOTE the larger values are of higher value
-	tokenValue := validator.Tokens
-
-	if validator.TotalNftDelegation.GT(math.ZeroInt()) {
-		nftToCoinValue := validator.TotalNftDelegation.Quo(math.NewInt(1000))
-		tokenValue = tokenValue.Add(nftToCoinValue)
-	}
-
-	consensusPower := sdk.TokensToConsensusPower(tokenValue, sdk.DefaultPowerReduction)
+	consensusPower := sdk.TokensToConsensusPower(validator.TokensPowerValue(), sdk.DefaultPowerReduction)
 	consensusPowerBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(consensusPowerBytes, uint64(consensusPower))
 
