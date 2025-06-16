@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	v1auth "github.com/cosmos/cosmos-sdk/x/auth/migrations/v1"
