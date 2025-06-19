@@ -180,6 +180,9 @@ message Validator {
 
   // nft_unbonding_ids is a list of unbonding ids, each uniquely identifying an unbonding of this validator
   repeated uint64 nft_unbonding_ids = 18;
+
+  // country is the country that the Validator belongs to
+  string country = 19;
 }
 
 // BondStatus is the status of a validator.
