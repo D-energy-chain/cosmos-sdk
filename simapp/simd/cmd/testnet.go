@@ -309,7 +309,7 @@ func initTestnetFiles(
 			sdk.NewCoin(sdk.DefaultBondDenom, valTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(math.LegacyOneDec(), math.LegacyOneDec(), math.LegacyOneDec()),
-			math.OneInt(), "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(),
+			math.OneInt(), "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), 220, "UAE",
 		)
 		if err != nil {
 			return err

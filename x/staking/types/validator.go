@@ -352,6 +352,26 @@ func (v Validator) BondedTokens() math.Int {
 	return math.ZeroInt()
 }
 
+// TokensPowerValue returns the amount of tokens that should be taken into account
+// when computing consensus power. Besides the regular liquid tokens bonded to the
+// validator it also converts the total NFT delegation into a token equivalent
+// (1/1000 ratio at the moment) and adds it to the total. The same conversion
+// logic is already used in GetValidatorsByPowerIndexKey so this helper keeps the
+// behaviour consistent across the code-base.
+func (v Validator) TokensPowerValue() math.Int {
+	tokenValue := v.Tokens
+
+	if v.TotalNftDelegation.GT(math.ZeroInt()) {
+		// 1000 NFTs should correspond to the power of 10^18 tokens.
+		// That means each NFT counts as 10^15 token-equivalent.
+		nftTokenMultiplier := math.NewInt(1_000_000_000_000_000) // 1e15
+		nftToCoinValue := v.TotalNftDelegation.Mul(nftTokenMultiplier)
+		tokenValue = tokenValue.Add(nftToCoinValue)
+	}
+
+	return tokenValue
+}
+
 // ConsensusPower gets the consensus-engine power. Aa reduction of 10^6 from
 // validator tokens is applied
 func (v Validator) ConsensusPower(r math.Int) int64 {
@@ -364,7 +384,7 @@ func (v Validator) ConsensusPower(r math.Int) int64 {
 
 // PotentialConsensusPower returns the potential consensus-engine power.
 func (v Validator) PotentialConsensusPower(r math.Int) int64 {
-	return sdk.TokensToConsensusPower(v.Tokens, r)
+	return sdk.TokensToConsensusPower(v.TokensPowerValue(), r)
 }
 
 // UpdateStatus updates the location of the shares within a validator

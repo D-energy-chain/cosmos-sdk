@@ -180,6 +180,9 @@ message Validator {
 
   // nft_unbonding_ids is a list of unbonding ids, each uniquely identifying an unbonding of this validator
   repeated uint64 nft_unbonding_ids = 18;
+
+  // country is the country that the Validator belongs to
+  string country = 19;
 }
 
 // BondStatus is the status of a validator.
@@ -366,6 +369,9 @@ message Params {
     (amino.dont_omitempty) = true,
     (cosmos_proto.scalar)  = "cosmos.Dec"
   ];
+  // allowed_validators is the list of validator addresses that are allowed to create validators.
+  // If empty, any address can create a validator.
+  repeated string allowed_validators = 7 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
 }
 
 // DelegationResponse is equivalent to Delegation except that it contains a

@@ -9,9 +9,10 @@ import (
 
 // permissions
 const (
-	Minter  = "minter"
-	Burner  = "burner"
-	Staking = "staking"
+	Minter     = "minter"
+	Burner     = "burner"
+	Staking    = "staking"
+	NftStaking = "nftstaking"
 )
 
 // PermissionsForAddress defines all the registered permissions for an address

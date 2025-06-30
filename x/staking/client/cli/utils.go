@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -31,21 +32,29 @@ type validator struct {
 	TokenId              math.Int
 	NftAmount            math.Int
 	MinNftSelfDelegation math.Int
+	Watts                uint64
+	Country              string
 }
 
 func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, error) {
 	type internalVal struct {
-		Amount              string          `json:"amount"`
-		PubKey              json.RawMessage `json:"pubkey"`
-		Moniker             string          `json:"moniker"`
-		Identity            string          `json:"identity,omitempty"`
-		Website             string          `json:"website,omitempty"`
-		Security            string          `json:"security,omitempty"`
-		Details             string          `json:"details,omitempty"`
-		CommissionRate      string          `json:"commission-rate"`
-		CommissionMaxRate   string          `json:"commission-max-rate"`
-		CommissionMaxChange string          `json:"commission-max-change-rate"`
-		MinSelfDelegation   string          `json:"min-self-delegation"`
+		Amount               string          `json:"amount"`
+		PubKey               json.RawMessage `json:"pubkey"`
+		Moniker              string          `json:"moniker"`
+		Identity             string          `json:"identity,omitempty"`
+		Website              string          `json:"website,omitempty"`
+		Security             string          `json:"security,omitempty"`
+		Details              string          `json:"details,omitempty"`
+		CommissionRate       string          `json:"commission-rate"`
+		CommissionMaxRate    string          `json:"commission-max-rate"`
+		CommissionMaxChange  string          `json:"commission-max-change-rate"`
+		MinSelfDelegation    string          `json:"min-self-delegation"`
+		NftContractAddress   string          `json:"nft-contract"`
+		TokenId              string          `json:"token-id"`
+		NftAmount            string          `json:"nft-amount"`
+		MinNftSelfDelegation string          `json:"min-nft-self-delegation"`
+		Watts                string          `json:"watts"`
+		Country              string          `json:"country"`
 	}
 
 	contents, err := os.ReadFile(path)
@@ -88,20 +97,59 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, fmt.Errorf("must specify minimum self delegation")
 	}
 	minSelfDelegation, ok := math.NewIntFromString(v.MinSelfDelegation)
-	if !ok {
-		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
+
+	if v.NftContractAddress == "" {
+		return validator{}, fmt.Errorf("must specify the nft contract address")
 	}
 
+	if v.TokenId == "" {
+		return validator{}, fmt.Errorf("must specify nft token-id")
+	}
+	tokenId, ok := math.NewIntFromString(v.TokenId)
+
+	if v.NftAmount == "" {
+		return validator{}, fmt.Errorf("must specify NFT amount to be staked")
+	}
+	nftAmount, ok := math.NewIntFromString(v.NftAmount)
+
+	if v.MinNftSelfDelegation == "" {
+		return validator{}, fmt.Errorf("must specify nft minimum self delegation")
+	}
+	minNftSelfDelegation, ok := math.NewIntFromString(v.MinNftSelfDelegation)
+	if !ok {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum nft self delegation must be a positive integer")
+	}
+	if v.Watts == "" {
+		return validator{}, fmt.Errorf("must specify power consumption of the node")
+	}
+	watts, err := strconv.ParseUint(v.Watts, 10, 64)
+	if v.Country == "" {
+		return validator{}, fmt.Errorf("must specify the country of the node")
+	}
+
+	// Validate ISO 3166-1 alpha-3 country code
+	countryCode := CountryByName(v.Country)
+	if countryCode == Unknown {
+		return validator{}, fmt.Errorf("invalid ISO 3166-1 alpha-3 country code: %s", v.Country)
+	}
+	v.Country = countryCode.Alpha3() // Normalize to uppercase alpha-3 code
+
 	return validator{
-		Amount:            amount,
-		PubKey:            pk,
-		Moniker:           v.Moniker,
-		Identity:          v.Identity,
-		Website:           v.Website,
-		Security:          v.Security,
-		Details:           v.Details,
-		CommissionRates:   commissionRates,
-		MinSelfDelegation: minSelfDelegation,
+		Amount:               amount,
+		PubKey:               pk,
+		Moniker:              v.Moniker,
+		Identity:             v.Identity,
+		Website:              v.Website,
+		Security:             v.Security,
+		Details:              v.Details,
+		CommissionRates:      commissionRates,
+		MinSelfDelegation:    minSelfDelegation,
+		NftContractAddress:   v.NftContractAddress,
+		TokenId:              tokenId,
+		NftAmount:            nftAmount,
+		MinNftSelfDelegation: minNftSelfDelegation,
+		Watts:                watts,
+		Country:              v.Country,
 	}, nil
 }
 

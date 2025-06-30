@@ -26,7 +26,7 @@ var (
 // Delegator address and validator address are the same.
 func NewMsgCreateValidator(
 	valAddr string, pubKey cryptotypes.PubKey,
-	selfDelegation sdk.Coin, description Description, commission CommissionRates, minSelfDelegation math.Int, nftContractAddress string, tokenId, nftAmount, minSelfNftDelegation math.Int,
+	selfDelegation sdk.Coin, description Description, commission CommissionRates, minSelfDelegation math.Int, nftContractAddress string, tokenId, nftAmount, minSelfNftDelegation math.Int, watts uint64, country string,
 ) (*MsgCreateValidator, error) {
 	var pkAny *codectypes.Any
 	if pubKey != nil {
@@ -46,6 +46,8 @@ func NewMsgCreateValidator(
 		TokenId:              tokenId,
 		NftAmount:            nftAmount,
 		MinSelfNftDelegation: minSelfNftDelegation,
+		Watts:                watts,
+		Country:              country,
 	}, nil
 }
 
@@ -84,7 +86,36 @@ func (msg MsgCreateValidator) Validate(ac address.Codec) error {
 		)
 	}
 
+	// Initialize NFT fields if they are nil to prevent panic
+	if msg.NftAmount.IsNil() {
+		msg.NftAmount = math.ZeroInt()
+	}
+	if msg.MinSelfNftDelegation.IsNil() {
+		msg.MinSelfNftDelegation = math.ZeroInt()
+	}
+	if msg.TokenId.IsNil() {
+		msg.TokenId = math.ZeroInt()
+	}
+
+	if !msg.NftAmount.GTE(math.ZeroInt()) {
+		return errorsmod.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			"nft amount must be a zero or positive integer",
+		)
+	}
+
+	if !msg.MinSelfNftDelegation.GTE(math.ZeroInt()) {
+		return errorsmod.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			"minimum nft self delegation must be a zero or positive integer",
+		)
+	}
+
 	if msg.Value.Amount.LT(msg.MinSelfDelegation) {
+		return ErrSelfDelegationBelowMinimum
+	}
+
+	if msg.NftAmount.LT(msg.MinSelfNftDelegation) {
 		return ErrSelfDelegationBelowMinimum
 	}
 

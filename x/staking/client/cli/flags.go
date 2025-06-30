@@ -32,11 +32,12 @@ const (
 	FlagTokenId              = "token-id"
 	FlagNftAmount            = "nft-amount"
 	FlagMinNftSelfDelegation = "min-nft-self-delegation"
-
-	FlagGenesisFormat = "genesis-format"
-	FlagNodeID        = "node-id"
-	FlagIP            = "ip"
-	FlagP2PPort       = "p2p-port"
+	FlagWatts                = "watts"
+	FlagCountry              = "country"
+	FlagGenesisFormat        = "genesis-format"
+	FlagNodeID               = "node-id"
+	FlagIP                   = "ip"
+	FlagP2PPort              = "p2p-port"
 )
 
 // common flagsets to add to various functions
@@ -131,5 +132,19 @@ func FlagSetNftTokenId() *flag.FlagSet {
 func FlagSetNftAmount() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 	fs.String(FlagNftAmount, "", "The amount of NFTs to bond is required")
+	return fs
+}
+
+// FlagSetWatts Returns the FlagSet used for the power of the node in watts
+func FlagSetWatts() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagWatts, "", "The power of the node in watts")
+	return fs
+}
+
+// FlagSetCountry Returns the FlagSet used for the country of the node
+func FlagSetCountry() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagCountry, "", "The country of the node")
 	return fs
 }
