@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -68,6 +70,23 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, err
 	}
 
+	// Validate Website URL if provided
+	if v.Website != "" {
+		if _, err := url.ParseRequestURI(v.Website); err != nil {
+			return validator{}, fmt.Errorf("invalid website URL: %w", err)
+		}
+	}
+
+	// Validate Security contact if provided (should be an email or URL)
+	if v.Security != "" {
+		if _, err := url.ParseRequestURI(v.Security); err != nil {
+			// If not a URL, check if it's a valid email format
+			if !strings.Contains(v.Security, "@") {
+				return validator{}, fmt.Errorf("security contact must be a valid URL or email address")
+			}
+		}
+	}
+
 	if v.Amount == "" {
 		return validator{}, fmt.Errorf("must specify amount of coins to bond")
 	}
@@ -93,10 +112,19 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, err
 	}
 
+	// Validate commission rates
+	if err := commissionRates.Validate(); err != nil {
+		return validator{}, err
+	}
+
 	if v.MinSelfDelegation == "" {
 		return validator{}, fmt.Errorf("must specify minimum self delegation")
 	}
 	minSelfDelegation, ok := math.NewIntFromString(v.MinSelfDelegation)
+
+	if !ok || !minSelfDelegation.IsPositive() {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
+	}
 
 	if v.NftContractAddress == "" {
 		return validator{}, fmt.Errorf("must specify the nft contract address")
@@ -105,26 +133,46 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 	if v.TokenId == "" {
 		return validator{}, fmt.Errorf("must specify nft token-id")
 	}
+
 	tokenId, ok := math.NewIntFromString(v.TokenId)
+	if !ok || !tokenId.IsPositive() {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "token id must be a positive integer")
+	}
 
 	if v.NftAmount == "" {
 		return validator{}, fmt.Errorf("must specify NFT amount to be staked")
 	}
+
 	nftAmount, ok := math.NewIntFromString(v.NftAmount)
+	if !ok || !nftAmount.IsPositive() {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "nft amount must be a positive integer")
+	}
 
 	if v.MinNftSelfDelegation == "" {
-		return validator{}, fmt.Errorf("must specify nft minimum self delegation")
+		return validator{}, fmt.Errorf("must specify minimum NFT self delegation")
 	}
+
 	minNftSelfDelegation, ok := math.NewIntFromString(v.MinNftSelfDelegation)
-	if !ok {
-		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum nft self delegation must be a positive integer")
+	if !ok || !minNftSelfDelegation.IsPositive() {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum NFT self delegation must be a positive integer")
 	}
-	if v.Watts == "" {
-		return validator{}, fmt.Errorf("must specify power consumption of the node")
-	}
+
+	// Validate Watts (should be within reasonable range, e.g., 1-100000)
 	watts, err := strconv.ParseUint(v.Watts, 10, 64)
+	if err != nil {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "watts must be a positive integer")
+	}
+	if watts < 1 || watts > 100000 {
+		return validator{}, fmt.Errorf("watts must be between 1 and 100000")
+	}
+
+	// Validate Country code (should be a valid ISO 3166-1 alpha-3 code)
 	if v.Country == "" {
 		return validator{}, fmt.Errorf("must specify the country of the node")
+	}
+
+	if len(v.Country) != 3 {
+		return validator{}, fmt.Errorf("country code must be a valid ISO 3166-1 alpha-3 code")
 	}
 
 	// Validate ISO 3166-1 alpha-3 country code
