@@ -65,10 +65,10 @@ func (suite *GenTxTestSuite) SetupTest() {
 	amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)
 	one := math.OneInt()
 	suite.msg1, err = stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(pk1.Address()).String(), pk1, amount, desc, comm, one)
+		sdk.ValAddress(pk1.Address()).String(), pk1, amount, desc, comm, one, "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), 220, "UAE")
 	suite.NoError(err)
 	suite.msg2, err = stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(pk2.Address()).String(), pk1, amount, desc, comm, one)
+		sdk.ValAddress(pk2.Address()).String(), pk1, amount, desc, comm, one, "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), 220, "UAE")
 	suite.NoError(err)
 }
 

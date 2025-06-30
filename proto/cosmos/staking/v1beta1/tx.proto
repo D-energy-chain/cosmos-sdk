@@ -70,6 +70,33 @@ message MsgCreateValidator {
   string                   validator_address = 5 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   google.protobuf.Any      pubkey            = 6 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
   cosmos.base.v1beta1.Coin value             = 7 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // nft_contract_address is the NFT contract address.
+  string nft_contract_address = 8 [(amino.dont_omitempty) = true];
+  // token_id is the token identifier (as a cosmos.Int scalar).
+  string token_id = 9 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // amount is the amount being self delegated (as a cosmos.Int scalar).
+  string nft_amount = 10 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // min_self_nft_delegation
+  string min_self_nft_delegation = 11 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // watts is the power consumption of the node in watts
+  uint64 watts = 12;
+  // country is the country the validator node belongs to
+  string country = 13;
 }
 
 // MsgCreateValidatorResponse defines the Msg/CreateValidator response type.

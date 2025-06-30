@@ -41,11 +41,11 @@ func TestValidateGenesisMultipleMessages(t *testing.T) {
 	desc := stakingtypes.NewDescription("testname", "", "", "", "")
 	comm := stakingtypes.CommissionRates{}
 
-	msg1, err := stakingtypes.NewMsgCreateValidator(sdk.ValAddress(pk1.Address()).String(), pk1, sdk.NewInt64Coin(sdk.DefaultBondDenom, 50), desc, comm, math.OneInt())
+	msg1, err := stakingtypes.NewMsgCreateValidator(sdk.ValAddress(pk1.Address()).String(), pk1, sdk.NewInt64Coin(sdk.DefaultBondDenom, 50), desc, comm, math.OneInt(), "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), 220, "UAE")
 	require.NoError(t, err)
 
 	msg2, err := stakingtypes.NewMsgCreateValidator(sdk.ValAddress(pk2.Address()).String(), pk2,
-		sdk.NewInt64Coin(sdk.DefaultBondDenom, 50), desc, comm, math.OneInt())
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 50), desc, comm, math.OneInt(), "0x0", math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), 220, "UAE")
 	require.NoError(t, err)
 
 	txConfig := moduletestutil.MakeTestEncodingConfig(staking.AppModuleBasic{}, genutil.AppModuleBasic{}).TxConfig

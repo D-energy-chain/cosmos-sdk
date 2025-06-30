@@ -28,10 +28,16 @@ const (
 
 	FlagMinSelfDelegation = "min-self-delegation"
 
-	FlagGenesisFormat = "genesis-format"
-	FlagNodeID        = "node-id"
-	FlagIP            = "ip"
-	FlagP2PPort       = "p2p-port"
+	FlagNftContractAddress   = "nft-contract"
+	FlagTokenId              = "token-id"
+	FlagNftAmount            = "nft-amount"
+	FlagMinNftSelfDelegation = "min-nft-self-delegation"
+	FlagWatts                = "watts"
+	FlagCountry              = "country"
+	FlagGenesisFormat        = "genesis-format"
+	FlagNodeID               = "node-id"
+	FlagIP                   = "ip"
+	FlagP2PPort              = "p2p-port"
 )
 
 // common flagsets to add to various functions
@@ -98,5 +104,47 @@ func flagSetCommissionUpdate() *flag.FlagSet {
 
 	fs.String(FlagCommissionRate, "", "The new commission rate percentage")
 
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetMinNftSelfDelegation() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagMinNftSelfDelegation, "", "The minimum self delegation required on the validator")
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetNftContract() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagNftContractAddress, "", "Contract of NFT to Bond")
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetNftTokenId() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagTokenId, "", "TokenID of NFT to Bond")
+	return fs
+}
+
+// FlagSetMinSelfDelegation Returns the FlagSet used for minimum set delegation.
+func FlagSetNftAmount() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagNftAmount, "", "The amount of NFTs to bond is required")
+	return fs
+}
+
+// FlagSetWatts Returns the FlagSet used for the power of the node in watts
+func FlagSetWatts() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagWatts, "", "The power of the node in watts")
+	return fs
+}
+
+// FlagSetCountry Returns the FlagSet used for the country of the node
+func FlagSetCountry() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+	fs.String(FlagCountry, "", "The country of the node")
 	return fs
 }

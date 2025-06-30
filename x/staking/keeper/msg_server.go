@@ -39,6 +39,16 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
 
+	// Check if validator is in the allowed list
+	params, err := k.GetParams(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if !params.IsValidatorAllowed(msg.ValidatorAddress) {
+		return nil, errorsmod.Wrapf(types.ErrValidatorNotAllowed, "validator %s is not in the allowed validators list", msg.ValidatorAddress)
+	}
+
 	if err := msg.Validate(k.validatorAddressCodec); err != nil {
 		return nil, err
 	}
@@ -116,6 +126,8 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	}
 
 	validator.MinSelfDelegation = msg.MinSelfDelegation
+
+	validator.Country = msg.Country
 
 	err = k.SetValidator(ctx, validator)
 	if err != nil {

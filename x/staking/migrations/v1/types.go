@@ -81,8 +81,7 @@ func AddressFromLastValidatorPowerKey(key []byte) []byte {
 func GetValidatorsByPowerIndexKey(validator types.Validator) []byte {
 	// NOTE the address doesn't need to be stored because counter bytes must always be different
 	// NOTE the larger values are of higher value
-
-	consensusPower := sdk.TokensToConsensusPower(validator.Tokens, sdk.DefaultPowerReduction)
+	consensusPower := sdk.TokensToConsensusPower(validator.TokensPowerValue(), sdk.DefaultPowerReduction)
 	consensusPowerBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(consensusPowerBytes, uint64(consensusPower))
 

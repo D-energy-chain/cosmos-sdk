@@ -16,3 +16,10 @@ type (
 		GetParamSet(ctx sdk.Context, ps ParamSet)
 	}
 )
+
+// EpochKeeper defines the expected epoch keeper interface that the parent codebase
+// should implement to enable epoch-based reward distribution in the distribution module.
+type EpochKeeper interface {
+	// IsEpochEnd returns true if the current block is the end of an epoch
+	IsEpochEnd(ctx sdk.Context, identifier string) bool
+}

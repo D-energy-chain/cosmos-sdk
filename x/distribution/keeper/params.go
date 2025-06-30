@@ -26,3 +26,23 @@ func (k Keeper) GetWithdrawAddrEnabled(ctx context.Context) (enabled bool, err e
 
 	return params.WithdrawAddrEnabled, nil
 }
+
+// GetNftStakingRatio returns the current NFT staking ratio parameter.
+func (k Keeper) GetNftStakingRatio(ctx context.Context) (math.LegacyDec, error) {
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return math.LegacyDec{}, err
+	}
+
+	return params.NftStakingRatio, nil
+}
+
+// GetNativeStakingRatio returns the current native staking ratio parameter.
+func (k Keeper) GetNativeStakingRatio(ctx context.Context) (math.LegacyDec, error) {
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return math.LegacyDec{}, err
+	}
+
+	return params.NativeStakingRatio, nil
+}

@@ -34,8 +34,11 @@ const (
 // DefaultMinCommissionRate is set to 0%
 var DefaultMinCommissionRate = math.LegacyZeroDec()
 
+// DefaultAllowedValidators is an empty list, meaning all validators are allowed by default
+var DefaultAllowedValidators = []string{}
+
 // NewParams creates a new Params instance
-func NewParams(unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, minCommissionRate math.LegacyDec) Params {
+func NewParams(unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, minCommissionRate math.LegacyDec, allowedValidators []string) Params {
 	return Params{
 		UnbondingTime:     unbondingTime,
 		MaxValidators:     maxValidators,
@@ -43,6 +46,7 @@ func NewParams(unbondingTime time.Duration, maxValidators, maxEntries, historica
 		HistoricalEntries: historicalEntries,
 		BondDenom:         bondDenom,
 		MinCommissionRate: minCommissionRate,
+		AllowedValidators: allowedValidators,
 	}
 }
 
@@ -55,6 +59,7 @@ func DefaultParams() Params {
 		DefaultHistoricalEntries,
 		sdk.DefaultBondDenom,
 		DefaultMinCommissionRate,
+		DefaultAllowedValidators,
 	)
 }
 
@@ -104,7 +109,28 @@ func (p Params) Validate() error {
 		return err
 	}
 
+	if err := validateAllowedValidators(p.AllowedValidators); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+// IsValidatorAllowed checks if a validator address is allowed to create a validator
+func (p Params) IsValidatorAllowed(validatorAddr string) bool {
+	// If no validators are specified in the allowlist, all validators are allowed
+	if len(p.AllowedValidators) == 0 {
+		return true
+	}
+
+	// Check if the validator is in the allowed list
+	for _, allowedAddr := range p.AllowedValidators {
+		if allowedAddr == validatorAddr {
+			return true
+		}
+	}
+
+	return false
 }
 
 func validateUnbondingTime(i interface{}) error {
@@ -199,6 +225,28 @@ func validateMinCommissionRate(i interface{}) error {
 	}
 	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("minimum commission rate cannot be greater than 100%%: %s", v)
+	}
+
+	return nil
+}
+
+func validateAllowedValidators(i interface{}) error {
+	v, ok := i.([]string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	// Empty list is valid (means all validators are allowed)
+	if len(v) == 0 {
+		return nil
+	}
+
+	// Validate each validator address
+	for _, addr := range v {
+		if strings.TrimSpace(addr) == "" {
+			return errors.New("allowed validator address cannot be blank")
+		}
+		// Additional validation can be added here for address format if needed
 	}
 
 	return nil

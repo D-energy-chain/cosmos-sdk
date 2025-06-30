@@ -19,22 +19,22 @@ and validator proposer-reward pool. Due to the nature of passive accounting,
 whenever changes to parameters which affect the rate of reward distribution
 occurs, withdrawal of rewards must also occur.
 
-* Whenever withdrawing, one must withdraw the maximum amount they are entitled
-   to, leaving nothing in the pool.
-* Whenever bonding, unbonding, or re-delegating tokens to an existing account, a
-   full withdrawal of the rewards must occur (as the rules for lazy accounting
-   change).
-* Whenever a validator chooses to change the commission on rewards, all accumulated
-   commission rewards must be simultaneously withdrawn.
+- Whenever withdrawing, one must withdraw the maximum amount they are entitled
+  to, leaving nothing in the pool.
+- Whenever bonding, unbonding, or re-delegating tokens to an existing account, a
+  full withdrawal of the rewards must occur (as the rules for lazy accounting
+  change).
+- Whenever a validator chooses to change the commission on rewards, all accumulated
+  commission rewards must be simultaneously withdrawn.
 
 The above scenarios are covered in `hooks.md`.
 
 The distribution mechanism outlined herein is used to lazily distribute the
 following rewards between validators and associated delegators:
 
-* multi-token fees to be socially distributed
-* inflated staked asset provisions
-* validator commission on all rewards earned by their delegators stake
+- multi-token fees to be socially distributed
+- inflated staked asset provisions
+- validator commission on all rewards earned by their delegators stake
 
 Fees are pooled within a global pool. The mechanisms used allow for validators
 and delegators to independently and lazily withdraw their rewards.
@@ -77,22 +77,32 @@ provisions or bonded atom provisions with no Atom commission, and we elect to
 implement the former. Stakeholders wishing to rebond their provisions may elect
 to set up a script to periodically withdraw and rebond rewards.
 
+## Epoch-Based Reward Distribution
+
+The distribution module now supports epoch-based reward distribution, which accumulates rewards during each epoch and distributes them at epoch boundaries. This approach provides several benefits:
+
+1. **Reduced computational overhead**: Processing rewards less frequently reduces the computational load on validators.
+2. **Gas efficiency**: Fewer transactions are needed for reward distribution.
+3. **Predictable distribution times**: Users know exactly when to expect their rewards.
+
+For detailed information about the implementation and integration with a parent codebase, see the [NFT Staking Rewards](./NFT_STAKING_REWARDS.md) documentation.
+
 ## Contents
 
-* [Concepts](#concepts)
-* [State](#state)
-    * [FeePool](#feepool)
-    * [Validator Distribution](#validator-distribution)
-    * [Delegation Distribution](#delegation-distribution)
-    * [Params](#params)
-* [Begin Block](#begin-block)
-* [Messages](#messages)
-* [Hooks](#hooks)
-* [Events](#events)
-* [Parameters](#parameters)
-* [Client](#client)
-    * [CLI](#cli)
-    * [gRPC](#grpc)
+- [Concepts](#concepts)
+- [State](#state)
+  - [FeePool](#feepool)
+  - [Validator Distribution](#validator-distribution)
+  - [Delegation Distribution](#delegation-distribution)
+  - [Params](#params)
+- [Begin Block](#begin-block)
+- [Messages](#messages)
+- [Hooks](#hooks)
+- [Events](#events)
+- [Parameters](#parameters)
+- [Client](#client)
+  - [CLI](#cli)
+  - [gRPC](#grpc)
 
 ## Concepts
 
@@ -138,7 +148,7 @@ for fractions of coins to be received from operations like inflation.
 When coins are distributed from the pool they are truncated back to
 `sdk.Coins` which are non-decimal.
 
-* FeePool: `0x00 -> ProtocolBuffer(FeePool)`
+- FeePool: `0x00 -> ProtocolBuffer(FeePool)`
 
 ```go
 // coins with decimal
@@ -162,7 +172,7 @@ Validator distribution information for the relevant validator is updated each ti
 2. any delegator withdraws from a validator, or
 3. the validator withdraws its commission.
 
-* ValidatorDistInfo: `0x02 | ValOperatorAddrLen (1 byte) | ValOperatorAddr -> ProtocolBuffer(validatorDistribution)`
+- ValidatorDistInfo: `0x02 | ValOperatorAddrLen (1 byte) | ValOperatorAddr -> ProtocolBuffer(validatorDistribution)`
 
 ```go
 type ValidatorDistInfo struct {
@@ -180,7 +190,7 @@ properties change (aka bonded tokens etc.) its properties will remain constant
 and the delegator's _accumulation_ factor can be calculated passively knowing
 only the height of the last withdrawal and its current properties.
 
-* DelegationDistInfo: `0x02 | DelegatorAddrLen (1 byte) | DelegatorAddr | ValOperatorAddrLen (1 byte) | ValOperatorAddr -> ProtocolBuffer(delegatorDist)`
+- DelegationDistInfo: `0x02 | DelegatorAddrLen (1 byte) | DelegatorAddr | ValOperatorAddrLen (1 byte) | ValOperatorAddr -> ProtocolBuffer(delegatorDist)`
 
 ```go
 type DelegationDistInfo struct {
@@ -193,7 +203,7 @@ type DelegationDistInfo struct {
 The distribution module stores it's params in state with the prefix of `0x09`,
 it can be updated with governance or the address with authority.
 
-* Params: `0x09 | ProtocolBuffer(Params)`
+- Params: `0x09 | ProtocolBuffer(Params)`
 
 ```protobuf reference
 https://github.com/cosmos/cosmos-sdk/blob/v0.47.0-rc1/proto/cosmos/distribution/v1beta1/distribution.proto#L12-L42
@@ -206,8 +216,8 @@ the distribution `ModuleAccount` account. When a delegator or validator
 withdraws their rewards, they are taken out of the `ModuleAccount`. During begin
 block, the different claims on the fees collected are updated as follows:
 
-* The reserve community tax is charged.
-* The remainder is distributed proportionally by voting power to all bonded validators
+- The reserve community tax is charged.
+- The remainder is distributed proportionally by voting power to all bonded validators
 
 ### The Distribution Scheme
 
@@ -362,7 +372,7 @@ func (k Keeper) FundCommunityPool(ctx context.Context, amount sdk.Coins, sender 
   }
 
   feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amount...)...)
-	
+
   if err := k.FeePool.Set(ctx, feePool); err != nil {
     return err
   }
@@ -410,7 +420,7 @@ https://github.com/cosmos/cosmos-sdk/blob/v0.47.0-rc1/proto/cosmos/distribution/
 
 The message handling can fail if:
 
-* signer is not the gov module account address.
+- signer is not the gov module account address.
 
 ## Hooks
 
@@ -418,15 +428,15 @@ Available hooks that can be called by and from this module.
 
 ### Create or modify delegation distribution
 
-* triggered-by: `staking.MsgDelegate`, `staking.MsgBeginRedelegate`, `staking.MsgUndelegate`
+- triggered-by: `staking.MsgDelegate`, `staking.MsgBeginRedelegate`, `staking.MsgUndelegate`
 
 #### Before
 
-* The delegation rewards are withdrawn to the withdraw address of the delegator.
+- The delegation rewards are withdrawn to the withdraw address of the delegator.
   The rewards include the current period and exclude the starting period.
-* The validator period is incremented.
+- The validator period is incremented.
   The validator period is incremented because the validator's power and share distribution might have changed.
-* The reference count for the delegator's starting period is decremented.
+- The reference count for the delegator's starting period is decremented.
 
 #### After
 
@@ -435,21 +445,21 @@ Because of the `Before`-hook, this period is the last period for which the deleg
 
 ### Validator created
 
-* triggered-by: `staking.MsgCreateValidator`
+- triggered-by: `staking.MsgCreateValidator`
 
 When a validator is created, the following validator variables are initialized:
 
-* Historical rewards
-* Current accumulated rewards
-* Accumulated commission
-* Total outstanding rewards
-* Period
+- Historical rewards
+- Current accumulated rewards
+- Accumulated commission
+- Total outstanding rewards
+- Period
 
 By default, all values are set to a `0`, except period, which is set to `1`.
 
 ### Validator removed
 
-* triggered-by: `staking.RemoveValidator`
+- triggered-by: `staking.RemoveValidator`
 
 Outstanding commission is sent to the validator's self-delegation withdrawal address.
 Remaining delegator rewards get sent to the community fee pool.
@@ -460,11 +470,11 @@ Any remaining rewards are dust amounts.
 
 ### Validator is slashed
 
-* triggered-by: `staking.Slash`
-* The current validator period reference count is incremented.
+- triggered-by: `staking.Slash`
+- The current validator period reference count is incremented.
   The reference count is incremented because the slash event has created a reference to it.
-* The validator period is incremented.
-* The slash event is stored for later use.
+- The validator period is incremented.
+- The slash event is stored for later use.
   The slash event will be referenced when calculating delegator rewards.
 
 ## Events
@@ -474,7 +484,7 @@ The distribution module emits the following events:
 ### BeginBlocker
 
 | Type            | Attribute Key | Attribute Value    |
-|-----------------|---------------|--------------------|
+| --------------- | ------------- | ------------------ |
 | proposer_reward | validator     | {validatorAddress} |
 | proposer_reward | reward        | {proposerReward}   |
 | commission      | amount        | {commissionAmount} |
@@ -487,7 +497,7 @@ The distribution module emits the following events:
 #### MsgSetWithdrawAddress
 
 | Type                 | Attribute Key    | Attribute Value      |
-|----------------------|------------------|----------------------|
+| -------------------- | ---------------- | -------------------- |
 | set_withdraw_address | withdraw_address | {withdrawAddress}    |
 | message              | module           | distribution         |
 | message              | action           | set_withdraw_address |
@@ -495,8 +505,8 @@ The distribution module emits the following events:
 
 #### MsgWithdrawDelegatorReward
 
-| Type    | Attribute Key | Attribute Value           |
-|---------|---------------|---------------------------|
+| Type             | Attribute Key | Attribute Value           |
+| ---------------- | ------------- | ------------------------- |
 | withdraw_rewards | amount        | {rewardAmount}            |
 | withdraw_rewards | validator     | {validatorAddress}        |
 | message          | module        | distribution              |
@@ -505,12 +515,12 @@ The distribution module emits the following events:
 
 #### MsgWithdrawValidatorCommission
 
-| Type       | Attribute Key | Attribute Value               |
-|------------|---------------|-------------------------------|
+| Type                | Attribute Key | Attribute Value               |
+| ------------------- | ------------- | ----------------------------- |
 | withdraw_commission | amount        | {commissionAmount}            |
-| message    | module        | distribution                  |
-| message    | action        | withdraw_validator_commission |
-| message    | sender        | {senderAddress}               |
+| message             | module        | distribution                  |
+| message             | action        | withdraw_validator_commission |
+| message             | sender        | {senderAddress}               |
 
 ## Parameters
 
@@ -521,8 +531,8 @@ The distribution module contains the following parameters:
 | communitytax        | string (dec) | "0.020000000000000000" [0] |
 | withdrawaddrenabled | bool         | true                       |
 
-* [0] `communitytax` must be positive and cannot exceed 1.00.
-* `baseproposerreward` and `bonusproposerreward` were parameters that are deprecated in v0.47 and are not used.
+- [0] `communitytax` must be positive and cannot exceed 1.00.
+- `baseproposerreward` and `bonusproposerreward` were parameters that are deprecated in v0.47 and are not used.
 
 :::note
 The reserve pool is the pool of collected funds for use by governance taken via the `CommunityTax`.
@@ -561,8 +571,8 @@ Example Output:
 
 ```yml
 commission:
-- amount: "1000000.000000000000000000"
-  denom: stake
+  - amount: "1000000.000000000000000000"
+    denom: stake
 ```
 
 ##### community-pool
@@ -583,8 +593,8 @@ Example Output:
 
 ```yml
 pool:
-- amount: "1000000.000000000000000000"
-  denom: stake
+  - amount: "1000000.000000000000000000"
+    denom: stake
 ```
 
 ##### params
@@ -628,13 +638,13 @@ Example Output:
 
 ```yml
 rewards:
-- reward:
+  - reward:
+      - amount: "1000000.000000000000000000"
+        denom: stake
+    validator_address: cosmosvaloper1..
+total:
   - amount: "1000000.000000000000000000"
     denom: stake
-  validator_address: cosmosvaloper1..
-total:
-- amount: "1000000.000000000000000000"
-  denom: stake
 ```
 
 ##### slashes
@@ -658,8 +668,8 @@ pagination:
   next_key: null
   total: "0"
 slashes:
-- validator_period: 20,
-  fraction: "0.009999999999999999"
+  - validator_period: 20,
+    fraction: "0.009999999999999999"
 ```
 
 ##### validator-outstanding-rewards
@@ -680,15 +690,15 @@ Example Output:
 
 ```yml
 rewards:
-- amount: "1000000.000000000000000000"
-  denom: stake
+  - amount: "1000000.000000000000000000"
+    denom: stake
 ```
 
 ##### validator-distribution-info
 
 The `validator-distribution-info` command allows users to query validator commission and self-delegation rewards for validator.
 
-````shell
+```shell
 simd query distribution validator-distribution-info cosmosvaloper1...
 ```
 
@@ -696,12 +706,12 @@ Example Output:
 
 ```yml
 commission:
-- amount: "100000.000000000000000000"
-  denom: stake
+  - amount: "100000.000000000000000000"
+    denom: stake
 operator_address: cosmosvaloper1...
 self_bond_rewards:
-- amount: "100000.000000000000000000"
-  denom: stake
+  - amount: "100000.000000000000000000"
+    denom: stake
 ```
 
 #### Transactions
