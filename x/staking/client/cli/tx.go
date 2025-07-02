@@ -34,7 +34,7 @@ var (
 	defaultNftContract             = "0x0"
 	defaultTokenId                 = "1"
 	defaultNftAmount               = "0"
-	defaultMinNftSelfDelegation    = "0"
+	defaultMinNftSelfDelegation    = "1"
 	defaultWatts                   = "220"
 )
 
