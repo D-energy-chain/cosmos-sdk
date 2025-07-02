@@ -127,6 +127,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 
 	validator.MinSelfDelegation = msg.MinSelfDelegation
 
+	validator.MinNftSelfDelegation = msg.MinSelfNftDelegation
 	validator.Country = msg.Country
 
 	err = k.SetValidator(ctx, validator)
