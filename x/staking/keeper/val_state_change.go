@@ -305,7 +305,7 @@ func (k Keeper) UnbondingToUnbonded(ctx context.Context, validator types.Validat
 }
 
 // send a validator to jail
-func (k Keeper) jailValidator(ctx context.Context, validator types.Validator) error {
+func (k Keeper) JailValidator(ctx context.Context, validator types.Validator) error {
 	if validator.Jailed {
 		return types.ErrValidatorJailed.Wrapf("cannot jail already jailed validator, validator: %v", validator)
 	}
