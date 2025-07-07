@@ -20,8 +20,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, ek exported.EpochKeeper) err
 	}
 
 	// record the proposer for when we payout on the next block
-	consAddr := sdk.ConsAddress(ctx.BlockHeader().ProposerAddress)
-	if err := k.SetPreviousProposerConsAddr(ctx, consAddr); err != nil {
+	if err := SetProposerFromBlockHeader(ctx, k); err != nil {
 		return err
 	}
 
@@ -39,3 +38,4 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, ek exported.EpochKeeper) err
 	// The fees will remain in the fee collector module account until the epoch ends
 	return nil
 }
+
