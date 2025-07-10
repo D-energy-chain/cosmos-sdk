@@ -84,9 +84,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {
 	// Get the validator's NFT and native token shares
-	// TODO: Uncomment the line below when the GetDelegatorNftShares method is available in ValidatorI interface
-	// nftShares := val.GetDelegatorNftShares()
-	nftShares := math.LegacyZeroDec() // For now, assume no NFT shares until interface is updated
+	nftShares := val.GetNFTDelegatorShares()
 	nativeShares := val.GetDelegatorShares()
 	totalShares := nftShares.Add(nativeShares)
 

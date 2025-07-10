@@ -17,6 +17,7 @@ const (
 	// DefaultUnbondingTime reflects three weeks in seconds as the default
 	// unbonding time.
 	// TODO: Justify our choice of default here.
+	// Note: DefaultUnbondingTime is not required for DEnergy as the Unbonding is Epoch based.
 	DefaultUnbondingTime time.Duration = time.Hour * 24 * 7 * 3
 
 	// Default maximum number of bonded validators
