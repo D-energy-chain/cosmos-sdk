@@ -4,6 +4,7 @@ import (
 	"context"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"cosmossdk.io/math"
 
@@ -50,20 +51,23 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	voteMultiplier := math.LegacyOneDec().Sub(communityTax)
 	feeMultiplier := feesCollected.MulDecTruncate(voteMultiplier)
 
-	// allocate tokens proportionally to voting power
-	//
-	// TODO: Consider parallelizing later
+	// allocate tokens proportionally to voting power. Validators that did not
+	// sign the last block (i.e. votes with BlockIDFlagCommit != commit) are
+	// skipped, which effectively results in a micro-slash because their share of
+	// the rewards is redirected to the community pool.
 	//
 	// Ref: https://github.com/cosmos/cosmos-sdk/pull/3099#discussion_r246276376
 	for _, vote := range bondedVotes {
+		// Skip validators that missed their vote for the previous block.
+		if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit {
+			continue
+		}
+
 		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
 		if err != nil {
 			return err
 		}
 
-		// TODO: Consider micro-slashing for missing votes.
-		//
-		// Ref: https://github.com/cosmos/cosmos-sdk/issues/2525#issuecomment-430838701
 		powerFraction := math.LegacyNewDec(vote.Validator.Power).QuoTruncate(math.LegacyNewDec(totalPreviousPower))
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 

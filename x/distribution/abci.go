@@ -24,9 +24,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, ek exported.EpochKeeper) err
 		return err
 	}
 
-	// TODO fix the hardcoded epoch identifier later
-	// Check if the epoch has ended
-	if ek.IsEpochEnd(ctx, "inflation") {
+	// Check if the configured epoch has ended. The identifier is defined in
+	// types.DefaultEpochIdentifier so it can be configured from one place.
+	if ek.IsEpochEnd(ctx, types.DefaultEpochIdentifier) {
 		// At epoch end, distribute all accumulated rewards
 		if err := k.AllocateTokens(ctx, previousTotalPower, ctx.VoteInfos()); err != nil {
 			return err
@@ -38,4 +38,3 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, ek exported.EpochKeeper) err
 	// The fees will remain in the fee collector module account until the epoch ends
 	return nil
 }
-

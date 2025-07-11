@@ -14,6 +14,11 @@ const (
 	// ModuleName is the module name constant used in many places
 	ModuleName = "distribution"
 
+	// DefaultEpochIdentifier defines the default epoch identifier used for reward distribution.
+	// This replaces hard-coded string values across the module so the identifier can be
+	// referenced consistently in one place.
+	DefaultEpochIdentifier = "inflation"
+
 	// StoreKey is the store key string for distribution
 	StoreKey = ModuleName
 

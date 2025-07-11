@@ -109,7 +109,7 @@ func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, ak types.AccountKeeper,
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
-		epochKeeper:    NewSimpleEpochKeeper([]string{"inflation"}), // Default implementation
+		epochKeeper:    NewSimpleEpochKeeper([]string{types.DefaultEpochIdentifier}), // Default implementation
 		accountKeeper:  ak,
 		bankKeeper:     bk,
 		stakingKeeper:  sk,
