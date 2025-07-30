@@ -29,6 +29,11 @@ const (
 	MaxWebsiteLength         = 140
 	MaxSecurityContactLength = 140
 	MaxDetailsLength         = 280
+
+	// NFT delegation constants
+	// 1000 NFTs should correspond to the power of 10^18 tokens
+	// Each NFT counts as 10^15 token-equivalent
+	NftTokenMultiplier = 1_000_000_000_000_000 // 1e15
 )
 
 var (
@@ -361,15 +366,13 @@ func (v Validator) BondedTokens() math.Int {
 func (v Validator) TokensPowerValue() math.Int {
 	tokenValue := v.Tokens
 
-	if v.TotalNftDelegation.GT(math.ZeroInt()) {
-		// 1000 NFTs should correspond to the power of 10^18 tokens.
-		// That means each NFT counts as 10^15 token-equivalent.
-		nftTokenMultiplier := math.NewInt(1_000_000_000_000_000) // 1e15
-		nftToCoinValue := v.TotalNftDelegation.Mul(nftTokenMultiplier)
-		tokenValue = tokenValue.Add(nftToCoinValue)
+	// Early return if no NFT delegation or if it's zero
+	if v.TotalNftDelegation.IsNil() || v.TotalNftDelegation.IsZero() {
+		return tokenValue
 	}
 
-	return tokenValue
+	nftToCoinValue := v.TotalNftDelegation.Mul(math.NewInt(NftTokenMultiplier))
+	return tokenValue.Add(nftToCoinValue)
 }
 
 // ConsensusPower gets the consensus-engine power. Aa reduction of 10^6 from
@@ -532,9 +535,9 @@ func (v Validator) GetBondedTokens() math.Int { return v.BondedTokens() }
 func (v Validator) GetConsensusPower(r math.Int) int64 {
 	return v.ConsensusPower(r)
 }
-func (v Validator) GetCommission() math.LegacyDec      { return v.Commission.Rate }
-func (v Validator) GetMinSelfDelegation() math.Int     { return v.MinSelfDelegation }
-func (v Validator) GetDelegatorShares() math.LegacyDec { return v.DelegatorShares }
+func (v Validator) GetCommission() math.LegacyDec         { return v.Commission.Rate }
+func (v Validator) GetMinSelfDelegation() math.Int        { return v.MinSelfDelegation }
+func (v Validator) GetDelegatorShares() math.LegacyDec    { return v.DelegatorShares }
 func (v Validator) GetDelegatorNftShares() math.LegacyDec { return v.DelegatorNftShares }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
