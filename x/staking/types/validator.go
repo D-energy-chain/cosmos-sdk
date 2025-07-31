@@ -564,7 +564,12 @@ func (v Validator) GetConsensusPower(r math.Int) int64 {
 func (v Validator) GetCommission() math.LegacyDec         { return v.Commission.Rate }
 func (v Validator) GetMinSelfDelegation() math.Int        { return v.MinSelfDelegation }
 func (v Validator) GetDelegatorShares() math.LegacyDec    { return v.DelegatorShares }
-func (v Validator) GetDelegatorNftShares() math.LegacyDec { return v.DelegatorNftShares }
+func (v Validator) GetDelegatorNftShares() math.LegacyDec { 
+	if v.DelegatorNftShares.IsNil() {
+		return math.LegacyZeroDec()
+	}
+	return v.DelegatorNftShares 
+}
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {

@@ -8,7 +8,7 @@ import (
 func (v Validator) AddNFTFromDel(delegatorAddress, nftContractAddr string, tokenId, amount math.Int) (Validator, math.LegacyDec) {
 	// calculate the shares to issue
 	var issuedNFTs math.LegacyDec
-	if v.DelegatorNftShares.IsZero() {
+	if v.DelegatorNftShares.IsNil() || v.DelegatorNftShares.IsZero() {
 		// the first delegation to a validator sets the exchange rate to one
 		issuedNFTs = math.LegacyNewDecFromInt(amount)
 	} else {
@@ -18,6 +18,14 @@ func (v Validator) AddNFTFromDel(delegatorAddress, nftContractAddr string, token
 		}
 
 		issuedNFTs = shares
+	}
+
+	// Ensure fields are not nil before operations
+	if v.TotalNftDelegation.IsNil() {
+		v.TotalNftDelegation = math.ZeroInt()
+	}
+	if v.DelegatorNftShares.IsNil() {
+		v.DelegatorNftShares = math.LegacyZeroDec()
 	}
 
 	v.TotalNftDelegation = v.TotalNftDelegation.Add(amount)
@@ -38,29 +46,41 @@ func (v Validator) AddNFTFromDel(delegatorAddress, nftContractAddr string, token
 }
 
 func (v Validator) GetNFTDelegatorShares() math.LegacyDec {
+	if v.DelegatorNftShares.IsNil() {
+		return math.LegacyZeroDec()
+	}
 	return v.DelegatorNftShares
 }
 
 // calculate the token worth of provided shares
 func (v Validator) NFTFromShares(shares math.LegacyDec) math.LegacyDec {
+	if v.TotalNftDelegation.IsNil() || v.DelegatorNftShares.IsNil() || v.DelegatorNftShares.IsZero() {
+		return math.LegacyZeroDec()
+	}
 	return (shares.MulInt(v.TotalNftDelegation)).Quo(v.DelegatorNftShares)
 }
 
 // calculate the token worth of provided shares, truncated
 func (v Validator) NFTFromSharesTruncated(shares math.LegacyDec) math.LegacyDec {
+	if v.TotalNftDelegation.IsNil() || v.DelegatorNftShares.IsNil() || v.DelegatorNftShares.IsZero() {
+		return math.LegacyZeroDec()
+	}
 	return (shares.MulInt(v.TotalNftDelegation)).QuoTruncate(v.DelegatorNftShares)
 }
 
 // TokensFromSharesRoundUp returns the token worth of provided shares, rounded
 // up.
 func (v Validator) NFTFromSharesRoundUp(shares math.LegacyDec) math.LegacyDec {
+	if v.TotalNftDelegation.IsNil() || v.DelegatorNftShares.IsNil() || v.DelegatorNftShares.IsZero() {
+		return math.LegacyZeroDec()
+	}
 	return (shares.MulInt(v.TotalNftDelegation)).QuoRoundUp(v.DelegatorNftShares)
 }
 
 // SharesFromTokens returns the shares of a delegation given a bond amount. It
 // returns an error if the validator has no tokens.
 func (v Validator) SharesFromNFTs(amt math.Int) (math.LegacyDec, error) {
-	if v.TotalNftDelegation.IsZero() {
+	if v.TotalNftDelegation.IsNil() || v.TotalNftDelegation.IsZero() {
 		return math.LegacyZeroDec(), ErrInsufficientShares
 	}
 
@@ -70,7 +90,7 @@ func (v Validator) SharesFromNFTs(amt math.Int) (math.LegacyDec, error) {
 // SharesFromTokensTruncated returns the truncated shares of a delegation given
 // a bond amount. It returns an error if the validator has no tokens.
 func (v Validator) SharesFromNFTsTruncated(amt math.Int) (math.LegacyDec, error) {
-	if v.TotalNftDelegation.IsZero() {
+	if v.TotalNftDelegation.IsNil() || v.TotalNftDelegation.IsZero() {
 		return math.LegacyZeroDec(), ErrInsufficientShares
 	}
 
@@ -82,6 +102,14 @@ func (v Validator) SharesFromNFTsTruncated(amt math.Int) (math.LegacyDec, error)
 //
 //	the exchange rate of future shares of this validator can increase.
 func (v Validator) RemoveDelNFTShares(delShares math.LegacyDec) (Validator, math.Int) {
+	// Ensure fields are not nil before operations
+	if v.DelegatorNftShares.IsNil() {
+		v.DelegatorNftShares = math.LegacyZeroDec()
+	}
+	if v.TotalNftDelegation.IsNil() {
+		v.TotalNftDelegation = math.ZeroInt()
+	}
+
 	remainingShares := v.DelegatorNftShares.Sub(delShares)
 
 	var issuedTokens math.Int
@@ -106,7 +134,7 @@ func (v Validator) RemoveDelNFTShares(delShares math.LegacyDec) (Validator, math
 }
 
 func (x *Validator) GetTotalNFTs() math.Int {
-	if x != nil {
+	if x != nil && !x.TotalNftDelegation.IsNil() {
 		return x.TotalNftDelegation
 	}
 	return math.ZeroInt()
