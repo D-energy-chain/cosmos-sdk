@@ -75,9 +75,9 @@ func TestMigrate(t *testing.T) {
 
 			ubd := getUBD(t, accAddr, valAddr, store, cdc)
 			if tc.doMigration {
-				var res types.Params
 				bz := store.Get(v4.ParamsKey)
-				require.NoError(t, cdc.Unmarshal(bz, &res))
+				res, err := types.UnmarshalParamsBinary(cdc, bz)
+				require.NoError(t, err)
 				require.Equal(t, legacySubspace.ps, res)
 
 				// checking the updated balance for duplicateCreationHeight

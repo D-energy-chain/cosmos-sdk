@@ -217,7 +217,7 @@ type ModuleInputs struct {
 	AccountKeeper types.AccountKeeper
 	BankKeeper    types.BankKeeper
 	StakingKeeper types.StakingKeeper
-	EpochKeeper   exported.EpochKeeper
+	EpochKeeper   exported.EpochKeeper `optional:"true"`
 
 	// LegacySubspace is used solely for migration of x/params managed parameters
 	LegacySubspace exported.Subspace `optional:"true"`
@@ -229,6 +229,11 @@ type ModuleOutputs struct {
 	DistrKeeper keeper.Keeper
 	Module      appmodule.AppModule
 	Hooks       staking.StakingHooksWrapper
+}
+
+// ProvideTestEpochKeeper provides a simple epoch keeper for testing
+func ProvideTestEpochKeeper() exported.EpochKeeper {
+	return NewSimpleEpochKeeper([]string{types.DefaultEpochIdentifier})
 }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
@@ -254,6 +259,11 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 	)
 
 	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.BankKeeper, in.StakingKeeper, in.LegacySubspace)
+
+	// Set EpochKeeper if provided
+	if in.EpochKeeper != nil {
+		m.SetEpochKeeper(in.EpochKeeper)
+	}
 
 	return ModuleOutputs{
 		DistrKeeper: k,

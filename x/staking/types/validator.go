@@ -177,7 +177,33 @@ func MustUnmarshalValidator(cdc codec.BinaryCodec, value []byte) Validator {
 // unmarshal a redelegation from a store value
 func UnmarshalValidator(cdc codec.BinaryCodec, value []byte) (v Validator, err error) {
 	err = cdc.Unmarshal(value, &v)
-	return v, err
+	if err != nil {
+		return v, err
+	}
+
+	// Ensure NFT-related slice fields are never nil
+	if v.NftDelegations == nil {
+		v.NftDelegations = []*NFTDelegation{}
+	}
+	if v.UnbondingIds == nil {
+		v.UnbondingIds = []uint64{}
+	}
+	if v.NftUnbondingIds == nil {
+		v.NftUnbondingIds = []uint64{}
+	}
+
+	// Ensure NFT-related numeric fields are never nil
+	if v.TotalNftDelegation.IsNil() {
+		v.TotalNftDelegation = math.ZeroInt()
+	}
+	if v.DelegatorNftShares.IsNil() {
+		v.DelegatorNftShares = math.LegacyZeroDec()
+	}
+	if v.MinNftSelfDelegation.IsNil() {
+		v.MinNftSelfDelegation = math.ZeroInt()
+	}
+
+	return v, nil
 }
 
 // IsBonded checks if the validator status equals Bonded

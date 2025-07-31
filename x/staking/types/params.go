@@ -81,7 +81,27 @@ func UnmarshalParams(cdc *codec.LegacyAmino, value []byte) (params Params, err e
 		return
 	}
 
+	// Ensure AllowedValidators is never nil
+	if params.AllowedValidators == nil {
+		params.AllowedValidators = []string{}
+	}
+
 	return
+}
+
+// UnmarshalParamsBinary unmarshals params using binary codec and ensures AllowedValidators is never nil
+func UnmarshalParamsBinary(cdc codec.BinaryCodec, value []byte) (params Params, err error) {
+	err = cdc.Unmarshal(value, &params)
+	if err != nil {
+		return params, err
+	}
+
+	// Ensure AllowedValidators is never nil
+	if params.AllowedValidators == nil {
+		params.AllowedValidators = []string{}
+	}
+
+	return params, nil
 }
 
 // validate a set of params

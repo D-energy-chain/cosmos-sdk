@@ -79,6 +79,10 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) 
 		return params, nil
 	}
 
-	err = k.cdc.Unmarshal(bz, &params)
-	return params, err
+	params, err = types.UnmarshalParamsBinary(k.cdc, bz)
+	if err != nil {
+		return params, err
+	}
+
+	return params, nil
 }

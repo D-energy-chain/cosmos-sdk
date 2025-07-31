@@ -37,3 +37,18 @@ func TestValidateParams(t *testing.T) {
 	params.MinCommissionRate = math.LegacyNewDec(2)
 	require.Error(t, params.Validate())
 }
+
+func TestParamsAllowedValidatorsNilHandling(t *testing.T) {
+	// Test that default params have properly initialized AllowedValidators
+	params := types.DefaultParams()
+	require.NotNil(t, params.AllowedValidators, "AllowedValidators should not be nil")
+	require.Empty(t, params.AllowedValidators, "AllowedValidators should be empty slice")
+	
+	// Test IsValidatorAllowed works correctly with empty slice
+	require.True(t, params.IsValidatorAllowed("any-address"), "any validator should be allowed when list is empty")
+	
+	// Test with specific validators
+	params.AllowedValidators = []string{"validator1", "validator2"}
+	require.True(t, params.IsValidatorAllowed("validator1"), "validator1 should be allowed")
+	require.False(t, params.IsValidatorAllowed("validator3"), "validator3 should not be allowed")
+}
