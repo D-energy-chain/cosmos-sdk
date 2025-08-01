@@ -16,6 +16,11 @@ import (
 // AllocateTokens performs reward and fee distribution to all validators based
 // on the F1 fee distribution specification.
 func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bondedVotes []abci.VoteInfo) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx.Logger().Info("AllocateTokens started", 
+		"total_previous_power", totalPreviousPower, 
+		"num_bonded_votes", len(bondedVotes))
+
 	// fetch and clear the collected fees for distribution, since this is
 	// called in BeginBlock, collected fees will be from the previous block
 	// (and distributed to the previous proposer)
@@ -23,11 +28,26 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
+	sdkCtx.Logger().Info("Fees collected from fee collector", 
+		"fees_collected_int", feesCollectedInt, 
+		"fees_collected_dec", feesCollected)
+
+	if feesCollectedInt.IsZero() {
+		sdkCtx.Logger().Warn("No fees collected - skipping token allocation")
+		return nil
+	}
+
 	// transfer collected fees to the distribution module account
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
 	if err != nil {
+		sdkCtx.Logger().Error("Failed to transfer fees to distribution module", "error", err)
 		return err
 	}
+
+	sdkCtx.Logger().Info("Fees transferred to distribution module", 
+		"from", k.feeCollectorName, 
+		"to", types.ModuleName, 
+		"amount", feesCollectedInt)
 
 	// temporary workaround to keep CanWithdrawInvariant happy
 	// general discussions here: https://github.com/cosmos/cosmos-sdk/issues/2906#issuecomment-441867634
@@ -37,6 +57,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	}
 
 	if totalPreviousPower == 0 {
+		sdkCtx.Logger().Warn("Total previous power is zero - allocating all fees to community pool")
 		feePool.CommunityPool = feePool.CommunityPool.Add(feesCollected...)
 		return k.FeePool.Set(ctx, feePool)
 	}
@@ -48,8 +69,16 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return err
 	}
 
+	sdkCtx.Logger().Info("Community tax configuration", 
+		"community_tax", communityTax)
+
 	voteMultiplier := math.LegacyOneDec().Sub(communityTax)
 	feeMultiplier := feesCollected.MulDecTruncate(voteMultiplier)
+
+	sdkCtx.Logger().Info("Fee distribution calculations", 
+		"remaining", remaining, 
+		"vote_multiplier", voteMultiplier, 
+		"fee_multiplier", feeMultiplier)
 
 	// allocate tokens proportionally to voting power. Validators that did not
 	// sign the last block (i.e. votes with BlockIDFlagCommit != commit) are
@@ -57,43 +86,83 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	// the rewards is redirected to the community pool.
 	//
 	// Ref: https://github.com/cosmos/cosmos-sdk/pull/3099#discussion_r246276376
+	validatorsProcessed := 0
 	for _, vote := range bondedVotes {
 		// Skip validators that missed their vote for the previous block.
 		if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit {
+			sdkCtx.Logger().Debug("Skipping validator that missed vote", 
+				"validator_address", vote.Validator.Address, 
+				"block_id_flag", vote.BlockIdFlag)
 			continue
 		}
 
 		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
 		if err != nil {
+			sdkCtx.Logger().Error("Failed to get validator by consensus address", 
+				"cons_addr", vote.Validator.Address, 
+				"error", err)
 			return err
 		}
 
 		powerFraction := math.LegacyNewDec(vote.Validator.Power).QuoTruncate(math.LegacyNewDec(totalPreviousPower))
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
+		sdkCtx.Logger().Info("Allocating tokens to validator", 
+			"validator", validator.GetOperator(), 
+			"power", vote.Validator.Power, 
+			"power_fraction", powerFraction, 
+			"reward", reward)
+
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
+			sdkCtx.Logger().Error("Failed to allocate tokens to validator", 
+				"validator", validator.GetOperator(), 
+				"error", err)
 			return err
 		}
 
 		remaining = remaining.Sub(reward)
+		validatorsProcessed++
 	}
+
+	sdkCtx.Logger().Info("Validator reward allocation completed", 
+		"validators_processed", validatorsProcessed, 
+		"remaining_for_community", remaining)
 
 	// allocate community funding
 	feePool.CommunityPool = feePool.CommunityPool.Add(remaining...)
-	return k.FeePool.Set(ctx, feePool)
+	err = k.FeePool.Set(ctx, feePool)
+	if err != nil {
+		sdkCtx.Logger().Error("Failed to set fee pool", "error", err)
+		return err
+	}
+
+	sdkCtx.Logger().Info("Token allocation completed successfully", 
+		"community_pool_addition", remaining)
+	return nil
 }
 
 // AllocateTokensToValidator allocate tokens to a particular validator,
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	
 	// Get the validator's NFT and native token shares
 	nftShares := val.GetNFTDelegatorShares()
 	nativeShares := val.GetDelegatorShares()
 	totalShares := nftShares.Add(nativeShares)
 
+	sdkCtx.Logger().Info("AllocateTokensToValidator started", 
+		"validator", val.GetOperator(), 
+		"tokens", tokens, 
+		"nft_shares", nftShares, 
+		"native_shares", nativeShares, 
+		"total_shares", totalShares)
+
 	// If there are no shares at all, no rewards can be allocated
 	if totalShares.IsZero() {
+		sdkCtx.Logger().Warn("No shares for validator - skipping reward allocation", 
+			"validator", val.GetOperator())
 		return nil
 	}
 
@@ -146,7 +215,6 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 	totalCommission := nftCommission.Add(nativeCommission...)
 
 	// Update current commission
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeCommission,
