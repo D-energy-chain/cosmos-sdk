@@ -9,9 +9,9 @@ import (
 // DefaultParams returns default distribution parameters
 func DefaultParams() Params {
 	return Params{
-		CommunityTax:        math.LegacyNewDecWithPrec(20, 2), // 20%
-		BaseProposerReward:  math.LegacyZeroDec(),             // deprecated
-		BonusProposerReward: math.LegacyZeroDec(),             // deprecated
+		CommunityTax:        math.LegacyZeroDec(), // 0%
+		BaseProposerReward:  math.LegacyZeroDec(), // deprecated
+		BonusProposerReward: math.LegacyZeroDec(), // deprecated
 		WithdrawAddrEnabled: true,
 		NftStakingRatio:     math.LegacyNewDecWithPrec(75, 2), // 75% of staking rewards (56.25% of total)
 		NativeStakingRatio:  math.LegacyNewDecWithPrec(25, 2), // 25% of staking rewards (18.75% of total)
