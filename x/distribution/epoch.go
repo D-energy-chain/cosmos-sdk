@@ -20,7 +20,12 @@ func NewSimpleEpochKeeper(epochIdentifiers []string) *SimpleEpochKeeper {
 
 // IsEpochEnd returns true if the current block is the end of an epoch
 func (k *SimpleEpochKeeper) IsEpochEnd(ctx sdk.Context, identifier string) bool {
-	return k.isEpochEnd[identifier]
+	isEnd := k.isEpochEnd[identifier]
+	ctx.Logger().Debug("SimpleEpochKeeper.IsEpochEnd called", 
+		"identifier", identifier, 
+		"is_epoch_end", isEnd, 
+		"height", ctx.BlockHeight())
+	return isEnd
 }
 
 // SetEpochEnd sets whether the current block is the end of an epoch
