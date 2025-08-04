@@ -40,8 +40,7 @@ var (
 	_ module.HasServices         = AppModule{}
 	_ module.HasInvariants       = AppModule{}
 
-	_ appmodule.AppModule       = AppModule{}
-	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.AppModule = AppModule{}
 )
 
 // AppModuleBasic defines the basic application module used by the distribution module.
@@ -97,7 +96,6 @@ func (AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 type AppModule struct {
 	AppModuleBasic
 	keeper         keeper.Keeper
-	epochKeeper    exported.EpochKeeper
 	accountKeeper  types.AccountKeeper
 	bankKeeper     types.BankKeeper
 	stakingKeeper  types.StakingKeeper
@@ -109,24 +107,11 @@ func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, ak types.AccountKeeper,
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
-		epochKeeper:    NewSimpleEpochKeeper([]string{types.DefaultEpochIdentifier}), // Default implementation
 		accountKeeper:  ak,
 		bankKeeper:     bk,
 		stakingKeeper:  sk,
 		legacySubspace: subspace,
 	}
-}
-
-// SetEpochKeeper allows setting a custom epoch keeper after module initialization
-func (am *AppModule) SetEpochKeeper(ek exported.EpochKeeper) {
-	// Add debugging to track when epoch keeper is being set
-	am.epochKeeper = ek
-}
-
-// BeginBlock returns the begin blocker for the distribution module.
-func (am AppModule) BeginBlock(ctx context.Context) error {
-	c := sdk.UnwrapSDKContext(ctx)
-	return BeginBlocker(c, am.keeper, am.epochKeeper)
 }
 
 // IsOnePerModuleType implements the depinject.OnePerModuleType interface.
@@ -218,7 +203,6 @@ type ModuleInputs struct {
 	AccountKeeper types.AccountKeeper
 	BankKeeper    types.BankKeeper
 	StakingKeeper types.StakingKeeper
-	EpochKeeper   exported.EpochKeeper `optional:"true"`
 
 	// LegacySubspace is used solely for migration of x/params managed parameters
 	LegacySubspace exported.Subspace `optional:"true"`
@@ -230,11 +214,6 @@ type ModuleOutputs struct {
 	DistrKeeper keeper.Keeper
 	Module      appmodule.AppModule
 	Hooks       staking.StakingHooksWrapper
-}
-
-// ProvideTestEpochKeeper provides a simple epoch keeper for testing
-func ProvideTestEpochKeeper() exported.EpochKeeper {
-	return NewSimpleEpochKeeper([]string{types.DefaultEpochIdentifier})
 }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
@@ -260,11 +239,6 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 	)
 
 	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.BankKeeper, in.StakingKeeper, in.LegacySubspace)
-
-	// Set EpochKeeper if provided
-	if in.EpochKeeper != nil {
-		m.SetEpochKeeper(in.EpochKeeper)
-	}
 
 	return ModuleOutputs{
 		DistrKeeper: k,

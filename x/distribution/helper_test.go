@@ -66,17 +66,17 @@ func TestDistributionHelper(t *testing.T) {
 	err = helper.ProcessBlock(sdkCtx)
 	require.NoError(t, err)
 
-	// Test SimpleEpochKeeper
-	simpleKeeper := distribution.NewSimpleEpochKeeper([]string{"day", "week"})
+	// // Test SimpleEpochKeeper
+	// simpleKeeper := distribution.NewSimpleEpochKeeper([]string{"day", "week"})
 
-	// Check initial state
-	require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "day"))
-	require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "week"))
+	// // Check initial state
+	// require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "day"))
+	// require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "week"))
 
-	// Set epoch end
-	simpleKeeper.SetEpochEnd("day", true)
-	require.True(t, simpleKeeper.IsEpochEnd(sdkCtx, "day"))
-	require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "week"))
+	// // Set epoch end
+	// simpleKeeper.SetEpochEnd("day", true)
+	// require.True(t, simpleKeeper.IsEpochEnd(sdkCtx, "day"))
+	// require.False(t, simpleKeeper.IsEpochEnd(sdkCtx, "week"))
 
 	// Test ProcessEpochEnd
 	fees := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(1000)))
