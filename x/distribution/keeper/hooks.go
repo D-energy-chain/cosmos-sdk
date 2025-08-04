@@ -17,6 +17,8 @@ type Hooks struct {
 
 var _ stakingtypes.StakingHooks = Hooks{}
 
+var _ types.EpochHooks = Hooks{}
+
 // Create new distribution hooks
 func (k Keeper) Hooks() Hooks {
 	return Hooks{k}
@@ -179,4 +181,44 @@ func (h Hooks) BeforeDelegationRemoved(_ context.Context, _ sdk.AccAddress, _ sd
 
 func (h Hooks) AfterUnbondingInitiated(_ context.Context, _ uint64) error {
 	return nil
+}
+
+// BeforeEpochStart: noop, We don't need to do anything here
+func (h Hooks) BeforeEpochStart(_ sdk.Context, _ string, _ int64) {
+}
+
+// AfterEpochEnd mints and allocates coins at the end of each epoch end
+func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
+	// determine the total power signing the block
+	var previousTotalPower int64
+	for _, voteInfo := range ctx.VoteInfos() {
+		previousTotalPower += voteInfo.Validator.Power
+	}
+
+	ctx.Logger().Info("Vote info processed",
+		"total_power", previousTotalPower,
+		"num_validators", len(ctx.VoteInfos()))
+
+	// record the proposer for when we payout on the next block
+	consAddr := sdk.ConsAddress(ctx.BlockHeader().ProposerAddress)
+	if err := h.k.SetPreviousProposerConsAddr(ctx, consAddr); err != nil {
+		ctx.Logger().Error("Failed to set proposer from block header", "error", err)
+		return
+	}
+
+	ctx.Logger().Info("Epoch ended - starting reward distribution",
+		"total_power", previousTotalPower)
+
+	// Note: We can't easily get the fee collector balance here because
+	// the keeper methods are private, but AllocateTokens will log this information
+
+	// At epoch end, distribute all accumulated rewards
+	if err := h.k.AllocateTokens(ctx, previousTotalPower, ctx.VoteInfos()); err != nil {
+		ctx.Logger().Error("Failed to allocate tokens during epoch end", "error", err)
+		return
+	}
+
+	// AllocateTokens function contains detailed logging of the fee collection process
+
+	ctx.Logger().Info("Epoch-based reward distribution completed successfully")
 }
