@@ -120,7 +120,6 @@ func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, ak types.AccountKeeper,
 // SetEpochKeeper allows setting a custom epoch keeper after module initialization
 func (am *AppModule) SetEpochKeeper(ek exported.EpochKeeper) {
 	// Add debugging to track when epoch keeper is being set
-	fmt.Printf("[DEBUG] Distribution module: SetEpochKeeper called with type: %T\n", ek)
 	am.epochKeeper = ek
 }
 
@@ -264,10 +263,7 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 
 	// Set EpochKeeper if provided
 	if in.EpochKeeper != nil {
-		fmt.Printf("[DEBUG] Distribution module: Injecting EpochKeeper of type: %T\n", in.EpochKeeper)
 		m.SetEpochKeeper(in.EpochKeeper)
-	} else {
-		fmt.Printf("[DEBUG] Distribution module: No EpochKeeper provided via depinject, using SimpleEpochKeeper\n")
 	}
 
 	return ModuleOutputs{
