@@ -34,9 +34,9 @@ func GenTxCmd(mbm module.BasicManager, txEncCfg client.TxEncodingConfig, genBalI
 	fsCreateValidator, defaultsDesc := cli.CreateValidatorMsgFlagSet(ipDefault)
 
 	cmd := &cobra.Command{
-		Use:   "gentx [key_name] [amount] [country_code]",
+		Use:   "gentx [key_name] [amount] [watts] [country_code]",
 		Short: "Generate a genesis tx carrying a self delegation",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		Long: fmt.Sprintf(`Generate a genesis transaction that creates a validator with a self-delegation,
 that is signed by the key in the Keyring referenced by a given name. A node ID and consensus
 pubkey may optionally be provided. If they are omitted, they will be retrieved from the priv_validator.json
@@ -44,7 +44,7 @@ file. The following default parameters are included:
     %s
 
 Example:
-$ %s gentx my-key-name 1000000stake country-code --home=/path/to/home/dir --keyring-backend=os --chain-id=test-chain-1 \
+$ %s gentx my-key-name 1000000stake watts country-code --home=/path/to/home/dir --keyring-backend=os --chain-id=test-chain-1 \
     --moniker="myvalidator" \
     --commission-max-change-rate=0.01 \
     --commission-max-rate=1.0 \
@@ -121,7 +121,12 @@ $ %s gentx my-key-name 1000000stake country-code --home=/path/to/home/dir --keyr
 				return errors.Wrap(err, "failed to parse coins")
 			}
 
-			country := args[2]
+			watts := args[2]
+			if w, _ := cmd.Flags().GetString(cli.FlagWatts); w != "" {
+				watts = w
+			}
+
+			country := args[3]
 			if c, _ := cmd.Flags().GetString(cli.FlagCountry); c != "" {
 				country = c
 			}
@@ -159,6 +164,7 @@ $ %s gentx my-key-name 1000000stake country-code --home=/path/to/home/dir --keyr
 			// ref: https://github.com/cosmos/cosmos-sdk/issues/8177
 			createValCfg.Amount = amount
 			createValCfg.Country = country
+			createValCfg.Watts = watts
 
 			// create a 'create-validator' message
 			txBldr, msg, err := cli.BuildCreateValidatorMsg(clientCtx, createValCfg, txFactory, true, valAdddressCodec)

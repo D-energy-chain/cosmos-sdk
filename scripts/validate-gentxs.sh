@@ -118,7 +118,7 @@ if [ "$(ls -A $GENTXS_DIR)" ]; then
             $DAEMON add-genesis-account $RANDOM_KEY 1000000000000000$DENOM --home $DAEMON_HOME \
                 --keyring-backend test
 
-            $DAEMON gentx $RANDOM_KEY 900000000000000$DENOM --home $DAEMON_HOME \
+            $DAEMON gentx $RANDOM_KEY 900000000000000$DENOM 220 UAE --home $DAEMON_HOME \
                 --keyring-backend test --chain-id $CHAIN_ID
 
             cp $GENTX_FILE $DAEMON_HOME/config/gentx/

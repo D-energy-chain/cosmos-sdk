@@ -13,5 +13,5 @@ $SIMD_BIN keys add bob
 $SIMD_BIN init test --chain-id demo
 $SIMD_BIN genesis add-genesis-account alice 5000000000stake --keyring-backend test
 $SIMD_BIN genesis add-genesis-account bob 5000000000stake --keyring-backend test
-$SIMD_BIN genesis gentx alice 1000000stake --chain-id demo
+$SIMD_BIN genesis gentx alice 1000000stake 220 UAE --chain-id demo
 $SIMD_BIN genesis collect-gentxs

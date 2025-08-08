@@ -4,14 +4,14 @@
 
 The `genutil` package contains a variety of genesis utility functionalities for usage within a blockchain application. Namely:
 
-* Genesis transactions related (gentx)
-* Commands for collection and creation of gentxs
-* `InitChain` processing of gentxs
-* Genesis file creation
-* Genesis file validation
-* Genesis file migration
-* CometBFT related initialization
-    * Translation of an app genesis to a CometBFT genesis
+- Genesis transactions related (gentx)
+- Commands for collection and creation of gentxs
+- `InitChain` processing of gentxs
+- Genesis file creation
+- Genesis file validation
+- Genesis file migration
+- CometBFT related initialization
+  - Translation of an app genesis to a CometBFT genesis
 
 ## Genesis
 
@@ -57,7 +57,7 @@ This will create a new `genesis.json` file that includes data from all the valid
 Generate a genesis tx carrying a self delegation.
 
 ```shell
-simd genesis gentx [key_name] [amount] --chain-id [chain-id]
+simd genesis gentx [key_name] [amount] [watts] [country_code] --chain-id [chain-id]
 ```
 
 This will create the genesis transaction for your new chain. Here `amount` should be at least `1000000000stake`.

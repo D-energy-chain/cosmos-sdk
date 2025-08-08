@@ -78,8 +78,10 @@ func (s *CLITestSuite) TestGenTxCmd() {
 				fmt.Sprintf("--%s=1", stakingcli.FlagCommissionRate),
 				"node0",
 				amount.String(),
+				"220",
+				"UAE",
 			},
-			expCmdOutput: fmt.Sprintf("--%s=%s --%s=1 %s %s", flags.FlagChainID, s.baseCtx.ChainID, stakingcli.FlagCommissionRate, "node0", amount.String()),
+			expCmdOutput: fmt.Sprintf("--%s=%s --%s=1 %s %s %s %s", flags.FlagChainID, s.baseCtx.ChainID, stakingcli.FlagCommissionRate, "node0", amount.String(), "220", "UAE"),
 		},
 		{
 			name: "valid gentx",
@@ -87,8 +89,10 @@ func (s *CLITestSuite) TestGenTxCmd() {
 				fmt.Sprintf("--%s=%s", flags.FlagChainID, s.baseCtx.ChainID),
 				"node0",
 				amount.String(),
+				"220",
+				"UAE",
 			},
-			expCmdOutput: fmt.Sprintf("--%s=%s %s %s", flags.FlagChainID, s.baseCtx.ChainID, "node0", amount.String()),
+			expCmdOutput: fmt.Sprintf("--%s=%s %s %s %s %s", flags.FlagChainID, s.baseCtx.ChainID, "node0", amount.String(), "220", "UAE"),
 		},
 		{
 			name: "invalid pubkey",
@@ -97,8 +101,10 @@ func (s *CLITestSuite) TestGenTxCmd() {
 				fmt.Sprintf("--%s={\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"}", stakingcli.FlagPubKey),
 				"node0",
 				amount.String(),
+				"220",
+				"UAE",
 			},
-			expCmdOutput: fmt.Sprintf("--%s=test-chain-1 --%s={\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"} %s %s ", flags.FlagChainID, stakingcli.FlagPubKey, "node0", amount.String()),
+			expCmdOutput: fmt.Sprintf("--%s=test-chain-1 --%s={\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"} %s %s %s %s ", flags.FlagChainID, stakingcli.FlagPubKey, "node0", amount.String(), "220", "UAE"),
 		},
 		{
 			name: "valid pubkey flag",
@@ -107,8 +113,10 @@ func (s *CLITestSuite) TestGenTxCmd() {
 				fmt.Sprintf("--%s={\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"}", stakingcli.FlagPubKey),
 				"node0",
 				amount.String(),
+				"220",
+				"UAE",
 			},
-			expCmdOutput: fmt.Sprintf("--%s=test-chain-1 --%s={\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"} %s %s ", flags.FlagChainID, stakingcli.FlagPubKey, "node0", amount.String()),
+			expCmdOutput: fmt.Sprintf("--%s=test-chain-1 --%s={\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"} %s %s %s %s ", flags.FlagChainID, stakingcli.FlagPubKey, "node0", amount.String(), "220", "UAE"),
 		},
 	}
 
