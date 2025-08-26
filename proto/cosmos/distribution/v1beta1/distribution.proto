@@ -61,15 +61,6 @@ message Params {
     (amino.dont_omitempty) = true,
     (gogoproto.nullable)   = false
   ];
-
-  // separate_pool_ratio defines the fraction of total rewards allocated to a separate pool.
-  // Default: 5% (0.05) of total newly minted coins
-  string separate_pool_ratio = 7 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (amino.dont_omitempty) = true,
-    (gogoproto.nullable)   = false
-  ];
 }
 
 // ValidatorHistoricalRewards represents historical rewards for a validator.

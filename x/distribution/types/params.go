@@ -15,22 +15,15 @@ func DefaultParams() Params {
 		WithdrawAddrEnabled: true,
 		NftStakingRatio:     math.LegacyNewDecWithPrec(75, 2), // 75% of staking rewards (56.25% of total)
 		NativeStakingRatio:  math.LegacyNewDecWithPrec(25, 2), // 25% of staking rewards (18.75% of total)
-		SeparatePoolRatio:   math.LegacyNewDecWithPrec(5, 2),  // 5% to separate pool
 	}
 }
 
 // ValidateBasic performs basic validation on distribution parameters.
 func (p Params) ValidateBasic() error {
-	if err := validateCommunityTax(p.CommunityTax); err != nil {
-		return err
-	}
 	if err := validateStakingRatio(p.NftStakingRatio, "nft_staking_ratio"); err != nil {
 		return err
 	}
 	if err := validateStakingRatio(p.NativeStakingRatio, "native_staking_ratio"); err != nil {
-		return err
-	}
-	if err := validateStakingRatio(p.SeparatePoolRatio, "separate_pool_ratio"); err != nil {
 		return err
 	}
 
@@ -42,33 +35,9 @@ func (p Params) ValidateBasic() error {
 		return fmt.Errorf("nft_staking_ratio + native_staking_ratio must equal 100%% (1.0) of staking rewards, got: %s", totalStakingRatio)
 	}
 
-	// Validate that community tax + separate pool ratio is less than or equal to 100%
-	totalDeductions := p.CommunityTax.Add(p.SeparatePoolRatio)
-	if totalDeductions.GT(math.LegacyOneDec()) {
-		return fmt.Errorf("community_tax + separate_pool_ratio must be less than or equal to 100%%, got: %s", totalDeductions)
-	}
-
 	return nil
 }
 
-func validateCommunityTax(i interface{}) error {
-	v, ok := i.(math.LegacyDec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v.IsNil() {
-		return fmt.Errorf("community tax must be not nil")
-	}
-	if v.IsNegative() {
-		return fmt.Errorf("community tax must be positive: %s", v)
-	}
-	if v.GT(math.LegacyOneDec()) {
-		return fmt.Errorf("community tax too large: %s", v)
-	}
-
-	return nil
-}
 
 func validateWithdrawAddrEnabled(i interface{}) error {
 	_, ok := i.(bool)

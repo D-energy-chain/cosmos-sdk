@@ -62,22 +62,12 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return k.FeePool.Set(ctx, feePool)
 	}
 
-	// calculate fraction allocated to validators
+	// All fees go directly to validators (no community tax)
 	remaining := feesCollected
-	communityTax, err := k.GetCommunityTax(ctx)
-	if err != nil {
-		return err
-	}
-
-	sdkCtx.Logger().Info("Community tax configuration", 
-		"community_tax", communityTax)
-
-	voteMultiplier := math.LegacyOneDec().Sub(communityTax)
-	feeMultiplier := feesCollected.MulDecTruncate(voteMultiplier)
+	feeMultiplier := feesCollected // 100% goes to validators
 
 	sdkCtx.Logger().Info("Fee distribution calculations", 
 		"remaining", remaining, 
-		"vote_multiplier", voteMultiplier, 
 		"fee_multiplier", feeMultiplier)
 
 	// allocate tokens proportionally to voting power. Validators that did not

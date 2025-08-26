@@ -14,7 +14,6 @@ func TestParams_ValidateBasic(t *testing.T) {
 	toDec := sdkmath.LegacyMustNewDecFromStr
 
 	type fields struct {
-		CommunityTax        sdkmath.LegacyDec
 		BaseProposerReward  sdkmath.LegacyDec
 		BonusProposerReward sdkmath.LegacyDec
 		WithdrawAddrEnabled bool
@@ -26,23 +25,18 @@ func TestParams_ValidateBasic(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
-		{"success", fields{toDec("0.1"), toDec("0"), toDec("0"), false, toDec("0.75"), toDec("0.25")}, false},
-		{"negative community tax", fields{toDec("-0.1"), toDec("0"), toDec("0"), false, toDec("0.75"), toDec("0.25")}, true},
-		{"negative base proposer reward (must not matter)", fields{toDec("0.1"), toDec("0"), toDec("-0.1"), false, toDec("0.75"), toDec("0.25")}, false},
-		{"negative bonus proposer reward (must not matter)", fields{toDec("0.1"), toDec("0"), toDec("-0.1"), false, toDec("0.75"), toDec("0.25")}, false},
-		{"total sum greater than 1 (must not matter)", fields{toDec("0.2"), toDec("0.5"), toDec("0.4"), false, toDec("0.75"), toDec("0.25")}, false},
-		{"community tax greater than 1", fields{toDec("1.1"), toDec("0"), toDec("0"), false, toDec("0.75"), toDec("0.25")}, true},
-		{"community tax nil", fields{sdkmath.LegacyDec{}, toDec("0"), toDec("0"), false, toDec("0.75"), toDec("0.25")}, true},
-		{"negative nft staking ratio", fields{toDec("0.1"), toDec("0"), toDec("0"), false, toDec("-0.1"), toDec("0.25")}, true},
-		{"negative native staking ratio", fields{toDec("0.1"), toDec("0"), toDec("0"), false, toDec("0.75"), toDec("-0.1")}, true},
-		{"staking ratios don't sum to 1", fields{toDec("0.1"), toDec("0"), toDec("0"), false, toDec("0.5"), toDec("0.3")}, true},
-		{"nft staking ratio greater than 1", fields{toDec("0.1"), toDec("0"), toDec("0"), false, toDec("1.1"), toDec("0.25")}, true},
-		{"native staking ratio greater than 1", fields{toDec("0.1"), toDec("0"), toDec("0"), false, toDec("0.75"), toDec("1.1")}, true},
+		{"success", fields{toDec("0"), toDec("0"), false, toDec("0.75"), toDec("0.25")}, false},
+		{"negative base proposer reward (must not matter)", fields{toDec("-0.1"), toDec("0"), false, toDec("0.75"), toDec("0.25")}, false},
+		{"negative bonus proposer reward (must not matter)", fields{toDec("0"), toDec("-0.1"), false, toDec("0.75"), toDec("0.25")}, false},
+		{"negative nft staking ratio", fields{toDec("0"), toDec("0"), false, toDec("-0.1"), toDec("0.25")}, true},
+		{"negative native staking ratio", fields{toDec("0"), toDec("0"), false, toDec("0.75"), toDec("-0.1")}, true},
+		{"staking ratios don't sum to 1", fields{toDec("0"), toDec("0"), false, toDec("0.5"), toDec("0.3")}, true},
+		{"nft staking ratio greater than 1", fields{toDec("0"), toDec("0"), false, toDec("1.1"), toDec("0.25")}, true},
+		{"native staking ratio greater than 1", fields{toDec("0"), toDec("0"), false, toDec("0.75"), toDec("1.1")}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := types.Params{
-				CommunityTax:        tt.fields.CommunityTax,
 				WithdrawAddrEnabled: tt.fields.WithdrawAddrEnabled,
 				NftStakingRatio:     tt.fields.NftStakingRatio,
 				NativeStakingRatio:  tt.fields.NativeStakingRatio,
