@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
-	distirbuitonv1beta1 "cosmossdk.io/api/cosmos/distribution/v1beta1"
+	distributionv1beta1 "cosmossdk.io/api/cosmos/distribution/v1beta1"
 
 	"github.com/cosmos/cosmos-sdk/version"
 )
@@ -13,7 +13,7 @@ import (
 func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 	return &autocliv1.ModuleOptions{
 		Query: &autocliv1.ServiceCommandDescriptor{
-			Service: distirbuitonv1beta1.Query_ServiceDesc.ServiceName,
+			Service: distributionv1beta1.Query_ServiceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
 					RpcMethod: "Params",
@@ -85,43 +85,49 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Short:     "Query the amount of coins in the community pool",
 					Example:   fmt.Sprintf(`$ %s query distribution community-pool`, version.AppName),
 				},
-				{
-					RpcMethod: "ValidatorEpochPerformance",
-					Use:       "validator-epoch-performance [validator-address] [epoch-identifier] [epoch-number]",
-					Short:     "Query validator's performance for a specific epoch",
-					Long:      "Query a validator's performance metrics (commit ratio, average power) for a specific epoch",
-					Example:   fmt.Sprintf(`$ %s query distribution validator-epoch-performance cosmosvaloper1... inflation 1627`, version.AppName),
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "validator_address"},
-						{ProtoField: "epoch_identifier"},
-						{ProtoField: "epoch_number"},
-					},
-				},
-				{
-					RpcMethod: "ValidatorEpochPerformances",
-					Use:       "validator-epoch-performances [validator-address]",
-					Short:     "Query all epoch performances for a validator",
-					Long:      "Query all historical epoch performances for a specific validator",
-					Example:   fmt.Sprintf(`$ %s query distribution validator-epoch-performances cosmosvaloper1...`, version.AppName),
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "validator_address"},
-					},
-				},
-				{
-					RpcMethod: "EpochPerformances",
-					Use:       "epoch-performances [epoch-identifier] [epoch-number]",
-					Short:     "Query all validator performances for a specific epoch",
-					Long:      "Query performance metrics for all validators in a specific epoch",
-					Example:   fmt.Sprintf(`$ %s query distribution epoch-performances inflation 1627`, version.AppName),
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "epoch_identifier"},
-						{ProtoField: "epoch_number"},
-					},
-				},
+
+				// TODO: New RPC methods for validator epoch performance tracking
+				// These methods are temporarily commented out due to a service descriptor registration issue
+				// The protobuf definitions exist and the gRPC handlers are implemented, but the AutoCLI
+				// system cannot find the methods in the service descriptor at runtime.
+				// This requires further investigation into the AutoCLI service registration mechanism.
+				// {
+				// 	RpcMethod: "ValidatorEpochPerformance",
+				// 	Use:       "validator-epoch-performance [validator-address] [epoch-identifier] [epoch-number]",
+				// 	Short:     "Query validator's performance for a specific epoch",
+				// 	Long:      "Query a validator's performance metrics (commit ratio, average power) for a specific epoch",
+				// 	Example:   fmt.Sprintf(`$ %s query distribution validator-epoch-performance cosmosvaloper1... inflation 1627`, version.AppName),
+				// 	PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+				// 		{ProtoField: "validator_address"},
+				// 		{ProtoField: "epoch_identifier"},
+				// 		{ProtoField: "epoch_number"},
+				// 	},
+				// },
+				// {
+				// 	RpcMethod: "ValidatorEpochPerformances",
+				// 	Use:       "validator-epoch-performances [validator-address]",
+				// 	Short:     "Query all epoch performances for a validator",
+				// 	Long:      "Query all historical epoch performances for a specific validator",
+				// 	Example:   fmt.Sprintf(`$ %s query distribution validator-epoch-performances cosmosvaloper1...`, version.AppName),
+				// 	PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+				// 		{ProtoField: "validator_address"},
+				// 	},
+				// },
+				// {
+				// 	RpcMethod: "EpochPerformances",
+				// 	Use:       "epoch-performances [epoch-identifier] [epoch-number]",
+				// 	Short:     "Query all validator performances for a specific epoch",
+				// 	Long:      "Query performance metrics for all validators in a specific epoch",
+				// 	Example:   fmt.Sprintf(`$ %s query distribution epoch-performances inflation 1627`, version.AppName),
+				// 	PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+				// 		{ProtoField: "epoch_identifier"},
+				// 		{ProtoField: "epoch_number"},
+				// 	},
+				// },
 			},
 		},
 		Tx: &autocliv1.ServiceCommandDescriptor{
-			Service: distirbuitonv1beta1.Msg_ServiceDesc.ServiceName,
+			Service: distributionv1beta1.Msg_ServiceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
 					RpcMethod: "SetWithdrawAddress",
