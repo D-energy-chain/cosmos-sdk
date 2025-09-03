@@ -132,6 +132,162 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	return nil
 }
 
+// AllocateTokensWithPerformance performs reward and fee distribution based on epoch performance
+// rather than single-block voting status. This provides fairer distribution for epoch-based systems.
+func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifier string, epochNumber int64) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx.Logger().Info("Performance-based token allocation started", 
+		"epoch_identifier", epochIdentifier, 
+		"epoch_number", epochNumber)
+
+	// fetch and clear the collected fees for distribution
+	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
+	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
+	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
+
+	sdkCtx.Logger().Info("Fees collected from fee collector", 
+		"fees_collected_int", feesCollectedInt, 
+		"fees_collected_dec", feesCollected)
+
+	if feesCollectedInt.IsZero() {
+		sdkCtx.Logger().Warn("No fees collected - skipping token allocation")
+		return nil
+	}
+
+	// transfer collected fees to the distribution module account
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
+	if err != nil {
+		sdkCtx.Logger().Error("Failed to transfer fees to distribution module", "error", err)
+		return err
+	}
+
+	// get distribution parameters
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	// get all validator performance records for this epoch
+	performances, err := k.GetAllValidatorEpochPerformanceForEpoch(ctx, epochIdentifier, epochNumber)
+	if err != nil {
+		sdkCtx.Logger().Error("Failed to get validator epoch performances", "error", err)
+		return err
+	}
+
+	if len(performances) == 0 {
+		sdkCtx.Logger().Warn("No validator performance records found - allocating all fees to community pool")
+		feePool, err := k.FeePool.Get(ctx)
+		if err != nil {
+			return err
+		}
+		feePool.CommunityPool = feePool.CommunityPool.Add(feesCollected...)
+		return k.FeePool.Set(ctx, feePool)
+	}
+
+	// calculate total weighted power from eligible validators
+	var totalWeightedPower math.LegacyDec = math.LegacyZeroDec()
+	eligibleValidators := make([]types.ValidatorEpochPerformance, 0)
+
+	for _, performance := range performances {
+		// only include validators that meet minimum commit ratio
+		if performance.CommitRatio.GTE(params.MinCommitRatio) {
+			weightedPower := performance.AveragePower.Mul(performance.CommitRatio)
+			totalWeightedPower = totalWeightedPower.Add(weightedPower)
+			eligibleValidators = append(eligibleValidators, performance)
+			
+			sdkCtx.Logger().Debug("Validator eligible for rewards",
+				"validator_addr", performance.ValidatorAddress,
+				"commit_ratio", performance.CommitRatio,
+				"average_power", performance.AveragePower,
+				"weighted_power", weightedPower)
+		} else {
+			sdkCtx.Logger().Debug("Validator below minimum commit threshold",
+				"validator_addr", performance.ValidatorAddress,
+				"commit_ratio", performance.CommitRatio,
+				"min_commit_ratio", params.MinCommitRatio)
+		}
+	}
+
+	if totalWeightedPower.IsZero() {
+		sdkCtx.Logger().Warn("No validators meet minimum performance threshold - allocating all fees to community pool")
+		feePool, err := k.FeePool.Get(ctx)
+		if err != nil {
+			return err
+		}
+		feePool.CommunityPool = feePool.CommunityPool.Add(feesCollected...)
+		return k.FeePool.Set(ctx, feePool)
+	}
+
+	// All fees go directly to validators (no community tax)
+	remaining := feesCollected
+	feeMultiplier := feesCollected // 100% goes to validators
+
+	// allocate rewards proportionally to performance-weighted power
+	validatorsProcessed := 0
+	for _, performance := range eligibleValidators {
+		// get validator by operator address stored in performance record
+		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(performance.ValidatorAddress)
+		if err != nil {
+			sdkCtx.Logger().Error("Failed to decode validator address", 
+				"validator_address", performance.ValidatorAddress, 
+				"error", err)
+			continue // Skip this validator but continue with others
+		}
+		
+		validator, err := k.stakingKeeper.Validator(ctx, valAddr)
+		if err != nil {
+			sdkCtx.Logger().Error("Failed to get validator", 
+				"validator_address", performance.ValidatorAddress, 
+				"error", err)
+			continue // Skip this validator but continue with others
+		}
+
+		// calculate reward based on performance-weighted power
+		weightedPower := performance.AveragePower.Mul(performance.CommitRatio)
+		powerFraction := weightedPower.Quo(totalWeightedPower)
+		reward := feeMultiplier.MulDecTruncate(powerFraction)
+
+		sdkCtx.Logger().Info("Allocating tokens to validator based on performance", 
+			"validator", validator.GetOperator(), 
+			"commit_ratio", performance.CommitRatio,
+			"average_power", performance.AveragePower,
+			"weighted_power", weightedPower,
+			"power_fraction", powerFraction, 
+			"reward", reward)
+
+		err = k.AllocateTokensToValidator(ctx, validator, reward)
+		if err != nil {
+			sdkCtx.Logger().Error("Failed to allocate tokens to validator", 
+				"validator", validator.GetOperator(), 
+				"error", err)
+			continue // Continue with other validators
+		}
+
+		remaining = remaining.Sub(reward)
+		validatorsProcessed++
+	}
+
+	// get fee pool and add any remaining to community pool
+	feePool, err := k.FeePool.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	feePool.CommunityPool = feePool.CommunityPool.Add(remaining...)
+	err = k.FeePool.Set(ctx, feePool)
+	if err != nil {
+		sdkCtx.Logger().Error("Failed to set fee pool", "error", err)
+		return err
+	}
+
+	sdkCtx.Logger().Info("Performance-based token allocation completed successfully", 
+		"validators_processed", validatorsProcessed,
+		"total_weighted_power", totalWeightedPower,
+		"community_pool_addition", remaining)
+
+	return nil
+}
+
 // AllocateTokensToValidator allocate tokens to a particular validator,
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {

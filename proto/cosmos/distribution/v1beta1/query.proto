@@ -70,6 +70,24 @@ service Query {
   rpc CommunityPool(QueryCommunityPoolRequest) returns (QueryCommunityPoolResponse) {
     option (google.api.http).get = "/cosmos/distribution/v1beta1/community_pool";
   }
+
+  // ValidatorEpochPerformance queries a validator's performance for a specific epoch.
+  rpc ValidatorEpochPerformance(QueryValidatorEpochPerformanceRequest)
+      returns (QueryValidatorEpochPerformanceResponse) {
+    option (google.api.http).get = "/cosmos/distribution/v1beta1/validators/{validator_address}/epoch_performance/"
+                                   "{epoch_identifier}/{epoch_number}";
+  }
+
+  // ValidatorEpochPerformances queries all epoch performances for a validator.
+  rpc ValidatorEpochPerformances(QueryValidatorEpochPerformancesRequest)
+      returns (QueryValidatorEpochPerformancesResponse) {
+    option (google.api.http).get = "/cosmos/distribution/v1beta1/validators/{validator_address}/epoch_performances";
+  }
+
+  // EpochPerformances queries all validator performances for a specific epoch.
+  rpc EpochPerformances(QueryEpochPerformancesRequest) returns (QueryEpochPerformancesResponse) {
+    option (google.api.http).get = "/cosmos/distribution/v1beta1/epochs/{epoch_identifier}/{epoch_number}/performances";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
@@ -252,4 +270,60 @@ message QueryCommunityPoolResponse {
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true
   ];
+}
+
+// QueryValidatorEpochPerformanceRequest is the request type for the
+// Query/ValidatorEpochPerformance RPC method.
+message QueryValidatorEpochPerformanceRequest {
+  // validator_address defines the validator address to query for.
+  string validator_address = 1 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+  // epoch_identifier defines the epoch identifier to query for.
+  string epoch_identifier = 2;
+  // epoch_number defines the epoch number to query for.
+  int64 epoch_number = 3;
+}
+
+// QueryValidatorEpochPerformanceResponse is the response type for the
+// Query/ValidatorEpochPerformance RPC method.
+message QueryValidatorEpochPerformanceResponse {
+  // performance defines the validator's epoch performance.
+  ValidatorEpochPerformance performance = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
+// QueryValidatorEpochPerformancesRequest is the request type for the
+// Query/ValidatorEpochPerformances RPC method.
+message QueryValidatorEpochPerformancesRequest {
+  // validator_address defines the validator address to query for.
+  string validator_address = 1 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryValidatorEpochPerformancesResponse is the response type for the
+// Query/ValidatorEpochPerformances RPC method.
+message QueryValidatorEpochPerformancesResponse {
+  // performances defines the validator's epoch performances.
+  repeated ValidatorEpochPerformance performances = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryEpochPerformancesRequest is the request type for the
+// Query/EpochPerformances RPC method.
+message QueryEpochPerformancesRequest {
+  // epoch_identifier defines the epoch identifier to query for.
+  string epoch_identifier = 1;
+  // epoch_number defines the epoch number to query for.
+  int64 epoch_number = 2;
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// QueryEpochPerformancesResponse is the response type for the
+// Query/EpochPerformances RPC method.
+message QueryEpochPerformancesResponse {
+  // performances defines all validator performances for the epoch.
+  repeated ValidatorEpochPerformance performances = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

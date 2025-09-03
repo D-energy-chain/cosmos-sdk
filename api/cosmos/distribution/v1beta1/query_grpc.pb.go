@@ -29,6 +29,9 @@ const (
 	Query_DelegatorValidators_FullMethodName         = "/cosmos.distribution.v1beta1.Query/DelegatorValidators"
 	Query_DelegatorWithdrawAddress_FullMethodName    = "/cosmos.distribution.v1beta1.Query/DelegatorWithdrawAddress"
 	Query_CommunityPool_FullMethodName               = "/cosmos.distribution.v1beta1.Query/CommunityPool"
+	Query_ValidatorEpochPerformance_FullMethodName   = "/cosmos.distribution.v1beta1.Query/ValidatorEpochPerformance"
+	Query_ValidatorEpochPerformances_FullMethodName  = "/cosmos.distribution.v1beta1.Query/ValidatorEpochPerformances"
+	Query_EpochPerformances_FullMethodName           = "/cosmos.distribution.v1beta1.Query/EpochPerformances"
 )
 
 // QueryClient is the client API for Query service.
@@ -56,6 +59,12 @@ type QueryClient interface {
 	DelegatorWithdrawAddress(ctx context.Context, in *QueryDelegatorWithdrawAddressRequest, opts ...grpc.CallOption) (*QueryDelegatorWithdrawAddressResponse, error)
 	// CommunityPool queries the community pool coins.
 	CommunityPool(ctx context.Context, in *QueryCommunityPoolRequest, opts ...grpc.CallOption) (*QueryCommunityPoolResponse, error)
+	// ValidatorEpochPerformance queries a validator's performance for a specific epoch.
+	ValidatorEpochPerformance(ctx context.Context, in *QueryValidatorEpochPerformanceRequest, opts ...grpc.CallOption) (*QueryValidatorEpochPerformanceResponse, error)
+	// ValidatorEpochPerformances queries all epoch performances for a validator.
+	ValidatorEpochPerformances(ctx context.Context, in *QueryValidatorEpochPerformancesRequest, opts ...grpc.CallOption) (*QueryValidatorEpochPerformancesResponse, error)
+	// EpochPerformances queries all validator performances for a specific epoch.
+	EpochPerformances(ctx context.Context, in *QueryEpochPerformancesRequest, opts ...grpc.CallOption) (*QueryEpochPerformancesResponse, error)
 }
 
 type queryClient struct {
@@ -156,6 +165,33 @@ func (c *queryClient) CommunityPool(ctx context.Context, in *QueryCommunityPoolR
 	return out, nil
 }
 
+func (c *queryClient) ValidatorEpochPerformance(ctx context.Context, in *QueryValidatorEpochPerformanceRequest, opts ...grpc.CallOption) (*QueryValidatorEpochPerformanceResponse, error) {
+	out := new(QueryValidatorEpochPerformanceResponse)
+	err := c.cc.Invoke(ctx, Query_ValidatorEpochPerformance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ValidatorEpochPerformances(ctx context.Context, in *QueryValidatorEpochPerformancesRequest, opts ...grpc.CallOption) (*QueryValidatorEpochPerformancesResponse, error) {
+	out := new(QueryValidatorEpochPerformancesResponse)
+	err := c.cc.Invoke(ctx, Query_ValidatorEpochPerformances_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) EpochPerformances(ctx context.Context, in *QueryEpochPerformancesRequest, opts ...grpc.CallOption) (*QueryEpochPerformancesResponse, error) {
+	out := new(QueryEpochPerformancesResponse)
+	err := c.cc.Invoke(ctx, Query_EpochPerformances_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -181,6 +217,12 @@ type QueryServer interface {
 	DelegatorWithdrawAddress(context.Context, *QueryDelegatorWithdrawAddressRequest) (*QueryDelegatorWithdrawAddressResponse, error)
 	// CommunityPool queries the community pool coins.
 	CommunityPool(context.Context, *QueryCommunityPoolRequest) (*QueryCommunityPoolResponse, error)
+	// ValidatorEpochPerformance queries a validator's performance for a specific epoch.
+	ValidatorEpochPerformance(context.Context, *QueryValidatorEpochPerformanceRequest) (*QueryValidatorEpochPerformanceResponse, error)
+	// ValidatorEpochPerformances queries all epoch performances for a validator.
+	ValidatorEpochPerformances(context.Context, *QueryValidatorEpochPerformancesRequest) (*QueryValidatorEpochPerformancesResponse, error)
+	// EpochPerformances queries all validator performances for a specific epoch.
+	EpochPerformances(context.Context, *QueryEpochPerformancesRequest) (*QueryEpochPerformancesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -217,6 +259,15 @@ func (UnimplementedQueryServer) DelegatorWithdrawAddress(context.Context, *Query
 }
 func (UnimplementedQueryServer) CommunityPool(context.Context, *QueryCommunityPoolRequest) (*QueryCommunityPoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommunityPool not implemented")
+}
+func (UnimplementedQueryServer) ValidatorEpochPerformance(context.Context, *QueryValidatorEpochPerformanceRequest) (*QueryValidatorEpochPerformanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidatorEpochPerformance not implemented")
+}
+func (UnimplementedQueryServer) ValidatorEpochPerformances(context.Context, *QueryValidatorEpochPerformancesRequest) (*QueryValidatorEpochPerformancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidatorEpochPerformances not implemented")
+}
+func (UnimplementedQueryServer) EpochPerformances(context.Context, *QueryEpochPerformancesRequest) (*QueryEpochPerformancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EpochPerformances not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -411,6 +462,60 @@ func _Query_CommunityPool_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ValidatorEpochPerformance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryValidatorEpochPerformanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ValidatorEpochPerformance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ValidatorEpochPerformance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ValidatorEpochPerformance(ctx, req.(*QueryValidatorEpochPerformanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ValidatorEpochPerformances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryValidatorEpochPerformancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ValidatorEpochPerformances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ValidatorEpochPerformances_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ValidatorEpochPerformances(ctx, req.(*QueryValidatorEpochPerformancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_EpochPerformances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryEpochPerformancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).EpochPerformances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_EpochPerformances_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).EpochPerformances(ctx, req.(*QueryEpochPerformancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -457,6 +562,18 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CommunityPool",
 			Handler:    _Query_CommunityPool_Handler,
+		},
+		{
+			MethodName: "ValidatorEpochPerformance",
+			Handler:    _Query_ValidatorEpochPerformance_Handler,
+		},
+		{
+			MethodName: "ValidatorEpochPerformances",
+			Handler:    _Query_ValidatorEpochPerformances_Handler,
+		},
+		{
+			MethodName: "EpochPerformances",
+			Handler:    _Query_EpochPerformances_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

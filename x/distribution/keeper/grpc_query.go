@@ -370,3 +370,130 @@ func (k Querier) CommunityPool(ctx context.Context, req *types.QueryCommunityPoo
 
 	return &types.QueryCommunityPoolResponse{Pool: pool.CommunityPool}, nil
 }
+
+// ValidatorEpochPerformance queries a validator's performance for a specific epoch
+func (k Querier) ValidatorEpochPerformance(ctx context.Context, req *types.QueryValidatorEpochPerformanceRequest) (*types.QueryValidatorEpochPerformanceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.ValidatorAddress == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty validator address")
+	}
+
+	if req.EpochIdentifier == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty epoch identifier")
+	}
+
+	valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(req.ValidatorAddress)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	performance, err := k.GetValidatorEpochPerformance(ctx, valAddr, req.EpochIdentifier, req.EpochNumber)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	return &types.QueryValidatorEpochPerformanceResponse{Performance: performance}, nil
+}
+
+// ValidatorEpochPerformances queries all epoch performances for a validator
+func (k Querier) ValidatorEpochPerformances(ctx context.Context, req *types.QueryValidatorEpochPerformancesRequest) (*types.QueryValidatorEpochPerformancesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.ValidatorAddress == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty validator address")
+	}
+
+	valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(req.ValidatorAddress)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	var performances []types.ValidatorEpochPerformance
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	prefixStore := prefix.NewStore(store, types.GetValidatorEpochPerformancePrefix(valAddr))
+
+	pageRes, err := query.Paginate(prefixStore, req.Pagination, func(key, value []byte) error {
+		var performance types.ValidatorEpochPerformance
+		if err := k.cdc.Unmarshal(value, &performance); err != nil {
+			return err
+		}
+		performances = append(performances, performance)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryValidatorEpochPerformancesResponse{
+		Performances: performances,
+		Pagination:   pageRes,
+	}, nil
+}
+
+// EpochPerformances queries all validator performances for a specific epoch
+func (k Querier) EpochPerformances(ctx context.Context, req *types.QueryEpochPerformancesRequest) (*types.QueryEpochPerformancesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.EpochIdentifier == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty epoch identifier")
+	}
+
+	// Use the more efficient method from keeper
+	performances, err := k.GetAllValidatorEpochPerformanceForEpoch(ctx, req.EpochIdentifier, req.EpochNumber)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	// Simple in-memory pagination since we already have all the data
+	limit := uint64(100) // default limit
+	if req.Pagination != nil && req.Pagination.Limit != 0 {
+		limit = req.Pagination.Limit
+	}
+
+	var offset uint64
+	if req.Pagination != nil && req.Pagination.Offset != 0 {
+		offset = req.Pagination.Offset
+	}
+
+	total := uint64(len(performances))
+	
+	// Handle offset bounds
+	if offset >= total {
+		return &types.QueryEpochPerformancesResponse{
+			Performances: []types.ValidatorEpochPerformance{},
+			Pagination: &query.PageResponse{
+				NextKey: nil,
+				Total:   total,
+			},
+		}, nil
+	}
+
+	// Calculate end index
+	end := offset + limit
+	if end > total {
+		end = total
+	}
+
+	paginatedPerformances := performances[offset:end]
+	
+	// Set next key if there are more results
+	var nextKey []byte
+	if end < total {
+		nextKey = sdk.Uint64ToBigEndian(end)
+	}
+
+	return &types.QueryEpochPerformancesResponse{
+		Performances: paginatedPerformances,
+		Pagination: &query.PageResponse{
+			NextKey: nextKey,
+			Total:   total,
+		},
+	}, nil
+}

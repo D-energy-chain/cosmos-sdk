@@ -9,12 +9,14 @@ import (
 // DefaultParams returns default distribution parameters
 func DefaultParams() Params {
 	return Params{
-		CommunityTax:        math.LegacyZeroDec(), // 0%
-		BaseProposerReward:  math.LegacyZeroDec(), // deprecated
-		BonusProposerReward: math.LegacyZeroDec(), // deprecated
-		WithdrawAddrEnabled: true,
-		NftStakingRatio:     math.LegacyNewDecWithPrec(75, 2), // 75% of staking rewards (56.25% of total)
-		NativeStakingRatio:  math.LegacyNewDecWithPrec(25, 2), // 25% of staking rewards (18.75% of total)
+		CommunityTax:                        math.LegacyZeroDec(), // 0%
+		BaseProposerReward:                  math.LegacyZeroDec(), // deprecated
+		BonusProposerReward:                 math.LegacyZeroDec(), // deprecated
+		WithdrawAddrEnabled:                 true,
+		NftStakingRatio:                     math.LegacyNewDecWithPrec(75, 2), // 75% of staking rewards (56.25% of total)
+		NativeStakingRatio:                  math.LegacyNewDecWithPrec(25, 2), // 25% of staking rewards (18.75% of total)
+		MinCommitRatio:                      math.LegacyNewDecWithPrec(50, 2), // 50% minimum commit ratio
+		EnablePerformanceBasedDistribution:  true, // Enable performance-based distribution by default
 	}
 }
 
@@ -24,6 +26,9 @@ func (p Params) ValidateBasic() error {
 		return err
 	}
 	if err := validateStakingRatio(p.NativeStakingRatio, "native_staking_ratio"); err != nil {
+		return err
+	}
+	if err := validateStakingRatio(p.MinCommitRatio, "min_commit_ratio"); err != nil {
 		return err
 	}
 

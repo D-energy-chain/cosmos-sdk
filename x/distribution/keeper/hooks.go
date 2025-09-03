@@ -189,36 +189,52 @@ func (h Hooks) BeforeEpochStart(_ sdk.Context, _ string, _ int64) {
 
 // AfterEpochEnd mints and allocates coins at the end of each epoch end
 func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
-	// determine the total power signing the block
-	var previousTotalPower int64
-	for _, voteInfo := range ctx.VoteInfos() {
-		previousTotalPower += voteInfo.Validator.Power
-	}
-
-	ctx.Logger().Info("Vote info processed",
-		"total_power", previousTotalPower,
-		"num_validators", len(ctx.VoteInfos()))
-
-	// record the proposer for when we payout on the next block
-	consAddr := sdk.ConsAddress(ctx.BlockHeader().ProposerAddress)
-	if err := h.k.SetPreviousProposerConsAddr(ctx, consAddr); err != nil {
-		ctx.Logger().Error("Failed to set proposer from block header", "error", err)
+	// get distribution parameters to check if performance-based distribution is enabled
+	params, err := h.k.Params.Get(ctx)
+	if err != nil {
+		ctx.Logger().Error("Failed to get distribution params", "error", err)
 		return
 	}
 
 	ctx.Logger().Info("Epoch ended - starting reward distribution",
-		"total_power", previousTotalPower)
+		"epoch_identifier", epochIdentifier,
+		"epoch_number", epochNumber,
+		"performance_based", params.EnablePerformanceBasedDistribution)
 
-	// Note: We can't easily get the fee collector balance here because
-	// the keeper methods are private, but AllocateTokens will log this information
+	if params.EnablePerformanceBasedDistribution {
+		// Use performance-based allocation
+		if err := h.k.AllocateTokensWithPerformance(ctx, epochIdentifier, epochNumber); err != nil {
+			ctx.Logger().Error("Failed to allocate tokens using performance-based distribution", "error", err)
+			return
+		}
 
-	// At epoch end, distribute all accumulated rewards
-	if err := h.k.AllocateTokens(ctx, previousTotalPower, ctx.VoteInfos()); err != nil {
-		ctx.Logger().Error("Failed to allocate tokens during epoch end", "error", err)
-		return
+		// Clean up old performance records (keep last 100 epochs)
+		if err := h.k.CleanupOldEpochPerformanceRecords(ctx, epochIdentifier, epochNumber, 100); err != nil {
+			ctx.Logger().Error("Failed to cleanup old performance records", "error", err)
+			// Don't return here as it's not critical
+		}
+
+		ctx.Logger().Info("Performance-based reward distribution completed successfully")
+	} else {
+		// Use legacy single-block voting allocation
+		var previousTotalPower int64
+		for _, voteInfo := range ctx.VoteInfos() {
+			previousTotalPower += voteInfo.Validator.Power
+		}
+
+		// record the proposer for when we payout on the next block
+		consAddr := sdk.ConsAddress(ctx.BlockHeader().ProposerAddress)
+		if err := h.k.SetPreviousProposerConsAddr(ctx, consAddr); err != nil {
+			ctx.Logger().Error("Failed to set proposer from block header", "error", err)
+			return
+		}
+
+		// At epoch end, distribute all accumulated rewards using legacy method
+		if err := h.k.AllocateTokens(ctx, previousTotalPower, ctx.VoteInfos()); err != nil {
+			ctx.Logger().Error("Failed to allocate tokens during epoch end", "error", err)
+			return
+		}
+
+		ctx.Logger().Info("Legacy epoch-based reward distribution completed successfully")
 	}
-
-	// AllocateTokens function contains detailed logging of the fee collection process
-
-	ctx.Logger().Info("Epoch-based reward distribution completed successfully")
 }

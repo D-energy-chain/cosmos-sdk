@@ -48,6 +48,8 @@ const (
 // - 0x08<valAddrLen (1 Byte)><valAddr_Bytes><height>: ValidatorSlashEvent
 //
 // - 0x09: Params
+//
+// - 0x0A<valAddrLen (1 Byte)><valAddr_Bytes><epochIdentifierLen (1 Byte)><epochIdentifier_Bytes><epochNumber_Bytes>: ValidatorEpochPerformance
 var (
 	FeePoolKey                        = collections.NewPrefix(0) // key for global distribution state
 	ProposerKey                       = []byte{0x01}             // key for the proposer operator address
@@ -59,6 +61,7 @@ var (
 	ValidatorCurrentRewardsPrefix        = []byte{0x06} // key for current validator rewards
 	ValidatorAccumulatedCommissionPrefix = []byte{0x07} // key for accumulated validator commission
 	ValidatorSlashEventPrefix            = []byte{0x08} // key for validator slash fraction
+	ValidatorEpochPerformancePrefix      = []byte{0x0A} // key for validator epoch performance
 
 	ParamsKey = collections.NewPrefix(9) // key for distribution module params
 )
@@ -220,4 +223,46 @@ func GetValidatorSlashEventKey(v sdk.ValAddress, height, period uint64) []byte {
 	prefix := GetValidatorSlashEventKeyPrefix(v, height)
 
 	return append(prefix, periodBz...)
+}
+
+// GetValidatorEpochPerformanceKey creates the key for a validator's epoch performance.
+func GetValidatorEpochPerformanceKey(v sdk.ValAddress, epochIdentifier string, epochNumber int64) []byte {
+	epochNumberBz := make([]byte, 8)
+	binary.BigEndian.PutUint64(epochNumberBz, uint64(epochNumber))
+	
+	return append(
+		ValidatorEpochPerformancePrefix,
+		append(
+			address.MustLengthPrefix(v.Bytes()),
+			append(
+				address.MustLengthPrefix([]byte(epochIdentifier)),
+				epochNumberBz...,
+			)...,
+		)...,
+	)
+}
+
+// GetValidatorEpochPerformancePrefix creates the prefix key for a validator's epoch performance records.
+func GetValidatorEpochPerformancePrefix(v sdk.ValAddress) []byte {
+	return append(ValidatorEpochPerformancePrefix, address.MustLengthPrefix(v.Bytes())...)
+}
+
+// GetValidatorEpochPerformanceAddressEpochNumber creates the address, epoch identifier and number from a validator's epoch performance key.
+func GetValidatorEpochPerformanceAddressEpochNumber(key []byte) (valAddr sdk.ValAddress, epochIdentifier string, epochNumber int64) {
+	// key is in the format:
+	// 0x0A<valAddrLen (1 Byte)><valAddr_Bytes><epochIdentifierLen (1 Byte)><epochIdentifier_Bytes><epochNumber_Bytes>
+	kv.AssertKeyAtLeastLength(key, 2)
+	valAddrLen := int(key[1])
+	kv.AssertKeyAtLeastLength(key, 3+valAddrLen)
+	valAddr = sdk.ValAddress(key[2 : 2+valAddrLen])
+	
+	epochIdentifierLen := int(key[2+valAddrLen])
+	kv.AssertKeyAtLeastLength(key, 4+valAddrLen+epochIdentifierLen)
+	epochIdentifier = string(key[3+valAddrLen : 3+valAddrLen+epochIdentifierLen])
+	
+	epochNumberBz := key[3+valAddrLen+epochIdentifierLen:]
+	kv.AssertKeyLength(epochNumberBz, 8)
+	epochNumber = int64(binary.BigEndian.Uint64(epochNumberBz))
+	
+	return
 }

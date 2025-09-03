@@ -61,6 +61,21 @@ message Params {
     (amino.dont_omitempty) = true,
     (gogoproto.nullable)   = false
   ];
+
+  // min_commit_ratio defines the minimum commit ratio required for validators to receive rewards.
+  // Validators with commit ratios below this threshold will have their rewards redirected to
+  // the community pool. Default: 50% (0.5) minimum commit ratio required.
+  string min_commit_ratio = 7 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (amino.dont_omitempty) = true,
+    (gogoproto.nullable)   = false
+  ];
+
+  // enable_performance_based_distribution enables performance-based reward distribution
+  // instead of single-block voting status. When enabled, validators are rewarded based
+  // on their commit ratio throughout the epoch rather than just the final block vote.
+  bool enable_performance_based_distribution = 8;
 }
 
 // ValidatorHistoricalRewards represents historical rewards for a validator.
@@ -197,6 +212,28 @@ message DelegationDelegatorReward {
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true
+  ];
+}
+
+// ValidatorEpochPerformance represents a validator's performance metrics
+// during a specific epoch, used for performance-based reward distribution.
+message ValidatorEpochPerformance {
+  string validator_address = 1 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+  string epoch_identifier  = 2;
+  int64  epoch_number      = 3;
+  int64  commit_votes      = 4;
+  int64  total_votes       = 5;
+  string commit_ratio      = 6 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  string average_power = 7 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
   ];
 }
 
