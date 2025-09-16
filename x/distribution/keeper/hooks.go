@@ -123,15 +123,31 @@ func (h Hooks) AfterValidatorRemoved(ctx context.Context, _ sdk.ConsAddress, val
 	return nil
 }
 
-// increment period
+// increment period - now only on delegation creation for immediate effect
+// Note: Main period increments happen at epoch end for epoch-based rewards
 func (h Hooks) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return err
 	}
 
-	_, err = h.k.IncrementValidatorPeriod(ctx, val)
-	return err
+	// Only increment period if there are accumulated rewards that need to be locked in
+	// This handles the case where someone delegates mid-epoch
+	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
+	if err != nil {
+		return err
+	}
+
+	// If there are accumulated rewards, increment period to lock them in
+	// before the new delegation affects the reward calculation
+	if !currentRewards.Rewards.IsZero() {
+		_, err = h.k.IncrementValidatorPeriod(ctx, val)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // withdraw delegation rewards (which also increments period)
@@ -146,6 +162,8 @@ func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.A
 		return err
 	}
 
+	// Always withdraw delegation rewards before modifying shares
+	// This will increment the period if there are accumulated rewards
 	if _, err := h.k.withdrawDelegationRewards(ctx, val, del); err != nil {
 		return err
 	}
@@ -205,6 +223,13 @@ func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumbe
 		// Use performance-based allocation
 		if err := h.k.AllocateTokensWithPerformance(ctx, epochIdentifier, epochNumber); err != nil {
 			ctx.Logger().Error("Failed to allocate tokens using performance-based distribution", "error", err)
+			return
+		}
+
+		// CRITICAL: Increment periods for all validators to lock in this epoch's rewards
+		// This converts accumulated rewards to cumulative ratios for proper F1 distribution
+		if err := h.k.IncrementAllValidatorPeriods(ctx); err != nil {
+			ctx.Logger().Error("Failed to increment validator periods after epoch", "error", err)
 			return
 		}
 

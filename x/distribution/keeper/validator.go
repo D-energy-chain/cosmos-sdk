@@ -151,6 +151,22 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	return rewards.Period, nil
 }
 
+// IncrementAllValidatorPeriods increments periods for all validators
+// This is called at epoch end to convert accumulated rewards to cumulative ratios
+func (k Keeper) IncrementAllValidatorPeriods(ctx context.Context) error {
+	return k.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+		_, err := k.IncrementValidatorPeriod(ctx, val)
+		if err != nil {
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			sdkCtx.Logger().Error("Failed to increment validator period during epoch end",
+				"validator", val.GetOperator(),
+				"error", err)
+			// Continue with other validators instead of stopping the entire process
+		}
+		return false
+	})
+}
+
 // increment the reference count for a historical rewards value
 func (k Keeper) incrementReferenceCount(ctx context.Context, valAddr sdk.ValAddress, period uint64) error {
 	historical, err := k.GetValidatorHistoricalRewards(ctx, valAddr, period)
