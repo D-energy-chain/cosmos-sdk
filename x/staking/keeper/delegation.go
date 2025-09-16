@@ -1385,3 +1385,27 @@ func (k Keeper) ValidateUnbondAmount(
 
 	return shares, nil
 }
+
+// GetNFTDelegatorShares returns the NFT shares for a specific delegator with a specific validator
+func (k Keeper) GetNFTDelegatorShares(ctx context.Context, delegator sdk.AccAddress, valAddr sdk.ValAddress) (math.LegacyDec, error) {
+	validator, err := k.GetValidator(ctx, valAddr)
+	if err != nil {
+		return math.LegacyZeroDec(), err
+	}
+
+	// Convert addresses to strings for comparison
+	delegatorStr, err := k.authKeeper.AddressCodec().BytesToString(delegator)
+	if err != nil {
+		return math.LegacyZeroDec(), err
+	}
+
+	// Sum up all NFT shares for this delegator with this validator
+	totalShares := math.LegacyZeroDec()
+	for _, nftDel := range validator.NftDelegations {
+		if nftDel.DelegatorAddress == delegatorStr {
+			totalShares = totalShares.Add(nftDel.Shares)
+		}
+	}
+
+	return totalShares, nil
+}
