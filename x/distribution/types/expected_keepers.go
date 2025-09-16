@@ -4,6 +4,7 @@ import (
 	context "context"
 
 	"cosmossdk.io/core/address"
+	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -53,6 +54,10 @@ type StakingKeeper interface {
 	GetAllSDKDelegations(ctx context.Context) ([]stakingtypes.Delegation, error)
 	GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error)
 	GetAllDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress) ([]stakingtypes.Delegation, error)
+
+	// NFT delegation methods - for calculating NFT delegator rewards
+	// GetNFTDelegatorShares returns the total NFT shares for a delegator with a specific validator
+	GetNFTDelegatorShares(ctx context.Context, delegator sdk.AccAddress, validator sdk.ValAddress) (math.LegacyDec, error)
 }
 
 // StakingHooks event hooks for staking validator object (noalias)

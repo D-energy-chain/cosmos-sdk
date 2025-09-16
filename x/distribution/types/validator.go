@@ -9,8 +9,18 @@ import (
 // create a new ValidatorHistoricalRewards
 func NewValidatorHistoricalRewards(cumulativeRewardRatio sdk.DecCoins, referenceCount uint32) ValidatorHistoricalRewards {
 	return ValidatorHistoricalRewards{
-		CumulativeRewardRatio: cumulativeRewardRatio,
-		ReferenceCount:        referenceCount,
+		CumulativeRewardRatio:    cumulativeRewardRatio,
+		NftCumulativeRewardRatio: sdk.DecCoins{},
+		ReferenceCount:           referenceCount,
+	}
+}
+
+// create a new ValidatorHistoricalRewards with both native and NFT cumulative reward ratios
+func NewValidatorHistoricalRewardsWithNFT(cumulativeRewardRatio, nftCumulativeRewardRatio sdk.DecCoins, referenceCount uint32) ValidatorHistoricalRewards {
+	return ValidatorHistoricalRewards{
+		CumulativeRewardRatio:    cumulativeRewardRatio,
+		NftCumulativeRewardRatio: nftCumulativeRewardRatio,
+		ReferenceCount:           referenceCount,
 	}
 }
 

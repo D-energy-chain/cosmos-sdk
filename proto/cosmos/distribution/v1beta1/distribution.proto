@@ -96,6 +96,12 @@ message ValidatorHistoricalRewards {
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true
   ];
+  // nft_cumulative_reward_ratio is the cumulative reward ratio for NFT delegations
+  repeated cosmos.base.v1beta1.DecCoin nft_cumulative_reward_ratio = 3 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true
+  ];
   uint32 reference_count = 2;
 }
 
@@ -192,6 +198,13 @@ message CommunityPoolSpendProposal {
 message DelegatorStartingInfo {
   uint64 previous_period = 1;
   string stake           = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // nft_stake tracks the amount of NFT delegation stake for this delegator
+  string nft_stake = 4 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false,

@@ -18,7 +18,8 @@ func (k Keeper) initializeValidator(ctx context.Context, val stakingtypes.Valida
 		return err
 	}
 	// set initial historical rewards (period 0) with reference count of 1
-	err = k.SetValidatorHistoricalRewards(ctx, valBz, 0, types.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	// Initialize both native and NFT cumulative reward ratios to empty
+	err = k.SetValidatorHistoricalRewards(ctx, valBz, 0, types.NewValidatorHistoricalRewardsWithNFT(sdk.DecCoins{}, sdk.DecCoins{}, 1))
 	if err != nil {
 		return err
 	}
@@ -53,10 +54,14 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 		return 0, err
 	}
 
-	// calculate current ratio
-	var current sdk.DecCoins
-	if val.GetTokens().IsZero() {
+	// calculate current reward ratios for both NFT and native delegations
+	var current, nftCurrent sdk.DecCoins
 
+	nftShares := val.GetNFTDelegatorShares()
+	nativeShares := val.GetDelegatorShares()
+	totalShares := nftShares.Add(nativeShares)
+
+	if val.GetTokens().IsZero() || totalShares.IsZero() {
 		// can't calculate ratio for zero-token validators
 		// ergo we instead add to the community pool
 		feePool, err := k.FeePool.Get(ctx)
@@ -82,9 +87,36 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 		}
 
 		current = sdk.DecCoins{}
+		nftCurrent = sdk.DecCoins{}
 	} else {
-		// note: necessary to truncate so we don't allow withdrawing more rewards than owed
-		current = rewards.Rewards.QuoDecTruncate(math.LegacyNewDecFromInt(val.GetTokens()))
+		// Get the current reward allocation ratios
+		nftStakingRatio, err := k.GetNftStakingRatio(ctx)
+		if err != nil {
+			return 0, err
+		}
+		nativeStakingRatio, err := k.GetNativeStakingRatio(ctx)
+		if err != nil {
+			return 0, err
+		}
+
+		// Split the current rewards according to staking ratios
+		nftRewards := rewards.Rewards.MulDecTruncate(nftStakingRatio)
+		nativeRewards := rewards.Rewards.MulDecTruncate(nativeStakingRatio)
+
+		// Calculate reward ratios per unit of delegation
+		// Native ratio: native rewards / native shares
+		if !nativeShares.IsZero() {
+			current = nativeRewards.QuoDecTruncate(nativeShares)
+		} else {
+			current = sdk.DecCoins{}
+		}
+
+		// NFT ratio: NFT rewards / NFT shares
+		if !nftShares.IsZero() {
+			nftCurrent = nftRewards.QuoDecTruncate(nftShares)
+		} else {
+			nftCurrent = sdk.DecCoins{}
+		}
 	}
 
 	// fetch historical rewards for last period
@@ -94,6 +126,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	}
 
 	cumRewardRatio := historical.CumulativeRewardRatio
+	nftCumRewardRatio := historical.NftCumulativeRewardRatio
 
 	// decrement reference count
 	err = k.decrementReferenceCount(ctx, valBz, rewards.Period-1)
@@ -101,8 +134,10 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 		return 0, err
 	}
 
-	// set new historical rewards with reference count of 1
-	err = k.SetValidatorHistoricalRewards(ctx, valBz, rewards.Period, types.NewValidatorHistoricalRewards(cumRewardRatio.Add(current...), 1))
+	// set new historical rewards with separate cumulative ratios and reference count of 1
+	newNativeCumRatio := cumRewardRatio.Add(current...)
+	newNftCumRatio := nftCumRewardRatio.Add(nftCurrent...)
+	err = k.SetValidatorHistoricalRewards(ctx, valBz, rewards.Period, types.NewValidatorHistoricalRewardsWithNFT(newNativeCumRatio, newNftCumRatio, 1))
 	if err != nil {
 		return 0, err
 	}

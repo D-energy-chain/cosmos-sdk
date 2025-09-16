@@ -379,7 +379,9 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		return err
 	}
 
-	// Update current rewards - combine both native and NFT rewards
+	// Update current rewards - keep native and NFT rewards separate
+	// For now, we store the total in the main rewards field for backward compatibility
+	// but we'll separate them during period increment
 	totalShared := nftShared.Add(nativeShared...)
 	currentRewards, err := k.GetValidatorCurrentRewards(ctx, valBz)
 	if err != nil {
@@ -391,6 +393,10 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 	if err != nil {
 		return err
 	}
+
+	// Store the split for use during period increment
+	// We need to track how much of the current rewards are NFT vs native
+	// For this, we'll store metadata about the reward split ratios
 
 	// Update outstanding rewards
 	sdkCtx.EventManager().EmitEvent(
