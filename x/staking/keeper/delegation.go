@@ -1409,3 +1409,27 @@ func (k Keeper) GetNFTDelegatorShares(ctx context.Context, delegator sdk.AccAddr
 
 	return totalShares, nil
 }
+
+// GetNFTDelegations returns all NFT delegations for a specific delegator with a specific validator
+func (k Keeper) GetNFTDelegations(ctx context.Context, delegator sdk.AccAddress, valAddr sdk.ValAddress) ([]*types.NFTDelegation, error) {
+	validator, err := k.GetValidator(ctx, valAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert addresses to strings for comparison
+	delegatorStr, err := k.authKeeper.AddressCodec().BytesToString(delegator)
+	if err != nil {
+		return nil, err
+	}
+
+	// Collect all NFT delegations for this delegator with this validator
+	var nftDelegations []*types.NFTDelegation
+	for _, nftDel := range validator.NftDelegations {
+		if nftDel.DelegatorAddress == delegatorStr {
+			nftDelegations = append(nftDelegations, nftDel)
+		}
+	}
+
+	return nftDelegations, nil
+}

@@ -114,27 +114,133 @@ func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 		return nil, types.ErrNoValidatorDistInfo
 	}
 
+	var totalRewards sdk.Coins
+
+	// Try to withdraw native delegation rewards first
 	del, err := k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
+	if err == nil && del != nil {
+		// withdraw native delegation rewards
+		nativeRewards, err := k.withdrawDelegationRewards(ctx, val, del)
+		if err != nil {
+			return nil, err
+		}
+		totalRewards = totalRewards.Add(nativeRewards...)
+	}
+
+	// Check for NFT delegations and withdraw NFT rewards
+	nftDelegations, err := k.stakingKeeper.GetNFTDelegations(ctx, delAddr, valAddr)
+	if err == nil && len(nftDelegations) > 0 {
+		// Check if delegator starting info exists for NFT delegations
+		hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAddr, delAddr)
+		if err != nil {
+			return nil, err
+		}
+
+		if hasInfo {
+			// Get total NFT shares for this delegator with this validator
+			totalNFTShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, delAddr, valAddr)
+			if err != nil {
+				return nil, err
+			}
+
+			if !totalNFTShares.IsZero() {
+				// End current period and calculate NFT rewards
+				endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
+				if err != nil {
+					return nil, err
+				}
+
+				// Get delegator starting info to get the starting period and NFT stake
+				startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAddr, delAddr)
+				if err != nil {
+					return nil, err
+				}
+
+				startingPeriod := startingInfo.PreviousPeriod
+				nftStake := startingInfo.NftStake
+
+				// Calculate NFT delegation rewards using the NFT-specific calculation
+				nftRewardsRaw, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+				if err != nil {
+					return nil, err
+				}
+
+				outstanding, err := k.GetValidatorOutstandingRewardsCoins(ctx, valAddr)
+				if err != nil {
+					return nil, err
+				}
+
+				// Defensive edge case handling
+				nftRewards := nftRewardsRaw.Intersect(outstanding)
+				if !nftRewards.Equal(nftRewardsRaw) {
+					logger := k.Logger(ctx)
+					logger.Info(
+						"rounding error withdrawing NFT rewards from validator",
+						"delegator", delAddr.String(),
+						"validator", val.GetOperator(),
+						"got", nftRewards.String(),
+						"expected", nftRewardsRaw.String(),
+					)
+				}
+
+				// Update outstanding rewards
+				outstanding = outstanding.Sub(nftRewards)
+				err = k.SetValidatorOutstandingRewards(ctx, valAddr, types.ValidatorOutstandingRewards{Rewards: outstanding})
+				if err != nil {
+					return nil, err
+				}
+
+				// Convert DecCoins to Coins and add to total rewards
+				nftRewardsCoins, remainder := nftRewards.TruncateDecimal()
+				if !remainder.IsZero() {
+					feePool, err := k.FeePool.Get(ctx)
+					if err != nil {
+						return nil, err
+					}
+					feePool.CommunityPool = feePool.CommunityPool.Add(remainder...)
+					err = k.FeePool.Set(ctx, feePool)
+					if err != nil {
+						return nil, err
+					}
+				}
+				totalRewards = totalRewards.Add(nftRewardsCoins...)
+			}
+		}
+	}
+
+	// If no rewards from either native or NFT delegations, return error
+	if totalRewards.IsZero() {
+		// Check if there's any delegation at all (native or NFT)
+		if del == nil && len(nftDelegations) == 0 {
+			return nil, types.ErrEmptyDelegationDistInfo
+		}
+		// No rewards to withdraw, but delegations exist
+		return sdk.NewCoins(), nil
+	}
+
+	// Transfer rewards to delegator's withdraw address
+	withdrawAddr, err := k.GetDelegatorWithdrawAddr(ctx, delAddr)
 	if err != nil {
 		return nil, err
 	}
 
-	if del == nil {
-		return nil, types.ErrEmptyDelegationDistInfo
+	// totalRewards is already sdk.Coins, no need to truncate
+	finalRewards := totalRewards
+
+	if !finalRewards.IsZero() {
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, finalRewards)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	// withdraw rewards
-	rewards, err := k.withdrawDelegationRewards(ctx, val, del)
-	if err != nil {
-		return nil, err
-	}
-
-	// reinitialize the delegation
+	// reinitialize the delegation tracking (works for both native and NFT)
 	err = k.initializeDelegation(ctx, valAddr, delAddr)
 	if err != nil {
 		return nil, err
 	}
-	return rewards, nil
+
+	return finalRewards, nil
 }
 
 // withdraw validator commission
