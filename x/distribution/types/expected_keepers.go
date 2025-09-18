@@ -68,6 +68,12 @@ type StakingHooks interface {
 	AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
 }
 
+// NFTStakingHooks event hooks for NFT staking operations
+type NFTStakingHooks interface {
+	BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
+	AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
+}
+
 // EpochHooks event hooks for epoch processing
 type EpochHooks interface {
 	// the first block whose timestamp is after the duration is counted as the end of the epoch

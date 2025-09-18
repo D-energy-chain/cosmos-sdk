@@ -31,25 +31,27 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 		return err
 	}
 
+	// Try to get native delegation - it's okay if it doesn't exist for NFT-only delegators
+	var stake math.LegacyDec = math.LegacyZeroDec()
 	delegation, err := k.stakingKeeper.Delegation(ctx, del, val)
-	if err != nil {
-		return err
+	if err == nil && delegation != nil {
+		// calculate delegation stake in tokens
+		// we don't store directly, so multiply delegation shares * (tokens per share)
+		// note: necessary to truncate so we don't allow withdrawing more rewards than owed
+		stake = validator.TokensFromSharesTruncated(delegation.GetShares())
 	}
 
-	// calculate delegation stake in tokens
-	// we don't store directly, so multiply delegation shares * (tokens per share)
-	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
-	stake := validator.TokensFromSharesTruncated(delegation.GetShares())
-
 	// calculate NFT delegation stake (if any)
-	var nftStake math.LegacyDec
+	var nftStake math.LegacyDec = math.LegacyZeroDec()
 	nftShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
-	if err != nil {
-		// If NFT delegation query fails, assume no NFT delegation
-		nftStake = math.LegacyZeroDec()
-	} else {
+	if err == nil {
 		// NFT shares represent the delegator's proportion of NFT delegations to this validator
 		nftStake = nftShares
+	}
+
+	// Ensure at least one type of delegation exists
+	if stake.IsZero() && nftStake.IsZero() {
+		return types.ErrNoDelegationExists
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)

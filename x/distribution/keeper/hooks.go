@@ -19,6 +19,8 @@ var _ stakingtypes.StakingHooks = Hooks{}
 
 var _ types.EpochHooks = Hooks{}
 
+var _ types.NFTStakingHooks = Hooks{}
+
 // Create new distribution hooks
 func (k Keeper) Hooks() Hooks {
 	return Hooks{k}
@@ -173,6 +175,42 @@ func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.A
 
 // create new delegation period record
 func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	return h.k.initializeDelegation(ctx, valAddr, delAddr)
+}
+
+// NFT staking hooks - these are called by the NFT staking module
+
+// withdraw NFT delegation rewards (which also increments period)
+func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	// Check if delegator starting info exists
+	hasInfo, err := h.k.HasDelegatorStartingInfo(ctx, valAddr, delAddr)
+	if err != nil {
+		return err
+	}
+
+	// If starting info exists, withdraw any accumulated rewards
+	if hasInfo {
+		// Get NFT delegations for this delegator-validator pair
+		nftDelegations, err := h.k.stakingKeeper.GetNFTDelegations(ctx, delAddr, valAddr)
+		if err == nil && len(nftDelegations) > 0 {
+			// Withdraw NFT delegation rewards before modifying shares
+			// This will increment the period if there are accumulated rewards
+			if _, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
+				// Log error but don't fail - we want to allow the delegation modification to proceed
+				sdkCtx := sdk.UnwrapSDKContext(ctx)
+				sdkCtx.Logger().Error("Failed to withdraw NFT delegation rewards before share modification",
+					"delegator", delAddr.String(),
+					"validator", valAddr.String(),
+					"error", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+// create new NFT delegation period record
+func (h Hooks) AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
 	return h.k.initializeDelegation(ctx, valAddr, delAddr)
 }
 
