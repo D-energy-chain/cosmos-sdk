@@ -70,8 +70,10 @@ type StakingHooks interface {
 
 // NFTStakingHooks event hooks for NFT staking operations
 type NFTStakingHooks interface {
+	BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
 	BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
 	AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
+	BeforeNFTDelegationRemoved(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error
 }
 
 // EpochHooks event hooks for epoch processing
