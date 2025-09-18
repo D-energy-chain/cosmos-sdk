@@ -183,8 +183,19 @@ func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddre
 // increment period - now only on NFT delegation creation for immediate effect
 // Note: Main period increments happen at epoch end for epoch-based rewards
 func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger()
+
+	logger.Info("BeforeNFTDelegationCreated hook called",
+		"delegator", delAddr.String(),
+		"validator", valAddr.String())
+
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
+		logger.Error("BeforeNFTDelegationCreated: Failed to get validator",
+			"delegator", delAddr.String(),
+			"validator", valAddr.String(),
+			"error", err)
 		return err
 	}
 
@@ -192,17 +203,39 @@ func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAd
 	// This handles the case where someone delegates mid-epoch
 	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
 	if err != nil {
+		logger.Error("BeforeNFTDelegationCreated: Failed to get current rewards",
+			"delegator", delAddr.String(),
+			"validator", valAddr.String(),
+			"error", err)
 		return err
 	}
+
+	logger.Info("BeforeNFTDelegationCreated: Current rewards check",
+		"delegator", delAddr.String(),
+		"validator", valAddr.String(),
+		"current_rewards", currentRewards.Rewards,
+		"rewards_zero", currentRewards.Rewards.IsZero())
 
 	// If there are accumulated rewards, increment period to lock them in
 	// before the new NFT delegation affects the reward calculation
 	if !currentRewards.Rewards.IsZero() {
+		logger.Info("BeforeNFTDelegationCreated: Incrementing validator period",
+			"delegator", delAddr.String(),
+			"validator", valAddr.String())
+
 		_, err = h.k.IncrementValidatorPeriod(ctx, val)
 		if err != nil {
+			logger.Error("BeforeNFTDelegationCreated: Failed to increment period",
+				"delegator", delAddr.String(),
+				"validator", valAddr.String(),
+				"error", err)
 			return err
 		}
 	}
+
+	logger.Info("BeforeNFTDelegationCreated hook completed",
+		"delegator", delAddr.String(),
+		"validator", valAddr.String())
 
 	return nil
 }
@@ -238,7 +271,21 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 
 // create new NFT delegation period record
 func (h Hooks) AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	return h.k.initializeDelegation(ctx, valAddr, delAddr)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger()
+
+	logger.Info("AfterNFTDelegationModified hook called",
+		"delegator", delAddr.String(),
+		"validator", valAddr.String())
+
+	err := h.k.initializeDelegation(ctx, valAddr, delAddr)
+
+	logger.Info("AfterNFTDelegationModified hook completed",
+		"delegator", delAddr.String(),
+		"validator", valAddr.String(),
+		"error", err)
+
+	return err
 }
 
 // withdraw NFT delegation rewards before removal

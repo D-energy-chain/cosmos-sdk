@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -17,8 +18,8 @@ import (
 // on the F1 fee distribution specification.
 func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bondedVotes []abci.VoteInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.Logger().Info("AllocateTokens started", 
-		"total_previous_power", totalPreviousPower, 
+	sdkCtx.Logger().Info("AllocateTokens started",
+		"total_previous_power", totalPreviousPower,
 		"num_bonded_votes", len(bondedVotes))
 
 	// fetch and clear the collected fees for distribution, since this is
@@ -28,8 +29,8 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
-	sdkCtx.Logger().Info("Fees collected from fee collector", 
-		"fees_collected_int", feesCollectedInt, 
+	sdkCtx.Logger().Info("Fees collected from fee collector",
+		"fees_collected_int", feesCollectedInt,
 		"fees_collected_dec", feesCollected)
 
 	if feesCollectedInt.IsZero() {
@@ -44,9 +45,9 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return err
 	}
 
-	sdkCtx.Logger().Info("Fees transferred to distribution module", 
-		"from", k.feeCollectorName, 
-		"to", types.ModuleName, 
+	sdkCtx.Logger().Info("Fees transferred to distribution module",
+		"from", k.feeCollectorName,
+		"to", types.ModuleName,
 		"amount", feesCollectedInt)
 
 	// temporary workaround to keep CanWithdrawInvariant happy
@@ -66,8 +67,8 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	remaining := feesCollected
 	feeMultiplier := feesCollected // 100% goes to validators
 
-	sdkCtx.Logger().Info("Fee distribution calculations", 
-		"remaining", remaining, 
+	sdkCtx.Logger().Info("Fee distribution calculations",
+		"remaining", remaining,
 		"fee_multiplier", feeMultiplier)
 
 	// allocate tokens proportionally to voting power. Validators that did not
@@ -80,16 +81,16 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	for _, vote := range bondedVotes {
 		// Skip validators that missed their vote for the previous block.
 		if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit {
-			sdkCtx.Logger().Debug("Skipping validator that missed vote", 
-				"validator_address", vote.Validator.Address, 
+			sdkCtx.Logger().Debug("Skipping validator that missed vote",
+				"validator_address", vote.Validator.Address,
 				"block_id_flag", vote.BlockIdFlag)
 			continue
 		}
 
 		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to get validator by consensus address", 
-				"cons_addr", vote.Validator.Address, 
+			sdkCtx.Logger().Error("Failed to get validator by consensus address",
+				"cons_addr", vote.Validator.Address,
 				"error", err)
 			return err
 		}
@@ -97,16 +98,16 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		powerFraction := math.LegacyNewDec(vote.Validator.Power).QuoTruncate(math.LegacyNewDec(totalPreviousPower))
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
-		sdkCtx.Logger().Info("Allocating tokens to validator", 
-			"validator", validator.GetOperator(), 
-			"power", vote.Validator.Power, 
-			"power_fraction", powerFraction, 
+		sdkCtx.Logger().Info("Allocating tokens to validator",
+			"validator", validator.GetOperator(),
+			"power", vote.Validator.Power,
+			"power_fraction", powerFraction,
 			"reward", reward)
 
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to allocate tokens to validator", 
-				"validator", validator.GetOperator(), 
+			sdkCtx.Logger().Error("Failed to allocate tokens to validator",
+				"validator", validator.GetOperator(),
 				"error", err)
 			return err
 		}
@@ -115,8 +116,8 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		validatorsProcessed++
 	}
 
-	sdkCtx.Logger().Info("Validator reward allocation completed", 
-		"validators_processed", validatorsProcessed, 
+	sdkCtx.Logger().Info("Validator reward allocation completed",
+		"validators_processed", validatorsProcessed,
 		"remaining_for_community", remaining)
 
 	// allocate community funding
@@ -127,7 +128,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return err
 	}
 
-	sdkCtx.Logger().Info("Token allocation completed successfully", 
+	sdkCtx.Logger().Info("Token allocation completed successfully",
 		"community_pool_addition", remaining)
 	return nil
 }
@@ -136,8 +137,8 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 // rather than single-block voting status. This provides fairer distribution for epoch-based systems.
 func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifier string, epochNumber int64) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.Logger().Info("Performance-based token allocation started", 
-		"epoch_identifier", epochIdentifier, 
+	sdkCtx.Logger().Info("Performance-based token allocation started",
+		"epoch_identifier", epochIdentifier,
 		"epoch_number", epochNumber)
 
 	// fetch and clear the collected fees for distribution
@@ -145,8 +146,8 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
-	sdkCtx.Logger().Info("Fees collected from fee collector", 
-		"fees_collected_int", feesCollectedInt, 
+	sdkCtx.Logger().Info("Fees collected from fee collector",
+		"fees_collected_int", feesCollectedInt,
 		"fees_collected_dec", feesCollected)
 
 	if feesCollectedInt.IsZero() {
@@ -194,7 +195,7 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 			weightedPower := performance.AveragePower.Mul(performance.CommitRatio)
 			totalWeightedPower = totalWeightedPower.Add(weightedPower)
 			eligibleValidators = append(eligibleValidators, performance)
-			
+
 			sdkCtx.Logger().Debug("Validator eligible for rewards",
 				"validator_addr", performance.ValidatorAddress,
 				"commit_ratio", performance.CommitRatio,
@@ -228,16 +229,16 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		// get validator by operator address stored in performance record
 		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(performance.ValidatorAddress)
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to decode validator address", 
-				"validator_address", performance.ValidatorAddress, 
+			sdkCtx.Logger().Error("Failed to decode validator address",
+				"validator_address", performance.ValidatorAddress,
 				"error", err)
 			continue // Skip this validator but continue with others
 		}
-		
+
 		validator, err := k.stakingKeeper.Validator(ctx, valAddr)
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to get validator", 
-				"validator_address", performance.ValidatorAddress, 
+			sdkCtx.Logger().Error("Failed to get validator",
+				"validator_address", performance.ValidatorAddress,
 				"error", err)
 			continue // Skip this validator but continue with others
 		}
@@ -247,18 +248,18 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		powerFraction := weightedPower.Quo(totalWeightedPower)
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
-		sdkCtx.Logger().Info("Allocating tokens to validator based on performance", 
-			"validator", validator.GetOperator(), 
+		sdkCtx.Logger().Info("Allocating tokens to validator based on performance",
+			"validator", validator.GetOperator(),
 			"commit_ratio", performance.CommitRatio,
 			"average_power", performance.AveragePower,
 			"weighted_power", weightedPower,
-			"power_fraction", powerFraction, 
+			"power_fraction", powerFraction,
 			"reward", reward)
 
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to allocate tokens to validator", 
-				"validator", validator.GetOperator(), 
+			sdkCtx.Logger().Error("Failed to allocate tokens to validator",
+				"validator", validator.GetOperator(),
 				"error", err)
 			continue // Continue with other validators
 		}
@@ -280,7 +281,7 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		return err
 	}
 
-	sdkCtx.Logger().Info("Performance-based token allocation completed successfully", 
+	sdkCtx.Logger().Info("Performance-based token allocation completed successfully",
 		"validators_processed", validatorsProcessed,
 		"total_weighted_power", totalWeightedPower,
 		"community_pool_addition", remaining)
@@ -292,22 +293,44 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	
+
 	// Get the validator's NFT and native token shares
-	nftShares := val.GetNFTDelegatorShares()
+	// Try both possible method names for NFT shares
+	var nftShares math.LegacyDec
+
+	// First try GetDelegatorNftShares (as per documentation)
+	if v, ok := val.(interface{ GetDelegatorNftShares() math.LegacyDec }); ok {
+		nftShares = v.GetDelegatorNftShares()
+		sdkCtx.Logger().Info("AllocateTokensToValidator: Using GetDelegatorNftShares method",
+			"validator", val.GetOperator(),
+			"nft_shares", nftShares)
+	} else if v, ok := val.(interface{ GetNFTDelegatorShares() math.LegacyDec }); ok {
+		// Fallback to GetNFTDelegatorShares
+		nftShares = v.GetNFTDelegatorShares()
+		sdkCtx.Logger().Info("AllocateTokensToValidator: Using GetNFTDelegatorShares method",
+			"validator", val.GetOperator(),
+			"nft_shares", nftShares)
+	} else {
+		// Neither method exists
+		nftShares = math.LegacyZeroDec()
+		sdkCtx.Logger().Warn("AllocateTokensToValidator: No NFT shares method found on validator",
+			"validator", val.GetOperator(),
+			"validator_type", fmt.Sprintf("%T", val))
+	}
+
 	nativeShares := val.GetDelegatorShares()
 	totalShares := nftShares.Add(nativeShares)
 
-	sdkCtx.Logger().Info("AllocateTokensToValidator started", 
-		"validator", val.GetOperator(), 
-		"tokens", tokens, 
-		"nft_shares", nftShares, 
-		"native_shares", nativeShares, 
+	sdkCtx.Logger().Info("AllocateTokensToValidator started",
+		"validator", val.GetOperator(),
+		"tokens", tokens,
+		"nft_shares", nftShares,
+		"native_shares", nativeShares,
 		"total_shares", totalShares)
 
 	// If there are no shares at all, no rewards can be allocated
 	if totalShares.IsZero() {
-		sdkCtx.Logger().Warn("No shares for validator - skipping reward allocation", 
+		sdkCtx.Logger().Warn("No shares for validator - skipping reward allocation",
 			"validator", val.GetOperator())
 		return nil
 	}

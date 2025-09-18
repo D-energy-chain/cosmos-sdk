@@ -251,12 +251,31 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 		totalRewards = totalRewards.Add(nativeRewards...)
 	}
 
-	// Calculate NFT delegation rewards
+	// Calculate NFT delegation rewards with detailed logging
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger()
+
+	logger.Info("DelegationRewards: Checking NFT delegation rewards",
+		"delegator", req.DelegatorAddress,
+		"validator", req.ValidatorAddress)
+
 	hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAdr, delAdr)
+	logger.Info("DelegationRewards: Starting info check",
+		"has_info", hasInfo,
+		"error", err)
+
 	if err == nil && hasInfo {
 		// Get delegator starting info to get the starting period and NFT stake
 		startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAdr, delAdr)
+		logger.Info("DelegationRewards: Retrieved starting info",
+			"starting_info", startingInfo,
+			"error", err)
+
 		if err == nil && !startingInfo.NftStake.IsZero() {
+			logger.Info("DelegationRewards: NFT stake found, calculating rewards",
+				"nft_stake", startingInfo.NftStake,
+				"previous_period", startingInfo.PreviousPeriod)
+
 			// End current period and calculate NFT rewards
 			endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
 			if err != nil {
@@ -266,14 +285,30 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 			startingPeriod := startingInfo.PreviousPeriod
 			nftStake := startingInfo.NftStake
 
+			logger.Info("DelegationRewards: Period information",
+				"starting_period", startingPeriod,
+				"ending_period", endingPeriod)
+
 			// Calculate NFT delegation rewards
 			nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+			logger.Info("DelegationRewards: NFT rewards calculated",
+				"nft_rewards", nftRewards,
+				"error", err)
+
 			if err != nil {
 				return nil, err
 			}
 
 			totalRewards = totalRewards.Add(nftRewards...)
+		} else {
+			logger.Info("DelegationRewards: No NFT stake found or error retrieving starting info",
+				"nft_stake_zero", startingInfo.NftStake.IsZero(),
+				"error", err)
 		}
+	} else {
+		logger.Info("DelegationRewards: No starting info found or error",
+			"has_info", hasInfo,
+			"error", err)
 	}
 
 	// Return error if no delegations exist at all
