@@ -259,6 +259,14 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 		"delegator", req.DelegatorAddress,
 		"validator", req.ValidatorAddress)
 
+	// Check if NFT delegations exist first
+	nftDelegations, nftDelegationsErr := k.stakingKeeper.GetNFTDelegations(ctx, delAdr, valAdr)
+	logger.Info("DelegationRewards: NFT delegations check",
+		"delegator", req.DelegatorAddress,
+		"validator", req.ValidatorAddress,
+		"nft_delegations_count", len(nftDelegations),
+		"nft_delegations_error", nftDelegationsErr)
+
 	hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAdr, delAdr)
 	logger.Info("DelegationRewards: Starting info check",
 		"has_info", hasInfo,

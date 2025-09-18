@@ -13,12 +13,60 @@ import (
 
 // initialize starting info for a new delegation
 func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) error {
+	// Check if starting info already exists - if so, don't initialize again
+	hasInfo, err := k.HasDelegatorStartingInfo(ctx, val, del)
+	if err != nil {
+		return err
+	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger()
+
 	// period has already been incremented - we want to store the period ended by this delegation action
 	valCurrentRewards, err := k.GetValidatorCurrentRewards(ctx, val)
 	if err != nil {
 		return err
 	}
 	previousPeriod := valCurrentRewards.Period - 1
+
+	if hasInfo {
+		// Starting info already exists - update the NFT stake if needed
+		logger.Debug("initializeDelegation: Starting info already exists, updating if needed",
+			"delegator", del.String(),
+			"validator", val.String())
+
+		// Get existing starting info
+		existingInfo, err := k.GetDelegatorStartingInfo(ctx, val, del)
+		if err != nil {
+			return err
+		}
+
+		// Check if we need to update NFT stake
+		var currentNftStake math.LegacyDec = math.LegacyZeroDec()
+		nftShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
+		if err == nil {
+			currentNftStake = nftShares
+		}
+
+		// If NFT stake changed, update the starting info
+		if !currentNftStake.Equal(existingInfo.NftStake) {
+			logger.Info("initializeDelegation: Updating NFT stake in existing starting info",
+				"delegator", del.String(),
+				"validator", val.String(),
+				"old_nft_stake", existingInfo.NftStake,
+				"new_nft_stake", currentNftStake)
+
+			existingInfo.NftStake = currentNftStake
+			return k.SetDelegatorStartingInfo(ctx, val, del, existingInfo)
+		}
+
+		logger.Debug("initializeDelegation: No update needed for existing starting info")
+		return nil
+	}
+
+	logger.Info("initializeDelegation: Creating new starting info",
+		"delegator", del.String(),
+		"validator", val.String())
 
 	// increment reference count for the period we're going to track
 	err = k.incrementReferenceCount(ctx, val, previousPeriod)
@@ -43,18 +91,15 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 
 	// calculate NFT delegation stake (if any)
 	var nftStake math.LegacyDec = math.LegacyZeroDec()
-	nftShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
-
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	logger := sdkCtx.Logger()
+	nftShares, nftSharesErr := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
 
 	logger.Info("initializeDelegation: Checking NFT shares",
 		"delegator", del.String(),
 		"validator", val.String(),
 		"nft_shares", nftShares,
-		"nft_shares_error", err)
+		"nft_shares_error", nftSharesErr)
 
-	if err == nil {
+	if nftSharesErr == nil {
 		// NFT shares represent the delegator's proportion of NFT delegations to this validator
 		nftStake = nftShares
 	}
