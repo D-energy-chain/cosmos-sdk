@@ -57,40 +57,22 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	// calculate current reward ratios for both NFT and native delegations
 	var current, nftCurrent sdk.DecCoins
 
-	// Try both possible method names for NFT shares with debugging
+	// Try both possible method names for NFT shares
 	var nftShares math.LegacyDec
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	logger := sdkCtx.Logger()
 
 	// First try GetDelegatorNftShares (as per documentation)
 	if v, ok := val.(interface{ GetDelegatorNftShares() math.LegacyDec }); ok {
 		nftShares = v.GetDelegatorNftShares()
-		logger.Info("IncrementValidatorPeriod: Using GetDelegatorNftShares method",
-			"validator", val.GetOperator(),
-			"nft_shares", nftShares)
 	} else if v, ok := val.(interface{ GetNFTDelegatorShares() math.LegacyDec }); ok {
 		// Fallback to GetNFTDelegatorShares
 		nftShares = v.GetNFTDelegatorShares()
-		logger.Info("IncrementValidatorPeriod: Using GetNFTDelegatorShares method",
-			"validator", val.GetOperator(),
-			"nft_shares", nftShares)
 	} else {
 		// Neither method exists
 		nftShares = math.LegacyZeroDec()
-		logger.Warn("IncrementValidatorPeriod: No NFT shares method found on validator",
-			"validator", val.GetOperator(),
-			"validator_type", fmt.Sprintf("%T", val))
 	}
 
 	nativeShares := val.GetDelegatorShares()
 	totalShares := nftShares.Add(nativeShares)
-
-	logger.Info("IncrementValidatorPeriod: Share information",
-		"validator", val.GetOperator(),
-		"nft_shares", nftShares,
-		"native_shares", nativeShares,
-		"total_shares", totalShares,
-		"validator_tokens", val.GetTokens())
 
 	if val.GetTokens().IsZero() || totalShares.IsZero() {
 		// can't calculate ratio for zero-token validators
@@ -134,41 +116,19 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 		nftRewards := rewards.Rewards.MulDecTruncate(nftStakingRatio)
 		nativeRewards := rewards.Rewards.MulDecTruncate(nativeStakingRatio)
 
-		logger.Info("IncrementValidatorPeriod: Reward splitting",
-			"validator", val.GetOperator(),
-			"total_rewards", rewards.Rewards,
-			"nft_staking_ratio", nftStakingRatio,
-			"native_staking_ratio", nativeStakingRatio,
-			"nft_rewards", nftRewards,
-			"native_rewards", nativeRewards)
-
 		// Calculate reward ratios per unit of delegation
 		// Native ratio: native rewards / native shares
 		if !nativeShares.IsZero() {
 			current = nativeRewards.QuoDecTruncate(nativeShares)
-			logger.Info("IncrementValidatorPeriod: Native ratio calculated",
-				"validator", val.GetOperator(),
-				"native_rewards", nativeRewards,
-				"native_shares", nativeShares,
-				"native_ratio", current)
 		} else {
 			current = sdk.DecCoins{}
-			logger.Info("IncrementValidatorPeriod: No native shares, zero native ratio",
-				"validator", val.GetOperator())
 		}
 
 		// NFT ratio: NFT rewards / NFT shares
 		if !nftShares.IsZero() {
 			nftCurrent = nftRewards.QuoDecTruncate(nftShares)
-			logger.Info("IncrementValidatorPeriod: NFT ratio calculated",
-				"validator", val.GetOperator(),
-				"nft_rewards", nftRewards,
-				"nft_shares", nftShares,
-				"nft_ratio", nftCurrent)
 		} else {
 			nftCurrent = sdk.DecCoins{}
-			logger.Info("IncrementValidatorPeriod: No NFT shares, zero NFT ratio",
-				"validator", val.GetOperator())
 		}
 	}
 
@@ -191,16 +151,6 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	newNativeCumRatio := cumRewardRatio.Add(current...)
 	newNftCumRatio := nftCumRewardRatio.Add(nftCurrent...)
 
-	logger.Info("IncrementValidatorPeriod: Updating historical rewards",
-		"validator", val.GetOperator(),
-		"period", rewards.Period,
-		"old_native_cum_ratio", cumRewardRatio,
-		"old_nft_cum_ratio", nftCumRewardRatio,
-		"current_native_ratio", current,
-		"current_nft_ratio", nftCurrent,
-		"new_native_cum_ratio", newNativeCumRatio,
-		"new_nft_cum_ratio", newNftCumRatio)
-
 	err = k.SetValidatorHistoricalRewards(ctx, valBz, rewards.Period, types.NewValidatorHistoricalRewardsWithNFT(newNativeCumRatio, newNftCumRatio, 1))
 	if err != nil {
 		return 0, err
@@ -221,10 +171,7 @@ func (k Keeper) IncrementAllValidatorPeriods(ctx context.Context) error {
 	return k.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
 		_, err := k.IncrementValidatorPeriod(ctx, val)
 		if err != nil {
-			sdkCtx := sdk.UnwrapSDKContext(ctx)
-			sdkCtx.Logger().Error("Failed to increment validator period during epoch end",
-				"validator", val.GetOperator(),
-				"error", err)
+			k.Logger(ctx).Error("Failed to increment validator period during epoch end", "validator", val.GetOperator(), "error", err)
 			// Continue with other validators instead of stopping the entire process
 		}
 		return false

@@ -183,19 +183,9 @@ func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddre
 // increment period - now only on NFT delegation creation for immediate effect
 // Note: Main period increments happen at epoch end for epoch-based rewards
 func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	logger := sdkCtx.Logger()
-
-	logger.Info("BeforeNFTDelegationCreated hook called",
-		"delegator", delAddr.String(),
-		"validator", valAddr.String())
-
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
-		logger.Error("BeforeNFTDelegationCreated: Failed to get validator",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"error", err)
+		h.k.Logger(ctx).Error("Failed to get validator for NFT delegation", "error", err)
 		return err
 	}
 
@@ -203,39 +193,19 @@ func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAd
 	// This handles the case where someone delegates mid-epoch
 	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
 	if err != nil {
-		logger.Error("BeforeNFTDelegationCreated: Failed to get current rewards",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"error", err)
+		h.k.Logger(ctx).Error("Failed to get current rewards for NFT delegation", "error", err)
 		return err
 	}
-
-	logger.Info("BeforeNFTDelegationCreated: Current rewards check",
-		"delegator", delAddr.String(),
-		"validator", valAddr.String(),
-		"current_rewards", currentRewards.Rewards,
-		"rewards_zero", currentRewards.Rewards.IsZero())
 
 	// If there are accumulated rewards, increment period to lock them in
 	// before the new NFT delegation affects the reward calculation
 	if !currentRewards.Rewards.IsZero() {
-		logger.Info("BeforeNFTDelegationCreated: Incrementing validator period",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String())
-
 		_, err = h.k.IncrementValidatorPeriod(ctx, val)
 		if err != nil {
-			logger.Error("BeforeNFTDelegationCreated: Failed to increment period",
-				"delegator", delAddr.String(),
-				"validator", valAddr.String(),
-				"error", err)
+			h.k.Logger(ctx).Error("Failed to increment period for NFT delegation", "error", err)
 			return err
 		}
 	}
-
-	logger.Info("BeforeNFTDelegationCreated hook completed",
-		"delegator", delAddr.String(),
-		"validator", valAddr.String())
 
 	return nil
 }
@@ -257,11 +227,7 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 			// This will increment the period if there are accumulated rewards
 			if _, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
 				// Log error but don't fail - we want to allow the delegation modification to proceed
-				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				sdkCtx.Logger().Error("Failed to withdraw NFT delegation rewards before share modification",
-					"delegator", delAddr.String(),
-					"validator", valAddr.String(),
-					"error", err)
+				h.k.Logger(ctx).Error("Failed to withdraw NFT delegation rewards before share modification", "error", err)
 			}
 		}
 	}
@@ -271,21 +237,7 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 
 // create new NFT delegation period record
 func (h Hooks) AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	logger := sdkCtx.Logger()
-
-	logger.Info("AfterNFTDelegationModified hook called",
-		"delegator", delAddr.String(),
-		"validator", valAddr.String())
-
-	err := h.k.initializeDelegation(ctx, valAddr, delAddr)
-
-	logger.Info("AfterNFTDelegationModified hook completed",
-		"delegator", delAddr.String(),
-		"validator", valAddr.String(),
-		"error", err)
-
-	return err
+	return h.k.initializeDelegation(ctx, valAddr, delAddr)
 }
 
 // withdraw NFT delegation rewards before removal
@@ -305,11 +257,7 @@ func (h Hooks) BeforeNFTDelegationRemoved(ctx context.Context, delAddr sdk.AccAd
 			// This ensures the delegator doesn't lose their earned NFT rewards
 			if _, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
 				// Log error but don't fail the delegation removal
-				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				sdkCtx.Logger().Error("Failed to withdraw NFT delegation rewards before removal",
-					"delegator", delAddr.String(),
-					"validator", valAddr.String(),
-					"error", err)
+				h.k.Logger(ctx).Error("Failed to withdraw NFT delegation rewards before removal", "error", err)
 			}
 		}
 	}
@@ -351,11 +299,7 @@ func (h Hooks) BeforeDelegationRemoved(ctx context.Context, delAddr sdk.AccAddre
 	// Withdraw delegation rewards before removal
 	if _, err := h.k.withdrawDelegationRewards(ctx, val, del); err != nil {
 		// Log error but don't fail the delegation removal
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		sdkCtx.Logger().Error("Failed to withdraw delegation rewards before removal",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"error", err)
+		h.k.Logger(ctx).Error("Failed to withdraw delegation rewards before removal", "error", err)
 	}
 
 	return nil

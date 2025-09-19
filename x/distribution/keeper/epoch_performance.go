@@ -62,8 +62,6 @@ func (k Keeper) DeleteValidatorEpochPerformance(ctx context.Context, valAddr sdk
 // UpdateValidatorEpochPerformance updates or creates a validator's epoch performance record.
 // This method should be called during EndBlock to track validator commit votes.
 func (k Keeper) UpdateValidatorEpochPerformance(ctx context.Context, valAddr sdk.ValAddress, epochIdentifier string, epochNumber int64, power int64, committed bool) error {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
 	// Get existing performance record or create new one
 	performance, err := k.GetValidatorEpochPerformance(ctx, valAddr, epochIdentifier, epochNumber)
 	if err != nil && err != types.ErrNoValidatorDistInfo {
@@ -104,15 +102,6 @@ func (k Keeper) UpdateValidatorEpochPerformance(ctx context.Context, valAddr sdk
 	if performance.TotalVotes > 0 {
 		performance.CommitRatio = math.LegacyNewDec(performance.CommitVotes).Quo(math.LegacyNewDec(performance.TotalVotes))
 	}
-
-	sdkCtx.Logger().Debug("Updated validator epoch performance",
-		"validator", valAddr.String(),
-		"epoch_identifier", epochIdentifier,
-		"epoch_number", epochNumber,
-		"commit_votes", performance.CommitVotes,
-		"total_votes", performance.TotalVotes,
-		"commit_ratio", performance.CommitRatio,
-		"average_power", performance.AveragePower)
 
 	return k.SetValidatorEpochPerformance(ctx, valAddr, performance)
 }
@@ -170,7 +159,6 @@ func (k Keeper) CleanupOldEpochPerformanceRecords(ctx context.Context, epochIden
 		return nil // Nothing to clean up
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	iterator := store.Iterator(types.ValidatorEpochPerformancePrefix, storetypes.PrefixEndBytes(types.ValidatorEpochPerformancePrefix))
 	defer iterator.Close()
@@ -194,11 +182,9 @@ func (k Keeper) CleanupOldEpochPerformanceRecords(ctx context.Context, epochIden
 		store.Delete(key)
 	}
 
-	sdkCtx.Logger().Info("Cleaned up old epoch performance records",
-		"epoch_identifier", epochIdentifier,
-		"current_epoch", currentEpochNumber,
-		"cutoff_epoch", cutoffEpoch,
-		"records_deleted", len(keysToDelete))
+	if len(keysToDelete) > 0 {
+		k.Logger(ctx).Info("Cleaned up old epoch performance records", "records_deleted", len(keysToDelete))
+	}
 
 	return nil
 }
@@ -206,8 +192,6 @@ func (k Keeper) CleanupOldEpochPerformanceRecords(ctx context.Context, epochIden
 // TrackValidatorPerformance can be called directly by parent modules to track validator performance
 // This avoids polluting shared hook interfaces with module-specific methods
 func (k Keeper) TrackValidatorPerformance(ctx sdk.Context, epochIdentifier string, epochNumber int64, voteInfos []abci.VoteInfo) error {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	
 	// get distribution parameters to check if performance-based distribution is enabled
 	params, err := k.Params.Get(ctx)
 	if err != nil {
@@ -224,9 +208,6 @@ func (k Keeper) TrackValidatorPerformance(ctx sdk.Context, epochIdentifier strin
 		// Get validator by consensus address
 		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, voteInfo.Validator.Address)
 		if err != nil {
-			sdkCtx.Logger().Debug("Failed to get validator by consensus address", 
-				"cons_addr", voteInfo.Validator.Address, 
-				"error", err)
 			continue // Skip this validator but continue with others
 		}
 
@@ -236,9 +217,6 @@ func (k Keeper) TrackValidatorPerformance(ctx sdk.Context, epochIdentifier strin
 		// Convert validator operator address to ValAddress
 		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to convert validator operator address",
-				"operator", validator.GetOperator(),
-				"error", err)
 			continue
 		}
 
@@ -252,21 +230,8 @@ func (k Keeper) TrackValidatorPerformance(ctx sdk.Context, epochIdentifier strin
 			committed,
 		)
 		if err != nil {
-			sdkCtx.Logger().Error("Failed to update validator epoch performance",
-				"validator", validator.GetOperator(),
-				"epoch_identifier", epochIdentifier,
-				"epoch_number", epochNumber,
-				"error", err)
 			continue
 		}
-
-		sdkCtx.Logger().Debug("Updated validator epoch performance",
-			"validator", validator.GetOperator(),
-			"epoch_identifier", epochIdentifier,
-			"epoch_number", epochNumber,
-			"power", voteInfo.Validator.Power,
-			"committed", committed,
-			"block_height", sdkCtx.BlockHeight())
 	}
 
 	return nil

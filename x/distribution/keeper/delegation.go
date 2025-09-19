@@ -20,7 +20,6 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	logger := sdkCtx.Logger()
 
 	// period has already been incremented - we want to store the period ended by this delegation action
 	valCurrentRewards, err := k.GetValidatorCurrentRewards(ctx, val)
@@ -31,9 +30,6 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 
 	if hasInfo {
 		// Starting info already exists - update the NFT stake if needed
-		logger.Debug("initializeDelegation: Starting info already exists, updating if needed",
-			"delegator", del.String(),
-			"validator", val.String())
 
 		// Get existing starting info
 		existingInfo, err := k.GetDelegatorStartingInfo(ctx, val, del)
@@ -50,23 +46,13 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 
 		// If NFT stake changed, update the starting info
 		if !currentNftStake.Equal(existingInfo.NftStake) {
-			logger.Info("initializeDelegation: Updating NFT stake in existing starting info",
-				"delegator", del.String(),
-				"validator", val.String(),
-				"old_nft_stake", existingInfo.NftStake,
-				"new_nft_stake", currentNftStake)
-
 			existingInfo.NftStake = currentNftStake
 			return k.SetDelegatorStartingInfo(ctx, val, del, existingInfo)
 		}
-
-		logger.Debug("initializeDelegation: No update needed for existing starting info")
 		return nil
 	}
 
-	logger.Info("initializeDelegation: Creating new starting info",
-		"delegator", del.String(),
-		"validator", val.String())
+	// Create new starting info
 
 	// increment reference count for the period we're going to track
 	err = k.incrementReferenceCount(ctx, val, previousPeriod)
@@ -93,39 +79,17 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 	var nftStake math.LegacyDec = math.LegacyZeroDec()
 	nftShares, nftSharesErr := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
 
-	logger.Info("initializeDelegation: Checking NFT shares",
-		"delegator", del.String(),
-		"validator", val.String(),
-		"nft_shares", nftShares,
-		"nft_shares_error", nftSharesErr)
-
 	if nftSharesErr == nil {
 		// NFT shares represent the delegator's proportion of NFT delegations to this validator
 		nftStake = nftShares
 	}
 
-	logger.Info("initializeDelegation: Final stakes calculated",
-		"delegator", del.String(),
-		"validator", val.String(),
-		"native_stake", stake,
-		"nft_stake", nftStake,
-		"previous_period", previousPeriod)
-
 	// Ensure at least one type of delegation exists
 	if stake.IsZero() && nftStake.IsZero() {
-		logger.Error("initializeDelegation: No delegations found",
-			"delegator", del.String(),
-			"validator", val.String())
 		return types.ErrNoDelegationExists
 	}
 
 	startingInfo := types.NewDelegatorStartingInfoWithNFT(previousPeriod, stake, nftStake, uint64(sdkCtx.BlockHeight()))
-
-	logger.Info("initializeDelegation: Setting starting info",
-		"delegator", del.String(),
-		"validator", val.String(),
-		"starting_info", startingInfo)
-
 	return k.SetDelegatorStartingInfo(ctx, val, del, startingInfo)
 }
 
@@ -198,33 +162,13 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 		return sdk.DecCoins{}, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	logger := sdkCtx.Logger()
-
-	logger.Info("calculateNFTDelegationRewardsBetween: Historical rewards retrieved",
-		"validator", val.GetOperator(),
-		"starting_period", startingPeriod,
-		"ending_period", endingPeriod,
-		"starting_nft_cum_ratio", starting.NftCumulativeRewardRatio,
-		"ending_nft_cum_ratio", ending.NftCumulativeRewardRatio,
-		"nft_stake", nftStake)
-
 	difference := ending.NftCumulativeRewardRatio.Sub(starting.NftCumulativeRewardRatio)
 	if difference.IsAnyNegative() {
-		logger.Error("calculateNFTDelegationRewardsBetween: Negative NFT reward difference",
-			"validator", val.GetOperator(),
-			"difference", difference)
 		panic("negative NFT rewards should not be possible")
 	}
 
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
 	rewards := difference.MulDecTruncate(nftStake)
-
-	logger.Info("calculateNFTDelegationRewardsBetween: Final calculation",
-		"validator", val.GetOperator(),
-		"difference", difference,
-		"nft_stake", nftStake,
-		"calculated_rewards", rewards)
 
 	return rewards, nil
 }
