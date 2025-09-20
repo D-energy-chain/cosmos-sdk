@@ -295,6 +295,16 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 	}
 	rewards = rewards.Add(nftDelRewards...)
 
+	// Log individual delegator reward calculations
+	if !delRewards.IsZero() {
+		delRewardsCoins, _ := delRewards.TruncateDecimal()
+		k.logDelegatorRewardCalculation(ctx, del.GetDelegatorAddr(), val.GetOperator(), stake, delRewardsCoins, "native")
+	}
+	if !nftDelRewards.IsZero() {
+		nftDelRewardsCoins, _ := nftDelRewards.TruncateDecimal()
+		k.logDelegatorRewardCalculation(ctx, del.GetDelegatorAddr(), val.GetOperator(), nftStake, nftDelRewardsCoins, "nft")
+	}
+
 	return rewards, nil
 }
 
@@ -364,6 +374,9 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, val stakingtypes.
 		if err != nil {
 			return nil, err
 		}
+
+		// Log delegation reward withdrawal
+		k.logDelegationRewardWithdrawal(ctx, sdk.AccAddress(delAddr), sdk.ValAddress(valAddr), finalRewards, "native")
 	}
 
 	// update the outstanding rewards and the community pool only if the

@@ -162,6 +162,9 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 		return 0, err
 	}
 
+	// Log period increment
+	k.logPeriodIncrement(ctx, sdk.ValAddress(valBz), rewards.Period-1, rewards.Period, "epoch_end")
+
 	return rewards.Period, nil
 }
 
@@ -231,6 +234,9 @@ func (k Keeper) updateValidatorSlashFraction(ctx context.Context, valAddr sdk.Va
 
 	slashEvent := types.NewValidatorSlashEvent(newPeriod, fraction)
 	height := uint64(sdkCtx.BlockHeight())
+
+	// Log slash event
+	k.logSlashEvent(ctx, valAddr, fraction, newPeriod, height)
 
 	return k.SetValidatorSlashEvent(ctx, valAddr, height, newPeriod, slashEvent)
 }

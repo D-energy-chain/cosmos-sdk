@@ -204,6 +204,9 @@ func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 					}
 				}
 				totalRewards = totalRewards.Add(nftRewardsCoins...)
+
+				// Log NFT delegation reward withdrawal
+				k.logDelegationRewardWithdrawal(ctx, delAddr, valAddr, nftRewardsCoins, "nft")
 			}
 		}
 	}

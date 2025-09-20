@@ -315,6 +315,9 @@ func (h Hooks) BeforeEpochStart(_ sdk.Context, _ string, _ int64) {
 
 // AfterEpochEnd mints and allocates coins at the end of each epoch end
 func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
+	// Log epoch hook sequence
+	h.k.logEpochHookSequence(ctx, "DistrKeeper.AfterEpochEnd", "2_SECOND", epochNumber, epochIdentifier, "reward_distribution")
+
 	// get distribution parameters to check if performance-based distribution is enabled
 	params, err := h.k.Params.Get(ctx)
 	if err != nil {

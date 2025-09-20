@@ -27,6 +27,9 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return nil
 	}
 
+	// Log pre-distribution state
+	k.logPreDistributionState(ctx, sdk.UnwrapSDKContext(ctx).BlockHeight())
+
 	// transfer collected fees to the distribution module account
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
 	if err != nil {
@@ -74,6 +77,9 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		powerFraction := math.LegacyNewDec(vote.Validator.Power).QuoTruncate(math.LegacyNewDec(totalPreviousPower))
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
+		// Log reward pool calculations for this validator
+		k.logRewardPoolCalculations(ctx, validator, reward)
+
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
 			k.Logger(ctx).Error("Failed to allocate tokens to validator", "validator", validator.GetOperator(), "error", err)
@@ -92,6 +98,15 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 		return err
 	}
 
+	// Log distribution summary
+	k.logRewardDistributionSummary(ctx, sdk.UnwrapSDKContext(ctx).BlockHeight(), feesCollectedInt, validatorsProcessed, false)
+
+	// Log multi-validator delegators
+	k.logMultiValidatorDelegators(ctx)
+
+	// Log post-distribution validation
+	k.logPostDistributionValidation(ctx, sdk.UnwrapSDKContext(ctx).BlockHeight())
+
 	return nil
 }
 
@@ -106,6 +121,9 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 	if feesCollectedInt.IsZero() {
 		return nil
 	}
+
+	// Log pre-distribution state
+	k.logPreDistributionState(ctx, epochNumber)
 
 	// transfer collected fees to the distribution module account
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
@@ -183,6 +201,9 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		powerFraction := weightedPower.Quo(totalWeightedPower)
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
+		// Log reward pool calculations for this validator
+		k.logRewardPoolCalculations(ctx, validator, reward)
+
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
 			k.Logger(ctx).Error("Failed to allocate tokens to validator", "validator", validator.GetOperator(), "error", err)
@@ -207,6 +228,15 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 	}
 
 	k.Logger(ctx).Info("Performance-based token allocation completed", "validators_processed", validatorsProcessed, "amount", feesCollectedInt)
+
+	// Log distribution summary
+	k.logRewardDistributionSummary(ctx, epochNumber, feesCollectedInt, validatorsProcessed, true)
+
+	// Log multi-validator delegators
+	k.logMultiValidatorDelegators(ctx)
+
+	// Log post-distribution validation
+	k.logPostDistributionValidation(ctx, epochNumber)
 
 	return nil
 }
@@ -286,6 +316,9 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 
 	// Combine commissions from both reward types
 	totalCommission := nftCommission.Add(nativeCommission...)
+
+	// Log validator reward allocation details
+	k.logValidatorRewardAllocation(ctx, val, tokens, nftRewards, nativeRewards, totalCommission)
 
 	// Update current commission
 	sdkCtx.EventManager().EmitEvent(
