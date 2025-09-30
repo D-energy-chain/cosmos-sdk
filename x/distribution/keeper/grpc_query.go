@@ -394,7 +394,7 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 	return &types.QueryDelegationTotalRewardsResponse{Rewards: delRewards, Total: total}, nil
 }
 
-// DelegatorValidators queries the validators list of a delegator
+// DelegatorValidators queries the validators list of a delegator (both native and NFT delegations)
 func (k Querier) DelegatorValidators(ctx context.Context, req *types.QueryDelegatorValidatorsRequest) (*types.QueryDelegatorValidatorsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -408,18 +408,39 @@ func (k Querier) DelegatorValidators(ctx context.Context, req *types.QueryDelega
 	if err != nil {
 		return nil, err
 	}
-	var validators []string
 
+	// Use a map to avoid duplicate validators
+	validatorMap := make(map[string]bool)
+
+	// Get validators from native delegations
 	err = k.stakingKeeper.IterateDelegations(
 		ctx, delAdr,
 		func(_ int64, del stakingtypes.DelegationI) (stop bool) {
-			validators = append(validators, del.GetValidatorAddr())
+			validatorMap[del.GetValidatorAddr()] = true
 			return false
 		},
 	)
-
 	if err != nil {
 		return nil, err
+	}
+
+	// Get validators from NFT delegations
+	// Check if the delegator has any starting info (which indicates NFT delegations)
+	k.IterateDelegatorStartingInfos(ctx, func(val sdk.ValAddress, del sdk.AccAddress, info types.DelegatorStartingInfo) (stop bool) {
+		// Only include validators where this specific delegator has NFT stake
+		if del.Equals(sdk.AccAddress(delAdr)) && !info.NftStake.IsZero() {
+			valAddr, err := k.stakingKeeper.ValidatorAddressCodec().BytesToString(val)
+			if err == nil {
+				validatorMap[valAddr] = true
+			}
+		}
+		return false
+	})
+
+	// Convert map to slice
+	var validators []string
+	for valAddr := range validatorMap {
+		validators = append(validators, valAddr)
 	}
 
 	return &types.QueryDelegatorValidatorsResponse{Validators: validators}, nil
