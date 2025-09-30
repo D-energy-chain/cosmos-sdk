@@ -236,49 +236,136 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 
 	var totalRewards sdk.DecCoins
 
+	// Enhanced debugging for validator-specific issues
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := sdkCtx.Logger()
+
+	logger.Info("DelegationRewards: Query started",
+		"delegator", req.DelegatorAddress,
+		"validator", req.ValidatorAddress)
+
 	// Calculate native delegation rewards
 	del, err := k.stakingKeeper.Delegation(ctx, delAdr, valAdr)
 	if err == nil && del != nil {
+		logger.Info("DelegationRewards: Found native delegation",
+			"delegator", req.DelegatorAddress,
+			"validator", req.ValidatorAddress,
+			"shares", del.GetShares())
+
 		endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
 		if err != nil {
+			logger.Error("DelegationRewards: Failed to increment validator period",
+				"delegator", req.DelegatorAddress,
+				"validator", req.ValidatorAddress,
+				"error", err)
 			return nil, err
 		}
 
+		// Calculate rewards - handle missing starting info gracefully for queries
 		nativeRewards, err := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
 		if err != nil {
-			return nil, err
+			logger.Warn("DelegationRewards: Failed to calculate rewards, trying fallback",
+				"delegator", req.DelegatorAddress,
+				"validator", req.ValidatorAddress,
+				"error", err)
+
+			// Fallback: If starting info is missing, initialize it and try again
+			err = k.initializeDelegation(ctx, valAdr, delAdr)
+			if err != nil {
+				logger.Error("DelegationRewards: Failed to initialize delegation",
+					"delegator", req.DelegatorAddress,
+					"validator", req.ValidatorAddress,
+					"error", err)
+				return nil, err
+			}
+
+			// Retry calculation after initialization
+			nativeRewards, err = k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
+			if err != nil {
+				logger.Error("DelegationRewards: Failed to calculate rewards after initialization",
+					"delegator", req.DelegatorAddress,
+					"validator", req.ValidatorAddress,
+					"error", err)
+				return nil, err
+			}
+
+			logger.Info("DelegationRewards: Successfully calculated rewards after fallback initialization",
+				"delegator", req.DelegatorAddress,
+				"validator", req.ValidatorAddress)
 		}
+
+		logger.Info("DelegationRewards: Calculated rewards",
+			"delegator", req.DelegatorAddress,
+			"validator", req.ValidatorAddress,
+			"rewards", nativeRewards)
+
 		totalRewards = totalRewards.Add(nativeRewards...)
+	} else {
+		logger.Info("DelegationRewards: No native delegation found",
+			"delegator", req.DelegatorAddress,
+			"validator", req.ValidatorAddress,
+			"error", err)
 	}
 
-	// Calculate NFT delegation rewards
-	hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAdr, delAdr)
+	// Calculate NFT delegation rewards for NFT-only delegators
+	if del == nil {
+		hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAdr, delAdr)
+		logger.Info("DelegationRewards: Checking NFT-only delegation",
+			"delegator", req.DelegatorAddress,
+			"validator", req.ValidatorAddress,
+			"has_starting_info", hasInfo,
+			"error", err)
 
-	if err == nil && hasInfo {
-		// Get delegator starting info to get the starting period and NFT stake
-		startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAdr, delAdr)
-		if err == nil && !startingInfo.NftStake.IsZero() {
-			// End current period and calculate NFT rewards
-			endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
-			if err != nil {
-				return nil, err
+		if err == nil && hasInfo {
+			startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAdr, delAdr)
+			if err == nil && !startingInfo.NftStake.IsZero() {
+				logger.Info("DelegationRewards: Found NFT-only delegation",
+					"delegator", req.DelegatorAddress,
+					"validator", req.ValidatorAddress,
+					"nft_stake", startingInfo.NftStake)
+
+				endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
+				if err != nil {
+					logger.Error("DelegationRewards: Failed to increment validator period for NFT",
+						"delegator", req.DelegatorAddress,
+						"validator", req.ValidatorAddress,
+						"error", err)
+					return nil, err
+				}
+
+				startingPeriod := startingInfo.PreviousPeriod
+				nftStake := startingInfo.NftStake
+
+				nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+				if err != nil {
+					logger.Error("DelegationRewards: Failed to calculate NFT rewards",
+						"delegator", req.DelegatorAddress,
+						"validator", req.ValidatorAddress,
+						"error", err)
+					return nil, err
+				}
+
+				logger.Info("DelegationRewards: Calculated NFT-only rewards",
+					"delegator", req.DelegatorAddress,
+					"validator", req.ValidatorAddress,
+					"nft_rewards", nftRewards)
+
+				totalRewards = totalRewards.Add(nftRewards...)
 			}
-
-			startingPeriod := startingInfo.PreviousPeriod
-			nftStake := startingInfo.NftStake
-
-			// Calculate NFT delegation rewards
-			nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
-			if err != nil {
-				return nil, err
-			}
-
-			totalRewards = totalRewards.Add(nftRewards...)
 		}
 	}
+
+	logger.Info("DelegationRewards: Final result",
+		"delegator", req.DelegatorAddress,
+		"validator", req.ValidatorAddress,
+		"total_rewards", totalRewards,
+		"is_zero", totalRewards.IsZero())
 
 	// Return error if no delegations exist at all
 	if del == nil && totalRewards.IsZero() {
+		logger.Warn("DelegationRewards: No delegations found",
+			"delegator", req.DelegatorAddress,
+			"validator", req.ValidatorAddress)
 		return nil, types.ErrNoDelegationExists
 	}
 
