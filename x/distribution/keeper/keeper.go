@@ -124,10 +124,23 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 		return nil, types.ErrEmptyDelegationDistInfo
 	}
 
-	// **SINGLE** period increment for both native and NFT rewards
-	endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
+	// Only increment period if there are accumulated rewards that need to be locked in
+	// This prevents double period increments when called after epoch end
+	currentRewards, err := k.GetValidatorCurrentRewards(ctx, valAddr)
 	if err != nil {
 		return nil, err
+	}
+
+	var endingPeriod uint64
+	if !currentRewards.Rewards.IsZero() {
+		// There are accumulated rewards, increment period to lock them in
+		endingPeriod, err = k.IncrementValidatorPeriod(ctx, val)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// No accumulated rewards, use current period as ending period
+		endingPeriod = currentRewards.Period
 	}
 
 	// Get delegator starting info
