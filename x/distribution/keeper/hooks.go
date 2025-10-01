@@ -154,19 +154,9 @@ func (h Hooks) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddre
 
 // withdraw delegation rewards (which also increments period)
 func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
-	if err != nil {
-		return err
-	}
-
-	del, err := h.k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
-	if err != nil {
-		return err
-	}
-
 	// Always withdraw delegation rewards before modifying shares
 	// This will increment the period if there are accumulated rewards
-	if _, err := h.k.withdrawDelegationRewards(ctx, val, del); err != nil {
+	if _, err := h.k.withdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
 		return err
 	}
 
@@ -225,7 +215,7 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 		if err == nil && len(nftDelegations) > 0 {
 			// Withdraw NFT delegation rewards before modifying shares
 			// This will increment the period if there are accumulated rewards
-			if _, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
+			if _, err := h.k.withdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
 				// Log error but don't fail - we want to allow the delegation modification to proceed
 				h.k.Logger(ctx).Error("Failed to withdraw NFT delegation rewards before share modification", "error", err)
 			}
@@ -255,7 +245,7 @@ func (h Hooks) BeforeNFTDelegationRemoved(ctx context.Context, delAddr sdk.AccAd
 		if err == nil && !startingInfo.NftStake.IsZero() {
 			// Withdraw NFT delegation rewards before removal
 			// This ensures the delegator doesn't lose their earned NFT rewards
-			if _, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
+			if _, err := h.k.withdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
 				// Log error but don't fail the delegation removal
 				h.k.Logger(ctx).Error("Failed to withdraw NFT delegation rewards before removal", "error", err)
 			}
@@ -285,19 +275,21 @@ func (h Hooks) AfterValidatorBeginUnbonding(_ context.Context, _ sdk.ConsAddress
 func (h Hooks) BeforeDelegationRemoved(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
 	// Withdraw any accumulated rewards before removing the delegation
 	// This ensures the delegator doesn't lose their earned rewards
-	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
-	if err != nil {
-		return err
-	}
 
+	// Check if delegation exists before attempting withdrawal
 	del, err := h.k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
 	if err != nil {
 		// If delegation doesn't exist, nothing to withdraw
 		return nil
 	}
 
+	if del == nil {
+		// No delegation found, nothing to withdraw
+		return nil
+	}
+
 	// Withdraw delegation rewards before removal
-	if _, err := h.k.withdrawDelegationRewards(ctx, val, del); err != nil {
+	if _, err := h.k.withdrawDelegationRewards(ctx, delAddr, valAddr); err != nil {
 		// Log error but don't fail the delegation removal
 		h.k.Logger(ctx).Error("Failed to withdraw delegation rewards before removal", "error", err)
 	}

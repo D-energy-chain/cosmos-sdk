@@ -308,6 +308,9 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 	return rewards, nil
 }
 
+// DEPRECATED: This function has been replaced by the fixed version in keeper.go
+// Keeping it commented out for reference but it should not be used
+/*
 func (k Keeper) withdrawDelegationRewards(ctx context.Context, val stakingtypes.ValidatorI, del stakingtypes.DelegationI) (sdk.Coins, error) {
 	addrCodec := k.authKeeper.AddressCodec()
 	delAddr, err := addrCodec.StringToBytes(del.GetDelegatorAddr())
@@ -438,3 +441,4 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, val stakingtypes.
 
 	return finalRewards, nil
 }
+*/

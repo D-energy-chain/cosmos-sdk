@@ -104,7 +104,7 @@ func (k Keeper) SetWithdrawAddr(ctx context.Context, delegatorAddr, withdrawAddr
 }
 
 // withdraw rewards from a delegation - FIXED VERSION (prevents double period increment and outstanding reward deduction)
-func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
+func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
 	val, err := k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return nil, err
@@ -239,6 +239,11 @@ func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 	k.logDelegationRewardWithdrawal(ctx, delAddr, valAddr, totalRewards, "combined")
 
 	return totalRewards, nil
+}
+
+// WithdrawDelegationRewards - public API that calls the internal fixed version
+func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
+	return k.withdrawDelegationRewards(ctx, delAddr, valAddr)
 }
 
 // withdraw validator commission
