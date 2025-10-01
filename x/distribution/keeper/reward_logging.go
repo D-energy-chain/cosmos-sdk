@@ -237,20 +237,6 @@ func (k Keeper) logMultiValidatorDelegators(ctx context.Context) {
 	}
 }
 
-// logEpochHookSequence logs the exact sequence of epoch hook executions
-func (k Keeper) logEpochHookSequence(ctx context.Context, hookName string, sequenceOrder string, epochNumber int64, epochIdentifier string, action string) {
-	logger := k.Logger(ctx)
-
-	logger.Info("EPOCH HOOK EXECUTION",
-		"hook_name", hookName,
-		"sequence_order", sequenceOrder,
-		"epoch", epochNumber,
-		"epoch_identifier", epochIdentifier,
-		"action", action,
-		"timestamp", sdk.UnwrapSDKContext(ctx).BlockTime().Format(time.RFC3339),
-	)
-}
-
 // logPostDistributionValidation logs validation checks after reward distribution
 func (k Keeper) logPostDistributionValidation(ctx context.Context, epochNumber int64) {
 	logger := k.Logger(ctx)
