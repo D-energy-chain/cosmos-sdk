@@ -155,13 +155,29 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 	}
 
 	// calculate total weighted power from eligible validators
+	// IMPORTANT: We use a linear performance adjustment to avoid quadratic penalty effects.
+	// The formula is: weightedPower = power * (baseWeight + performanceWeight * commitRatio)
+	// where baseWeight + performanceWeight = 1.0
+	// This ensures validators are rewarded primarily by power, with performance as an adjustment.
 	var totalWeightedPower math.LegacyDec = math.LegacyZeroDec()
 	eligibleValidators := make([]types.ValidatorEpochPerformance, 0)
+
+	// Performance weighting: 70% based on power, 30% based on performance
+	// This avoids the quadratic penalty while still rewarding good performance
+	baseWeight := math.LegacyNewDecWithPrec(70, 2)        // 0.70
+	performanceWeight := math.LegacyNewDecWithPrec(30, 2) // 0.30
 
 	for _, performance := range performances {
 		// only include validators that meet minimum commit ratio
 		if performance.CommitRatio.GTE(params.MinCommitRatio) {
-			weightedPower := performance.AveragePower.Mul(performance.CommitRatio)
+			// Calculate weighted power with performance adjustment
+			// Formula: weightedPower = power * (0.7 + 0.3 * commitRatio)
+			// This means:
+			//   - 100% commit ratio → 1.0x multiplier (full rewards)
+			//   -  50% commit ratio → 0.85x multiplier (moderate penalty)
+			//   -   0% commit ratio → 0.7x multiplier (but filtered by MinCommitRatio)
+			performanceFactor := baseWeight.Add(performanceWeight.Mul(performance.CommitRatio))
+			weightedPower := performance.AveragePower.Mul(performanceFactor)
 			totalWeightedPower = totalWeightedPower.Add(weightedPower)
 			eligibleValidators = append(eligibleValidators, performance)
 		}
@@ -197,9 +213,24 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		}
 
 		// calculate reward based on performance-weighted power
-		weightedPower := performance.AveragePower.Mul(performance.CommitRatio)
+		// Use the same performance adjustment formula as above
+		performanceFactor := baseWeight.Add(performanceWeight.Mul(performance.CommitRatio))
+		weightedPower := performance.AveragePower.Mul(performanceFactor)
 		powerFraction := weightedPower.Quo(totalWeightedPower)
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
+
+		// Log validator performance metrics and reward calculation
+		k.Logger(ctx).Info("Validator epoch performance and reward calculation",
+			"validator", performance.ValidatorAddress,
+			"average_power", performance.AveragePower.String(),
+			"commit_votes", performance.CommitVotes,
+			"total_votes", performance.TotalVotes,
+			"commit_ratio", performance.CommitRatio.String(),
+			"performance_factor", performanceFactor.String(),
+			"weighted_power", weightedPower.String(),
+			"power_fraction", powerFraction.String(),
+			"reward", reward.String(),
+		)
 
 		// Log reward pool calculations for this validator
 		k.logRewardPoolCalculations(ctx, validator, reward)
