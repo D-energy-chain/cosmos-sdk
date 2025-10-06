@@ -32,8 +32,9 @@ const (
 
 	// NFT delegation constants
 	// 1000 NFTs should correspond to the power of 10^18 tokens
-	// Each NFT counts as 10^15 token-equivalent
-	NftTokenMultiplier = 1_000_000_000_000_000 // 1e15
+	// Each NFT counts as 10^12 token-equivalent
+	// Meaning that 1M NFTs should correspond to the power of 10^18 tokens
+	NftTokenMultiplier = 1_000_000_000_000 // 1e12
 )
 
 var (
