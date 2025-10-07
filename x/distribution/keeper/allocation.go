@@ -220,7 +220,7 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
 		// Log validator performance metrics and reward calculation
-		k.Logger(ctx).Info("Validator epoch performance and reward calculation",
+		k.Logger(ctx).Debug("Validator epoch performance and reward calculation",
 			"validator", performance.ValidatorAddress,
 			"average_power", performance.AveragePower.String(),
 			"commit_votes", performance.CommitVotes,
