@@ -112,9 +112,31 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 			return 0, err
 		}
 
+		// LOG: CRITICAL POINT - RE-SPLITTING COMBINED REWARDS
+		k.Logger(ctx).Info("PERIOD INCREMENT - RE-SPLITTING REWARDS",
+			"validator", val.GetOperator(),
+			"===== INPUT (COMBINED DELEGATOR REWARDS) =====", "",
+			"current_rewards_total", rewards.Rewards.String(),
+			"===== SHARES INFO =====", "",
+			"native_shares", nativeShares.String(),
+			"nft_shares", nftShares.String(),
+			"total_shares", totalShares.String(),
+			"===== SPLIT RATIOS =====", "",
+			"native_staking_ratio", nativeStakingRatio.String(),
+			"nft_staking_ratio", nftStakingRatio.String(),
+		)
+
 		// Split the current rewards according to staking ratios
 		nftRewards := rewards.Rewards.MulDecTruncate(nftStakingRatio)
 		nativeRewards := rewards.Rewards.MulDecTruncate(nativeStakingRatio)
+
+		// LOG: POOL AMOUNTS AFTER RE-SPLIT
+		k.Logger(ctx).Info(" RE-SPLIT POOL AMOUNTS",
+			"validator", val.GetOperator(),
+			"native_pool_amount", nativeRewards.String(),
+			"nft_pool_amount", nftRewards.String(),
+			"⚠️  ISSUE", "These amounts were calculated by re-splitting combined rewards, not from original allocation",
+		)
 
 		// Calculate reward ratios per unit of delegation
 		// Native ratio: native rewards / native shares
@@ -130,6 +152,13 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 		} else {
 			nftCurrent = sdk.DecCoins{}
 		}
+
+		// LOG: PER-SHARE RATIOS
+		k.Logger(ctx).Info(" PER-SHARE REWARD RATIOS",
+			"validator", val.GetOperator(),
+			"native_ratio_per_share", current.String(),
+			"nft_ratio_per_share", nftCurrent.String(),
+		)
 	}
 
 	// fetch historical rewards for last period
@@ -150,6 +179,23 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	// set new historical rewards with separate cumulative ratios and reference count of 1
 	newNativeCumRatio := cumRewardRatio.Add(current...)
 	newNftCumRatio := nftCumRewardRatio.Add(nftCurrent...)
+
+	// LOG: FINAL CUMULATIVE RATIOS
+	k.Logger(ctx).Info(" CUMULATIVE REWARD RATIOS UPDATED",
+		"validator", val.GetOperator(),
+		"period", rewards.Period,
+		"===== PREVIOUS CUMULATIVE RATIOS =====", "",
+		"prev_native_cumulative_ratio", cumRewardRatio.String(),
+		"prev_nft_cumulative_ratio", nftCumRewardRatio.String(),
+		"===== ADDED THIS PERIOD =====", "",
+		"native_ratio_increment", current.String(),
+		"nft_ratio_increment", nftCurrent.String(),
+		"===== NEW CUMULATIVE RATIOS =====", "",
+		"new_native_cumulative_ratio", newNativeCumRatio.String(),
+		"new_nft_cumulative_ratio", newNftCumRatio.String(),
+		"===== WITHDRAWABLE CALCULATION =====", "",
+		"note", "Delegators multiply their stake by (new_ratio - starting_ratio) to get rewards",
+	)
 
 	err = k.SetValidatorHistoricalRewards(ctx, valBz, rewards.Period, types.NewValidatorHistoricalRewardsWithNFT(newNativeCumRatio, newNftCumRatio, 1))
 	if err != nil {
