@@ -107,14 +107,6 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	// Log post-distribution validation
 	k.logPostDistributionValidation(ctx, sdk.UnwrapSDKContext(ctx).BlockHeight())
 
-	// VALIDATION: Check module balance vs outstanding rewards
-	k.LogModuleBalance(ctx)
-
-	// VALIDATION: Check for reward inconsistencies
-	if err := k.ValidateRewardConsistency(ctx); err != nil {
-		k.Logger(ctx).Error("Reward consistency validation failed", "error", err)
-	}
-
 	return nil
 }
 
@@ -277,14 +269,6 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 	// Log post-distribution validation
 	k.logPostDistributionValidation(ctx, epochNumber)
 
-	// VALIDATION: Check module balance vs outstanding rewards
-	k.LogModuleBalance(ctx)
-
-	// VALIDATION: Check for reward inconsistencies
-	if err := k.ValidateRewardConsistency(ctx); err != nil {
-		k.Logger(ctx).Error("Reward consistency validation failed", "error", err)
-	}
-
 	return nil
 }
 
@@ -395,32 +379,7 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		return err
 	}
 
-	// LOG POOL BALANCES BEFORE UPDATE
-	k.Logger(ctx).Info("[ALLOCATION] POOL ALLOCATION BREAKDOWN",
-		"validator", val.GetOperator(),
-		"===== INCOMING REWARDS =====", "",
-		"total_rewards_this_round", tokens.String(),
-		"===== COMMISSION SPLIT =====", "",
-		"nft_commission", nftCommission.String(),
-		"native_commission", nativeCommission.String(),
-		"total_commission", totalCommission.String(),
-		"===== DELEGATOR POOL SPLIT =====", "",
-		"nft_pool_allocation", nftShared.String(),
-		"native_pool_allocation", nativeShared.String(),
-		"total_delegator_pool", totalShared.String(),
-		"===== CUMULATIVE BALANCES =====", "",
-		"previous_current_rewards", currentRewards.Rewards.String(),
-	)
-
 	currentRewards.Rewards = currentRewards.Rewards.Add(totalShared...)
-
-	// LOG POOL BALANCES AFTER UPDATE
-	k.Logger(ctx).Info("[ALLOCATION] UPDATED POOL BALANCES",
-		"validator", val.GetOperator(),
-		"new_current_rewards_total", currentRewards.Rewards.String(),
-		"⚠️  NOTE", "This combined value will be split again during period increment",
-	)
-
 	err = k.SetValidatorCurrentRewards(ctx, valBz, currentRewards)
 	if err != nil {
 		return err
