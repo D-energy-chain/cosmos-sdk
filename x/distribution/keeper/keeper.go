@@ -160,11 +160,12 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 	}
 
 	var totalRewardsRaw sdk.DecCoins
+	var nativeRewardsRaw, nftRewardsRaw sdk.DecCoins
 
 	// Calculate native delegation rewards if they exist
 	del, err := k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
 	if err == nil && del != nil && !nativeStake.IsZero() {
-		nativeRewardsRaw, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nativeStake)
+		nativeRewardsRaw, err = k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nativeStake)
 		if err != nil {
 			return nil, err
 		}
@@ -173,12 +174,30 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 
 	// Calculate NFT delegation rewards if they exist
 	if !nftStake.IsZero() {
-		nftRewardsRaw, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+		nftRewardsRaw, err = k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
 		if err != nil {
 			return nil, err
 		}
 		totalRewardsRaw = totalRewardsRaw.Add(nftRewardsRaw...)
 	}
+
+	// Log detailed calculation breakdown
+	k.Logger(ctx).Info("💰 WITHDRAWAL CALCULATION",
+		"delegator", delAddr.String(),
+		"validator", val.GetOperator(),
+		"===== PERIOD INFO =====", "",
+		"starting_period", startingPeriod,
+		"ending_period", endingPeriod,
+		"===== STAKES =====", "",
+		"native_stake", nativeStake.String(),
+		"nft_stake", nftStake.String(),
+		"===== CALCULATED REWARDS (BEFORE INTERSECTION) =====", "",
+		"native_rewards_raw", nativeRewardsRaw.String(),
+		"nft_rewards_raw", nftRewardsRaw.String(),
+		"total_rewards_raw", totalRewardsRaw.String(),
+		"===== VALIDATOR STATE =====", "",
+		"outstanding_rewards", outstanding.String(),
+	)
 
 	// Apply intersection ONCE to total rewards
 	totalRewardsDecCoins := totalRewardsRaw.Intersect(outstanding)
@@ -228,10 +247,41 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 		return nil, err
 	}
 
+	// Log BEFORE transfer
+	k.Logger(ctx).Info("💰 WITHDRAWAL - BEFORE TRANSFER",
+		"delegator", delAddr.String(),
+		"validator", val.GetOperator(),
+		"withdraw_address", withdrawAddr.String(),
+		"amount_to_transfer", totalRewards.String(),
+		"remainder_to_community", remainder.String(),
+	)
+
 	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, totalRewards)
 	if err != nil {
+		k.Logger(ctx).Error("❌ WITHDRAWAL FAILED - Transfer error",
+			"delegator", delAddr.String(),
+			"validator", val.GetOperator(),
+			"error", err.Error(),
+		)
 		return nil, err
 	}
+
+	// Log AFTER successful transfer
+	k.Logger(ctx).Info("✅ WITHDRAWAL SUCCESS",
+		"delegator", delAddr.String(),
+		"validator", val.GetOperator(),
+		"===== BREAKDOWN =====", "",
+		"native_rewards", nativeRewardsRaw.String(),
+		"nft_rewards", nftRewardsRaw.String(),
+		"total_calculated", totalRewardsRaw.String(),
+		"after_intersection", totalRewardsDecCoins.String(),
+		"===== FINAL TRANSFER =====", "",
+		"transferred_to", withdrawAddr.String(),
+		"amount_transferred", totalRewards.String(),
+		"remainder_to_community", remainder.String(),
+		"===== VALIDATOR STATE UPDATE =====", "",
+		"new_outstanding_rewards", outstanding.String(),
+	)
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx.EventManager().EmitEvent(

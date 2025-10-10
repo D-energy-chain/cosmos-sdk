@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"cosmossdk.io/store/prefix"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -235,40 +236,47 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 	}
 
 	var totalRewards sdk.DecCoins
+	var nativeRewards, nftRewards sdk.DecCoins
+
+	// CRITICAL FIX: Call IncrementValidatorPeriod only ONCE
+	// Calling it multiple times clears current rewards each time, losing rewards!
+	endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get starting info for logging
+	var startingPeriod uint64
+	var nativeStake, nftStake math.LegacyDec
+	startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAdr, delAdr)
+	if err == nil {
+		startingPeriod = startingInfo.PreviousPeriod
+		nativeStake = startingInfo.Stake
+		nftStake = startingInfo.NftStake
+	}
 
 	// Calculate native delegation rewards
 	del, err := k.stakingKeeper.Delegation(ctx, delAdr, valAdr)
 	if err == nil && del != nil {
-		endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
-		if err != nil {
-			return nil, err
-		}
-
-		nativeRewards, err := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
+		nativeRewards, err = k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
 		if err != nil {
 			return nil, err
 		}
 		totalRewards = totalRewards.Add(nativeRewards...)
 	}
 
-	// Calculate NFT delegation rewards
+	// Calculate NFT delegation rewards using the SAME ending period
 	hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAdr, delAdr)
 
 	if err == nil && hasInfo {
 		// Get delegator starting info to get the starting period and NFT stake
 		startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAdr, delAdr)
 		if err == nil && !startingInfo.NftStake.IsZero() {
-			// End current period and calculate NFT rewards
-			endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
-			if err != nil {
-				return nil, err
-			}
-
 			startingPeriod := startingInfo.PreviousPeriod
 			nftStake := startingInfo.NftStake
 
-			// Calculate NFT delegation rewards
-			nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+			// Calculate NFT delegation rewards using the same ending period as native
+			nftRewards, err = k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
 			if err != nil {
 				return nil, err
 			}
@@ -276,6 +284,24 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 			totalRewards = totalRewards.Add(nftRewards...)
 		}
 	}
+
+	// Log query calculation for comparison with withdrawal
+	k.Logger(ctx).Info("🔍 QUERY CALCULATION",
+		"delegator", req.DelegatorAddress,
+		"validator", req.ValidatorAddress,
+		"===== PERIOD INFO =====", "",
+		"starting_period", startingPeriod,
+		"ending_period", endingPeriod,
+		"===== STAKES =====", "",
+		"native_stake", nativeStake.String(),
+		"nft_stake", nftStake.String(),
+		"===== CALCULATED REWARDS =====", "",
+		"native_rewards", nativeRewards.String(),
+		"nft_rewards", nftRewards.String(),
+		"total_rewards", totalRewards.String(),
+		"===== NOTE =====", "",
+		"info", "This should match withdrawal calculation",
+	)
 
 	// Return error if no delegations exist at all
 	if del == nil && totalRewards.IsZero() {
@@ -298,13 +324,15 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 	total := sdk.DecCoins{}
 	var delRewards []types.DelegationDelegatorReward
 	validatorRewardsMap := make(map[string]sdk.DecCoins) // Track rewards per validator
+	validatorPeriodMap := make(map[string]uint64)        // Track ending periods to avoid double increment
 
 	delAdr, err := k.authKeeper.AddressCodec().StringToBytes(req.DelegatorAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	// First, iterate through native delegations
+	// CRITICAL FIX: First, increment periods for all relevant validators
+	// This prevents double-incrementing when a delegator has both native and NFT delegations
 	err = k.stakingKeeper.IterateDelegations(
 		ctx, delAdr,
 		func(_ int64, del stakingtypes.DelegationI) (stop bool) {
@@ -318,10 +346,70 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 				panic(err)
 			}
 
-			endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
+			// Only increment if we haven't already for this validator
+			if _, exists := validatorPeriodMap[del.GetValidatorAddr()]; !exists {
+				endingPeriod, err := k.IncrementValidatorPeriod(ctx, val)
+				if err != nil {
+					panic(err)
+				}
+				validatorPeriodMap[del.GetValidatorAddr()] = endingPeriod
+			}
+
+			return false
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Also increment for validators with NFT delegations (but not native)
+	err = k.stakingKeeper.IterateValidators(ctx, func(_ int64, validator stakingtypes.ValidatorI) (stop bool) {
+		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
+		if err != nil {
+			return false
+		}
+
+		// Check if delegator has NFT stake
+		hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAddr, delAdr)
+		if err != nil || !hasInfo {
+			return false
+		}
+
+		startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAddr, delAdr)
+		if err != nil || startingInfo.NftStake.IsZero() {
+			return false
+		}
+
+		// Only increment if we haven't already
+		if _, exists := validatorPeriodMap[validator.GetOperator()]; !exists {
+			endingPeriod, err := k.IncrementValidatorPeriod(ctx, validator)
+			if err != nil {
+				return false
+			}
+			validatorPeriodMap[validator.GetOperator()] = endingPeriod
+		}
+
+		return false
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Now calculate native delegation rewards using the stored ending periods
+	err = k.stakingKeeper.IterateDelegations(
+		ctx, delAdr,
+		func(_ int64, del stakingtypes.DelegationI) (stop bool) {
+			valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(del.GetValidatorAddr())
 			if err != nil {
 				panic(err)
 			}
+
+			val, err := k.stakingKeeper.Validator(ctx, valAddr)
+			if err != nil {
+				panic(err)
+			}
+
+			endingPeriod := validatorPeriodMap[del.GetValidatorAddr()]
 
 			delReward, err := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
 			if err != nil {
@@ -337,8 +425,7 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 		return nil, err
 	}
 
-	// Then, check all validators for NFT delegations
-	// We need to iterate through all validators to find NFT delegations
+	// Then, check all validators for NFT delegations using the stored ending periods
 	err = k.stakingKeeper.IterateValidators(ctx, func(_ int64, validator stakingtypes.ValidatorI) (stop bool) {
 		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 		if err != nil {
@@ -351,12 +438,6 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 			return false // Continue with other validators
 		}
 
-		// End current period and calculate NFT rewards
-		endingPeriod, err := k.IncrementValidatorPeriod(ctx, validator)
-		if err != nil {
-			return false // Continue with other validators
-		}
-
 		// Get delegator starting info to get the starting period and NFT stake
 		startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAddr, delAdr)
 		if err != nil || startingInfo.NftStake.IsZero() {
@@ -365,6 +446,9 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 
 		startingPeriod := startingInfo.PreviousPeriod
 		nftStake := startingInfo.NftStake
+
+		// Use the pre-calculated ending period for this validator
+		endingPeriod := validatorPeriodMap[validator.GetOperator()]
 
 		// Calculate NFT delegation rewards
 		nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, validator, startingPeriod, endingPeriod, nftStake)
