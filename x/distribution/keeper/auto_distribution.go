@@ -227,7 +227,7 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	// Apply intersection to handle rounding
 	totalRewardsDecCoins := totalRewardsRaw.Intersect(outstanding)
 	if !totalRewardsDecCoins.Equal(totalRewardsRaw) {
-		k.Logger(ctx).Debug("Rounding adjustment during automatic distribution",
+		k.Logger(ctx).Info("Rounding adjustment during automatic distribution",
 			"delegator", delAddr.String(),
 			"validator", val.GetOperator(),
 			"calculated", totalRewardsRaw.String(),

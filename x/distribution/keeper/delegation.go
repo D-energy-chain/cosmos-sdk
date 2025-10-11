@@ -60,6 +60,9 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	k.Logger(ctx).Info("initializeDelegation context",
+		"block_height", sdkCtx.BlockHeight(),
+	)
 
 	// period has already been incremented - we want to store the period ended by this delegation action
 	valCurrentRewards, err := k.GetValidatorCurrentRewards(ctx, val)
@@ -130,6 +133,12 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 	}
 
 	startingInfo := types.NewDelegatorStartingInfoWithNFT(previousPeriod, stake, nftStake, uint64(sdkCtx.BlockHeight()))
+	k.Logger(ctx).Info("Setting DelegatorStartingInfo",
+		"delegator", del.String(),
+		"validator", validator.GetOperator(),
+		"previous_period", previousPeriod,
+		"height_set", startingInfo.Height,
+	)
 	return k.SetDelegatorStartingInfo(ctx, val, del, startingInfo)
 }
 
@@ -306,8 +315,8 @@ func (k Keeper) calculateDelegationRewardsBetweenWithProRating(
 
 		factor := k.calculateProRatingFactor(ctx, delegationHeight, startRec.Height, endRec.Height)
 		prorated := base.MulDecTruncate(factor)
-		// Optional: log per-period details for debugging/auditing
-		k.Logger(ctx).Debug("📊 Pro-rating calculation",
+		// Optional: log per-period details for auditing
+		k.Logger(ctx).Info("📊 Pro-rating calculation",
 			"delegation_height", delegationHeight,
 			"period", period,
 			"period_start_height", startRec.Height,
@@ -357,8 +366,8 @@ func (k Keeper) calculateNFTDelegationRewardsBetweenWithProRating(
 
 		factor := k.calculateProRatingFactor(ctx, delegationHeight, startRec.Height, endRec.Height)
 		prorated := base.MulDecTruncate(factor)
-		// Optional: log per-period details for debugging/auditing (NFT)
-		k.Logger(ctx).Debug("📊 Pro-rating calculation (NFT)",
+		// Optional: log per-period details for auditing (NFT)
+		k.Logger(ctx).Info("📊 Pro-rating calculation (NFT)",
 			"delegation_height", delegationHeight,
 			"period", period,
 			"period_start_height", startRec.Height,
