@@ -205,6 +205,7 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 		"native_rewards", nativeRewards.String(),
 		"nft_rewards", nftRewards.String(),
 		"total_rewards_raw", totalRewardsRaw.String(),
+		"delegation_height", startingInfo.Height,
 	)
 
 	// If no rewards, return early without state changes

@@ -306,6 +306,16 @@ func (k Keeper) calculateDelegationRewardsBetweenWithProRating(
 
 		factor := k.calculateProRatingFactor(ctx, delegationHeight, startRec.Height, endRec.Height)
 		prorated := base.MulDecTruncate(factor)
+		// Optional: log per-period details for debugging/auditing
+		k.Logger(ctx).Debug("📊 Pro-rating calculation",
+			"delegation_height", delegationHeight,
+			"period", period,
+			"period_start_height", startRec.Height,
+			"period_end_height", endRec.Height,
+			"pro_rate_factor", factor.String(),
+			"base_rewards", base.String(),
+			"pro_rated_rewards", prorated.String(),
+		)
 		total = total.Add(prorated...)
 	}
 
@@ -347,6 +357,16 @@ func (k Keeper) calculateNFTDelegationRewardsBetweenWithProRating(
 
 		factor := k.calculateProRatingFactor(ctx, delegationHeight, startRec.Height, endRec.Height)
 		prorated := base.MulDecTruncate(factor)
+		// Optional: log per-period details for debugging/auditing (NFT)
+		k.Logger(ctx).Debug("📊 Pro-rating calculation (NFT)",
+			"delegation_height", delegationHeight,
+			"period", period,
+			"period_start_height", startRec.Height,
+			"period_end_height", endRec.Height,
+			"pro_rate_factor", factor.String(),
+			"base_rewards", base.String(),
+			"pro_rated_rewards", prorated.String(),
+		)
 		total = total.Add(prorated...)
 	}
 
