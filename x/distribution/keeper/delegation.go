@@ -398,15 +398,15 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 			func(height uint64, event types.ValidatorSlashEvent) (stop bool) {
 				endingPeriod := event.ValidatorPeriod
 				if endingPeriod > startingPeriod {
-					// Calculate native delegation rewards
-					delRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, stake)
+					// Calculate native delegation rewards with height-based pro-rating
+					delRewards, err := k.calculateDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, stake, startingInfo.Height)
 					if err != nil {
 						panic(err)
 					}
 					rewards = rewards.Add(delRewards...)
 
-					// Calculate NFT delegation rewards
-					nftDelRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+					// Calculate NFT delegation rewards with height-based pro-rating
+					nftDelRewards, err := k.calculateNFTDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, nftStake, startingInfo.Height)
 					if err != nil {
 						panic(err)
 					}
@@ -461,15 +461,15 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 		}
 	}
 
-	// calculate rewards for final period - both native and NFT
-	delRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, stake)
+	// calculate rewards for final period - both native and NFT with pro-rating
+	delRewards, err := k.calculateDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, stake, startingInfo.Height)
 	if err != nil {
 		return sdk.DecCoins{}, err
 	}
 	rewards = rewards.Add(delRewards...)
 
-	// calculate NFT rewards for final period
-	nftDelRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+	// calculate NFT rewards for final period with pro-rating
+	nftDelRewards, err := k.calculateNFTDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, nftStake, startingInfo.Height)
 	if err != nil {
 		return sdk.DecCoins{}, err
 	}
