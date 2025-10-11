@@ -18,8 +18,8 @@ func (k Keeper) initializeValidator(ctx context.Context, val stakingtypes.Valida
 		return err
 	}
 	// set initial historical rewards (period 0) with reference count of 1
-	// Initialize both native and NFT cumulative reward ratios to empty
-	err = k.SetValidatorHistoricalRewards(ctx, valBz, 0, types.NewValidatorHistoricalRewardsWithNFT(sdk.DecCoins{}, sdk.DecCoins{}, 1))
+	// Initialize both native and NFT cumulative reward ratios to empty and set height
+	err = k.SetValidatorHistoricalRewards(ctx, valBz, 0, types.NewValidatorHistoricalRewardsWithHeight(sdk.DecCoins{}, sdk.DecCoins{}, 1, uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())))
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	newNativeCumRatio := cumRewardRatio.Add(current...)
 	newNftCumRatio := nftCumRewardRatio.Add(nftCurrent...)
 
-	err = k.SetValidatorHistoricalRewards(ctx, valBz, rewards.Period, types.NewValidatorHistoricalRewardsWithNFT(newNativeCumRatio, newNftCumRatio, 1))
+	err = k.SetValidatorHistoricalRewards(ctx, valBz, rewards.Period, types.NewValidatorHistoricalRewardsWithHeight(newNativeCumRatio, newNftCumRatio, 1, uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())))
 	if err != nil {
 		return 0, err
 	}

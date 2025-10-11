@@ -115,6 +115,8 @@ message ValidatorHistoricalRewards {
     (amino.dont_omitempty)   = true
   ];
   uint32 reference_count = 2;
+  // height is the block height when this historical reward period was created
+  uint64 height = 4;
 }
 
 // ValidatorCurrentRewards represents current rewards and current

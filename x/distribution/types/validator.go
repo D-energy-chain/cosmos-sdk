@@ -24,6 +24,16 @@ func NewValidatorHistoricalRewardsWithNFT(cumulativeRewardRatio, nftCumulativeRe
 	}
 }
 
+// create a new ValidatorHistoricalRewards with height metadata
+func NewValidatorHistoricalRewardsWithHeight(cumulativeRewardRatio, nftCumulativeRewardRatio sdk.DecCoins, referenceCount uint32, height uint64) ValidatorHistoricalRewards {
+	return ValidatorHistoricalRewards{
+		CumulativeRewardRatio:    cumulativeRewardRatio,
+		NftCumulativeRewardRatio: nftCumulativeRewardRatio,
+		ReferenceCount:           referenceCount,
+		Height:                   height,
+	}
+}
+
 // create a new ValidatorCurrentRewards
 func NewValidatorCurrentRewards(rewards sdk.DecCoins, period uint64) ValidatorCurrentRewards {
 	return ValidatorCurrentRewards{
