@@ -450,8 +450,8 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 		// Use the pre-calculated ending period for this validator
 		endingPeriod := validatorPeriodMap[validator.GetOperator()]
 
-		// Calculate NFT delegation rewards
-		nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, validator, startingPeriod, endingPeriod, nftStake)
+		// Calculate NFT delegation rewards with height-based pro-rating
+		nftRewards, err := k.calculateNFTDelegationRewardsBetweenWithProRating(ctx, validator, startingPeriod, endingPeriod, nftStake, startingInfo.Height)
 		if err != nil {
 			return false // Continue with other validators
 		}
