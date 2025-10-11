@@ -135,8 +135,11 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 		return nil, err
 	}
 
-	// Use current period as ending period (periods already incremented at epoch end)
-	endingPeriod := currentRewards.Period
+	// CRITICAL: Use previous period as ending period because:
+	// - IncrementAllValidatorPeriods just ran and stored historical rewards at the OLD period
+	// - currentRewards.Period is now the NEW period with no historical rewards yet
+	// - We need to calculate rewards from delegator's starting period to the last COMPLETED period
+	endingPeriod := currentRewards.Period - 1
 
 	// Get delegator starting info
 	startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAddr, delAddr)

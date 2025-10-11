@@ -157,15 +157,24 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	}
 
 	// set current rewards, incrementing period by 1
-	err = k.SetValidatorCurrentRewards(ctx, valBz, types.NewValidatorCurrentRewards(sdk.DecCoins{}, rewards.Period+1))
+	oldPeriod := rewards.Period
+	newPeriod := rewards.Period + 1
+	err = k.SetValidatorCurrentRewards(ctx, valBz, types.NewValidatorCurrentRewards(sdk.DecCoins{}, newPeriod))
 	if err != nil {
 		return 0, err
 	}
 
-	// Log period increment
-	k.logPeriodIncrement(ctx, sdk.ValAddress(valBz), rewards.Period-1, rewards.Period, "epoch_end")
+	// Log period increment with CORRECT values
+	k.logPeriodIncrement(ctx, sdk.ValAddress(valBz), oldPeriod, newPeriod, "epoch_end")
+	
+	k.Logger(ctx).Info("📊 Stored historical rewards",
+		"validator", val.GetOperator(),
+		"period", oldPeriod,
+		"native_cum_ratio", newNativeCumRatio.String(),
+		"nft_cum_ratio", newNftCumRatio.String(),
+	)
 
-	return rewards.Period, nil
+	return oldPeriod, nil
 }
 
 // IncrementAllValidatorPeriods increments periods for all validators
