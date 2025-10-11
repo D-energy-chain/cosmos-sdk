@@ -165,8 +165,9 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	var totalRewardsRaw sdk.DecCoins = sdk.NewDecCoins()
 
 	// Calculate native delegation rewards if they exist
+	var nativeRewards sdk.DecCoins
 	if !nativeStake.IsZero() {
-		nativeRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nativeStake)
+		nativeRewards, err = k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nativeStake)
 		if err != nil {
 			k.Logger(ctx).Error("❌ Failed to calculate native rewards",
 				"delegator", delAddr.String(),
@@ -181,8 +182,9 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	}
 
 	// Calculate NFT delegation rewards if they exist
+	var nftRewards sdk.DecCoins
 	if !nftStake.IsZero() {
-		nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+		nftRewards, err = k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
 		if err != nil {
 			k.Logger(ctx).Error("❌ Failed to calculate NFT rewards",
 				"delegator", delAddr.String(),
@@ -196,10 +198,12 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 		totalRewardsRaw = totalRewardsRaw.Add(nftRewards...)
 	}
 
-	// Debug log calculated rewards
+	// Debug log calculated rewards with breakdown
 	k.Logger(ctx).Info("💰 Calculated rewards",
 		"delegator", delAddr.String(),
 		"validator", val.GetOperator(),
+		"native_rewards", nativeRewards.String(),
+		"nft_rewards", nftRewards.String(),
 		"total_rewards_raw", totalRewardsRaw.String(),
 	)
 
