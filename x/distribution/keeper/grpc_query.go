@@ -275,8 +275,8 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 			startingPeriod := startingInfo.PreviousPeriod
 			nftStake := startingInfo.NftStake
 
-			// Calculate NFT delegation rewards using the same ending period as native
-			nftRewards, err = k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
+			// Calculate NFT delegation rewards using the same ending period as native, with pro-rating
+			nftRewards, err = k.calculateNFTDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, nftStake, startingInfo.Height)
 			if err != nil {
 				return nil, err
 			}

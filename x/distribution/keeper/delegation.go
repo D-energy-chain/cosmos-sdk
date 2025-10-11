@@ -39,7 +39,7 @@ func (k Keeper) resetDelegatorStartingInfoToPeriod(ctx context.Context, val sdk.
 
 	// Set starting info with the specified period
 	startingInfo := types.NewDelegatorStartingInfoWithNFT(period, stake, nftStake, uint64(sdkCtx.BlockHeight()))
-	
+
 	k.Logger(ctx).Debug("Reset delegator starting info",
 		"delegator", del.String(),
 		"validator", validator.GetOperator(),
@@ -47,7 +47,7 @@ func (k Keeper) resetDelegatorStartingInfoToPeriod(ctx context.Context, val sdk.
 		"native_stake", stake.String(),
 		"nft_stake", nftStake.String(),
 	)
-	
+
 	return k.SetDelegatorStartingInfo(ctx, val, del, startingInfo)
 }
 
@@ -189,8 +189,20 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 		panic("negative rewards should not be possible")
 	}
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
-	rewards := difference.MulDecTruncate(stake)
-	return rewards, nil
+	baseRewards := difference.MulDecTruncate(stake)
+
+	// Pro-rate using heights captured at historical periods
+	// The period N represents rewards accumulated up to period N, and its Height
+	// corresponds to the block height when period N was created.
+	proRateFactor := k.calculateProRatingFactor(
+		ctx,
+		0, // placeholder; real delegation height applied in multi-period path
+		starting.Height,
+		ending.Height,
+	)
+	_ = proRateFactor // For now, base function remains unchanged; multi-period variant will use factor
+
+	return baseRewards, nil
 }
 
 // calculate the rewards accrued by an NFT delegation between two periods
@@ -250,9 +262,95 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 	}
 
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
-	rewards := difference.MulDecTruncate(nftStake)
+	baseRewards := difference.MulDecTruncate(nftStake)
 
-	return rewards, nil
+	// See native path; factor will be applied in multi-period variant
+	_ = k.calculateProRatingFactor
+
+	return baseRewards, nil
+}
+
+// calculateDelegationRewardsBetweenWithProRating calculates rewards across periods
+// and applies height-based pro-rating per period using the delegator's creation height.
+func (k Keeper) calculateDelegationRewardsBetweenWithProRating(
+	ctx context.Context,
+	val stakingtypes.ValidatorI,
+	startingPeriod uint64,
+	endingPeriod uint64,
+	stake math.LegacyDec,
+	delegationHeight uint64,
+) (sdk.DecCoins, error) {
+	if startingPeriod > endingPeriod {
+		panic("startingPeriod cannot be greater than endingPeriod")
+	}
+
+	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
+	if err != nil {
+		return sdk.DecCoins{}, err
+	}
+
+	total := sdk.NewDecCoins()
+
+	for period := startingPeriod; period < endingPeriod; period++ {
+		startRec, err := k.GetValidatorHistoricalRewards(ctx, valBz, period)
+		if err != nil {
+			return sdk.DecCoins{}, err
+		}
+		endRec, err := k.GetValidatorHistoricalRewards(ctx, valBz, period+1)
+		if err != nil {
+			return sdk.DecCoins{}, err
+		}
+
+		diff := endRec.CumulativeRewardRatio.Sub(startRec.CumulativeRewardRatio)
+		base := diff.MulDecTruncate(stake)
+
+		factor := k.calculateProRatingFactor(ctx, delegationHeight, startRec.Height, endRec.Height)
+		prorated := base.MulDecTruncate(factor)
+		total = total.Add(prorated...)
+	}
+
+	return total, nil
+}
+
+// calculateNFTDelegationRewardsBetweenWithProRating applies the same logic for NFT stake.
+func (k Keeper) calculateNFTDelegationRewardsBetweenWithProRating(
+	ctx context.Context,
+	val stakingtypes.ValidatorI,
+	startingPeriod uint64,
+	endingPeriod uint64,
+	nftStake math.LegacyDec,
+	delegationHeight uint64,
+) (sdk.DecCoins, error) {
+	if startingPeriod > endingPeriod {
+		panic("startingPeriod cannot be greater than endingPeriod")
+	}
+
+	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
+	if err != nil {
+		return sdk.DecCoins{}, err
+	}
+
+	total := sdk.NewDecCoins()
+
+	for period := startingPeriod; period < endingPeriod; period++ {
+		startRec, err := k.GetValidatorHistoricalRewards(ctx, valBz, period)
+		if err != nil {
+			return sdk.DecCoins{}, err
+		}
+		endRec, err := k.GetValidatorHistoricalRewards(ctx, valBz, period+1)
+		if err != nil {
+			return sdk.DecCoins{}, err
+		}
+
+		diff := endRec.NftCumulativeRewardRatio.Sub(startRec.NftCumulativeRewardRatio)
+		base := diff.MulDecTruncate(nftStake)
+
+		factor := k.calculateProRatingFactor(ctx, delegationHeight, startRec.Height, endRec.Height)
+		prorated := base.MulDecTruncate(factor)
+		total = total.Add(prorated...)
+	}
+
+	return total, nil
 }
 
 // calculate the total rewards accrued by a delegation
