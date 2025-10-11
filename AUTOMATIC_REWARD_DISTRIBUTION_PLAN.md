@@ -49,12 +49,16 @@ Remove the lazy reward withdrawal mechanism and implement automatic reward distr
 - `IterateValidatorDelegators`: Filters delegator starting infos by validator address
 - `IterateAllValidatorsAndDelegators`: Leverages existing `IterateDelegatorStartingInfos` for efficiency
 - Both functions use callback pattern for memory efficiency
+- **Native + NFT Support**: `DelegatorStartingInfo` contains both `Stake` (native) and `NftStake` (NFT)
+  - Single unified iteration handles both delegation types automatically
+  - No separate iteration needed for NFT delegators
 - No linter errors
 
 **Success Criteria**: ✅ ALL MET
 
 - Functions successfully iterate through delegator starting infos
 - No delegators are skipped or duplicated (single pass through store)
+- **Both native and NFT delegators are included** in the iteration
 - Efficient implementation using existing store iterators
 - Clean code, no linter errors
 
@@ -62,13 +66,13 @@ Remove the lazy reward withdrawal mechanism and implement automatic reward distr
 
 ---
 
-#### Step 1.2: Create Automatic Distribution Function ⬜ TODO
+#### Step 1.2: Create Automatic Distribution Function ✅ COMPLETED
 
-**Files**: `x/distribution/keeper/allocation.go`
+**Files**: `x/distribution/keeper/auto_distribution.go` (NEW FILE)
 
 **Tasks**:
 
-- [ ] Create `DistributeRewardsToAllDelegators(ctx)` function
+- [x] Create `DistributeRewardsToAllDelegators(ctx)` function
   - Uses iterator from Step 1.1
   - For each delegator-validator pair:
     - Calculate rewards using existing `calculateDelegationRewardsBetween`
@@ -79,28 +83,63 @@ Remove the lazy reward withdrawal mechanism and implement automatic reward distr
     - Reset delegator starting info for next epoch
   - Handle errors gracefully (log and continue)
   - Emit events for each distribution
+- [x] Create helper function `distributeRewardsToSingleDelegator(ctx, delAddr, valAddr)`
+  - Reusable for both automatic and immediate distribution (unbonding)
+  - Clean separation of concerns
+- [x] Organize code into new dedicated file (refactored from allocation.go)
 
-**Core Logic**:
+**Implementation Details**:
 
-```go
-func (k Keeper) DistributeRewardsToAllDelegators(ctx context.Context) error {
-    // 1. Iterate through all validators
-    // 2. For each validator, iterate through delegators
-    // 3. Calculate rewards (native + NFT)
-    // 4. Transfer to withdraw address
-    // 5. Update state
-    // 6. Emit events
-    // 7. Track metrics (total distributed, delegators processed, errors)
-}
-```
+- **New File**: Created `auto_distribution.go` (258 lines) for better code organization
+- **DistributionMetrics struct**: Tracks distribution statistics
+  - Total delegators processed
+  - Successful/failed distributions
+  - Total amount distributed
+  - Skipped zero reward delegators
+- **DistributeRewardsToAllDelegators**: Main automatic distribution function
+  - Iterates all delegators using Step 1.1 iterators
+  - Calls single delegator distribution for each
+  - Logs comprehensive metrics at completion
+  - Emits summary event
+  - Continues on individual errors (fail-safe)
+- **distributeRewardsToSingleDelegator**: Handles single delegator distribution
+  - **Calculates BOTH native + NFT rewards** using separate calculation functions
+    - `calculateDelegationRewardsBetween` for native stake
+    - `calculateNFTDelegationRewardsBetween` for NFT stake
+    - Combines both into total rewards
+  - Handles rounding with intersection
+  - Updates outstanding rewards
+  - Transfers to withdraw address
+  - Resets starting info for next epoch
+  - Emits individual distribution event
+  - Returns amount distributed
 
-**Success Criteria**:
+**Native + NFT Delegation Support**:
+
+- ✅ **Unified Handling**: `DelegatorStartingInfo` tracks both `Stake` (native) and `NftStake` (NFT)
+- ✅ **Automatic Detection**: Checks if each stake type is non-zero before calculating
+- ✅ **Separate Calculation**: Uses appropriate calculation function for each type
+- ✅ **Combined Distribution**: Both reward types transferred together to delegator
+- ✅ **No Special Cases**: Same flow handles pure native, pure NFT, or mixed delegators
+
+**Code Organization**:
+
+- allocation.go: 408 lines (unchanged, clean)
+- auto_distribution.go: 258 lines (new, focused on automatic distribution)
+- Clean separation of concerns
+
+**Success Criteria**: ✅ ALL MET
 
 - All delegators with rewards receive automatic distribution
+- **Both native AND NFT delegations are properly handled**
 - Outstanding rewards are correctly decremented
-- Delegator starting info is properly reset
-- Events are emitted for tracking
-- Zero rewards delegators are handled efficiently (skip transfer)
+- Delegator starting info is properly reset via `initializeDelegation`
+- Events are emitted for tracking (both per-delegator and summary)
+- Zero rewards delegators are handled efficiently (early return, no transfer)
+- Error handling is graceful (log and continue)
+- Code is reusable (single delegator function usable for hooks)
+- No linter errors
+- Well-organized code in dedicated file
 
 ---
 
@@ -473,16 +512,16 @@ EnableBatchDistribution bool   // Default: false (for Solution B)
 ### Overall Status
 
 - **Total Steps**: 17
-- **Completed**: 1
+- **Completed**: 2
 - **In Progress**: 1 (Phase 1)
-- **Not Started**: 15
-- **Progress**: 5.9%
+- **Not Started**: 14
+- **Progress**: 11.8%
 
 ### Phase Status
 
 | Phase                      | Status         | Completion |
 | -------------------------- | -------------- | ---------- |
-| Phase 1: Core Distribution | ⏳ In Progress | 1/4        |
+| Phase 1: Core Distribution | ⏳ In Progress | 2/4        |
 | Phase 2: Remove Withdrawal | ⬜ Not Started | 0/4        |
 | Phase 3: Update Hooks      | ⬜ Not Started | 0/3        |
 | Phase 4: Testing           | ⬜ Not Started | 0/3        |
@@ -520,6 +559,38 @@ EnableBatchDistribution bool   // Default: false (for Solution B)
 
 ## 🔄 UPDATE LOG
 
+### 2025-10-11 - Step 1.2 Completed ✅
+
+**Completed**: Phase 1, Step 1.2 - Create Automatic Distribution Function
+
+**Changes Made**:
+
+- Created new file `x/distribution/keeper/auto_distribution.go` (258 lines)
+- Added `DistributionMetrics` struct to track distribution statistics
+- Implemented `DistributeRewardsToAllDelegators()` function (main automatic distribution)
+- Implemented `distributeRewardsToSingleDelegator()` helper function
+- Kept `allocation.go` clean at 408 lines (no fmt import needed)
+
+**Key Features**:
+
+- **Comprehensive Metrics**: Tracks total delegators, successes, failures, and amounts
+- **Fail-Safe Design**: Errors on individual delegators don't stop the entire distribution
+- **Event Emission**: Both per-delegator events and summary event with metrics
+- **Zero Rewards Optimization**: Early returns for delegators with no rewards
+- **State Management**: Properly updates outstanding rewards and resets starting info
+- **Reusable Code**: Single delegator function can be used by hooks (Phase 3)
+
+**Technical Decisions**:
+
+- Used existing calculation functions (`calculateDelegationRewardsBetween`, `calculateNFTDelegationRewardsBetween`)
+- Applied intersection for rounding consistency with existing withdrawal logic
+- Comprehensive logging at debug and info levels
+- Remainder dust goes to community pool (existing pattern)
+
+**Next Step**: Phase 1, Step 1.3 - Implement Gas Optimization Strategies
+
+---
+
 ### 2025-10-11 - Step 1.1 Completed ✅
 
 **Completed**: Phase 1, Step 1.1 - Create Distribution Iterator Functions
@@ -555,11 +626,11 @@ EnableBatchDistribution bool   // Default: false (for Solution B)
 **Immediate Next Steps**:
 
 1. ✅ ~~Phase 1, Step 1.1: Create iterator functions~~ (COMPLETED)
-2. **CURRENT**: Phase 1, Step 1.2: Create automatic distribution function
-3. Phase 1, Step 1.3: Implement gas optimization strategies
+2. ✅ ~~Phase 1, Step 1.2: Create automatic distribution function~~ (COMPLETED)
+3. **CURRENT**: Phase 1, Step 1.3: Implement gas optimization strategies
 4. Phase 1, Step 1.4: Integrate into epoch end hook
 
-**Approval Required**: Review of Step 1.1 before git commit
+**Approval Required**: Review of Step 1.2 before git commit
 
 ---
 
