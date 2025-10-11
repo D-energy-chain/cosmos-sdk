@@ -333,6 +333,14 @@ func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumbe
 			return
 		}
 
+		// Automatically distribute rewards to all delegators
+		// This transfers accumulated rewards directly to delegator withdraw addresses
+		if err := h.k.DistributeRewardsToAllDelegators(ctx); err != nil {
+			ctx.Logger().Error("Failed to automatically distribute rewards to delegators", "error", err)
+			// Don't return here - epoch end should complete even if distribution fails
+			// Rewards remain in outstanding and can be distributed next epoch
+		}
+
 		// Clean up old performance records (keep last 100 epochs)
 		if err := h.k.CleanupOldEpochPerformanceRecords(ctx, epochIdentifier, epochNumber, 100); err != nil {
 			ctx.Logger().Error("Failed to cleanup old performance records", "error", err)
