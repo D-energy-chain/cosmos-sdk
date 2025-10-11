@@ -148,6 +148,16 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	nativeStake := startingInfo.Stake
 	nftStake := startingInfo.NftStake
 
+	// Debug logging for period tracking
+	k.Logger(ctx).Info("🔍 Distribution calculation",
+		"delegator", delAddr.String(),
+		"validator", val.GetOperator(),
+		"starting_period", startingPeriod,
+		"ending_period", endingPeriod,
+		"native_stake", nativeStake.String(),
+		"nft_stake", nftStake.String(),
+	)
+
 	// Calculate rewards
 	var totalRewardsRaw sdk.DecCoins = sdk.NewDecCoins()
 
@@ -169,8 +179,20 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 		totalRewardsRaw = totalRewardsRaw.Add(nftRewards...)
 	}
 
+	// Debug log calculated rewards
+	k.Logger(ctx).Info("💰 Calculated rewards",
+		"delegator", delAddr.String(),
+		"validator", val.GetOperator(),
+		"total_rewards_raw", totalRewardsRaw.String(),
+	)
+
 	// If no rewards, return early without state changes
 	if totalRewardsRaw.IsZero() {
+		k.Logger(ctx).Info("⚠️ Zero rewards calculated - skipping distribution",
+			"delegator", delAddr.String(),
+			"validator", val.GetOperator(),
+			"reason", "startingPeriod==endingPeriod or no historical rewards",
+		)
 		return sdk.NewCoins(), nil
 	}
 
@@ -270,8 +292,9 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	)
 
 	// Reset delegator starting info for next epoch
-	// This initializes them at the current period for the next distribution cycle
-	err = k.initializeDelegation(ctx, valAddr, delAddr)
+	// CRITICAL: Set starting period to CURRENT period (not current-1)
+	// because we just distributed rewards UP TO this period
+	err = k.resetDelegatorStartingInfo(ctx, valAddr, delAddr)
 	if err != nil {
 		k.Logger(ctx).Error("Failed to reset delegator starting info after distribution",
 			"delegator", delAddr.String(),

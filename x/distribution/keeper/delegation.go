@@ -11,6 +11,44 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+// resetDelegatorStartingInfo resets the delegator's starting info to the CURRENT period
+// after rewards have been distributed. Unlike initializeDelegation, this sets the starting
+// period to the current period (not current-1) because rewards were just distributed up to this period.
+func (k Keeper) resetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	// Get current period - this will be the starting period for next distribution
+	valCurrentRewards, err := k.GetValidatorCurrentRewards(ctx, val)
+	if err != nil {
+		return err
+	}
+	currentPeriod := valCurrentRewards.Period  // Use current period, NOT current-1
+
+	// Get validator for token calculations
+	validator, err := k.stakingKeeper.Validator(ctx, val)
+	if err != nil {
+		return err
+	}
+
+	// Try to get native delegation
+	var stake math.LegacyDec = math.LegacyZeroDec()
+	delegation, err := k.stakingKeeper.Delegation(ctx, del, val)
+	if err == nil && delegation != nil {
+		stake = validator.TokensFromSharesTruncated(delegation.GetShares())
+	}
+
+	// Try to get NFT delegation
+	var nftStake math.LegacyDec = math.LegacyZeroDec()
+	nftShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
+	if err == nil {
+		nftStake = nftShares
+	}
+
+	// Set starting info with current period
+	startingInfo := types.NewDelegatorStartingInfoWithNFT(currentPeriod, stake, nftStake, uint64(sdkCtx.BlockHeight()))
+	return k.SetDelegatorStartingInfo(ctx, val, del, startingInfo)
+}
+
 // initialize starting info for a new delegation
 func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) error {
 	// Check if starting info already exists - if so, don't initialize again
