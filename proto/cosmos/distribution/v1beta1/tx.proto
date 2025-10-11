@@ -19,10 +19,6 @@ service Msg {
   // for a delegator (or validator self-delegation).
   rpc SetWithdrawAddress(MsgSetWithdrawAddress) returns (MsgSetWithdrawAddressResponse);
 
-  // WithdrawDelegatorReward defines a method to withdraw rewards of delegator
-  // from a single validator.
-  rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
-
   // WithdrawValidatorCommission defines a method to withdraw the
   // full commission to the validator address.
   rpc WithdrawValidatorCommission(MsgWithdrawValidatorCommission) returns (MsgWithdrawValidatorCommissionResponse);
@@ -68,31 +64,6 @@ message MsgSetWithdrawAddress {
 // MsgSetWithdrawAddressResponse defines the Msg/SetWithdrawAddress response
 // type.
 message MsgSetWithdrawAddressResponse {}
-
-// MsgWithdrawDelegatorReward represents delegation withdrawal to a delegator
-// from a single validator.
-message MsgWithdrawDelegatorReward {
-  option (cosmos.msg.v1.signer) = "delegator_address";
-  option (amino.name)           = "cosmos-sdk/MsgWithdrawDelegationReward";
-
-  option (gogoproto.equal)           = false;
-  option (gogoproto.goproto_getters) = false;
-
-  string delegator_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string validator_address = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
-}
-
-// MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward
-// response type.
-message MsgWithdrawDelegatorRewardResponse {
-  // Since: cosmos-sdk 0.46
-  repeated cosmos.base.v1beta1.Coin amount = 1 [
-    (gogoproto.nullable)     = false,
-    (amino.dont_omitempty)   = true,
-    (amino.encoding)         = "legacy_coins",
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-}
 
 // MsgWithdrawValidatorCommission withdraws the full commission to the validator
 // address.
