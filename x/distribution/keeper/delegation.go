@@ -72,27 +72,65 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 	previousPeriod := valCurrentRewards.Period - 1
 
 	if hasInfo {
-		// Starting info already exists - update the NFT stake if needed
+		// Reset starting info on any share change (native or NFT):
+		// - Lock in the current previous period
+		// - Refresh height to current block for accurate pro-rating
 
-		// Get existing starting info
+		// Fetch existing starting info to manage reference counts
 		existingInfo, err := k.GetDelegatorStartingInfo(ctx, val, del)
 		if err != nil {
 			return err
 		}
 
-		// Check if we need to update NFT stake
-		var currentNftStake math.LegacyDec = math.LegacyZeroDec()
-		nftShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val)
-		if err == nil {
-			currentNftStake = nftShares
+		// If there is no stake change (neither native nor NFT), keep as-is
+		var newNftStake math.LegacyDec = math.LegacyZeroDec()
+		if nftShares, err := k.stakingKeeper.GetNFTDelegatorShares(ctx, del, val); err == nil {
+			newNftStake = nftShares
 		}
 
-		// If NFT stake changed, update the starting info
-		if !currentNftStake.Equal(existingInfo.NftStake) {
-			existingInfo.NftStake = currentNftStake
-			return k.SetDelegatorStartingInfo(ctx, val, del, existingInfo)
+		// Also recompute native stake
+		validator, err := k.stakingKeeper.Validator(ctx, val)
+		if err != nil {
+			return err
 		}
-		return nil
+
+		var newNativeStake math.LegacyDec = math.LegacyZeroDec()
+		if delegation, err := k.stakingKeeper.Delegation(ctx, del, val); err == nil && delegation != nil {
+			newNativeStake = validator.TokensFromSharesTruncated(delegation.GetShares())
+		}
+
+		if newNativeStake.Equal(existingInfo.Stake) && newNftStake.Equal(existingInfo.NftStake) && existingInfo.Height != 0 {
+			return nil
+		}
+
+		// Decrement reference on the previous starting period
+		if err := k.decrementReferenceCount(ctx, val, existingInfo.PreviousPeriod); err != nil {
+			return err
+		}
+
+		// Increment reference for the new previousPeriod (currentRewards.Period - 1)
+		if err := k.incrementReferenceCount(ctx, val, previousPeriod); err != nil {
+			return err
+		}
+
+		// Write fresh starting info with current block height. Preserve native height if native stake unchanged.
+		newInfo := types.NewDelegatorStartingInfoWithNFT(previousPeriod, newNativeStake, newNftStake, uint64(sdkCtx.BlockHeight()))
+		if newNativeStake.Equal(existingInfo.Stake) && existingInfo.Height != 0 {
+			newInfo.Height = existingInfo.Height
+		}
+		if !newNftStake.IsZero() && newInfo.NftHeight == 0 {
+			newInfo.NftHeight = uint64(sdkCtx.BlockHeight())
+		}
+		k.Logger(ctx).Info("Reset delegator starting info on share change",
+			"delegator", del.String(),
+			"validator", validator.GetOperator(),
+			"old_previous_period", existingInfo.PreviousPeriod,
+			"new_previous_period", previousPeriod,
+			"height_set", newInfo.Height,
+			"native_stake", newNativeStake.String(),
+			"nft_stake", newNftStake.String(),
+		)
+		return k.SetDelegatorStartingInfo(ctx, val, del, newInfo)
 	}
 
 	// Create new starting info
@@ -133,6 +171,10 @@ func (k Keeper) initializeDelegation(ctx context.Context, val sdk.ValAddress, de
 	}
 
 	startingInfo := types.NewDelegatorStartingInfoWithNFT(previousPeriod, stake, nftStake, uint64(sdkCtx.BlockHeight()))
+	// If there is NFT stake, ensure nft_height is set; otherwise it defaults to native height
+	if !nftStake.IsZero() && startingInfo.NftHeight == 0 {
+		startingInfo.NftHeight = uint64(sdkCtx.BlockHeight())
+	}
 	k.Logger(ctx).Info("Setting DelegatorStartingInfo",
 		"delegator", del.String(),
 		"validator", validator.GetOperator(),

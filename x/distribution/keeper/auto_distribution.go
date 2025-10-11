@@ -185,7 +185,12 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	// Calculate NFT delegation rewards if they exist
 	var nftRewards sdk.DecCoins
 	if !nftStake.IsZero() {
-		nftRewards, err = k.calculateNFTDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, nftStake, startingInfo.Height)
+		// Use nft-specific height if present; otherwise fallback to native height
+		nftDelegationHeight := startingInfo.NftHeight
+		if nftDelegationHeight == 0 {
+			nftDelegationHeight = startingInfo.Height
+		}
+		nftRewards, err = k.calculateNFTDelegationRewardsBetweenWithProRating(ctx, val, startingPeriod, endingPeriod, nftStake, nftDelegationHeight)
 		if err != nil {
 			k.Logger(ctx).Error("❌ Failed to calculate NFT rewards",
 				"delegator", delAddr.String(),

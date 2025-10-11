@@ -8,7 +8,8 @@ func NewDelegatorStartingInfo(previousPeriod uint64, stake sdkmath.LegacyDec, he
 		PreviousPeriod: previousPeriod,
 		Stake:          stake,
 		NftStake:       sdkmath.LegacyZeroDec(),
-		Height:         height,
+        Height:         height,
+        NftHeight:      height,
 	}
 }
 
@@ -18,6 +19,7 @@ func NewDelegatorStartingInfoWithNFT(previousPeriod uint64, stake, nftStake sdkm
 		PreviousPeriod: previousPeriod,
 		Stake:          stake,
 		NftStake:       nftStake,
-		Height:         height,
+        Height:         height,
+        NftHeight:      height,
 	}
 }

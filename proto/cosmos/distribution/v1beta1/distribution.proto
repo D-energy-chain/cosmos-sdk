@@ -226,6 +226,8 @@ message DelegatorStartingInfo {
   ];
   uint64 height = 3
       [(gogoproto.jsontag) = "creation_height", (amino.field_name) = "creation_height", (amino.dont_omitempty) = true];
+  // nft_height is the block height when the first NFT delegation was created for this delegator and validator
+  uint64 nft_height = 5;
 }
 
 // DelegationDelegatorReward represents the properties
