@@ -388,3 +388,49 @@ func (k Keeper) FundCommunityPool(ctx context.Context, amount sdk.Coins, sender 
 	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amount...)...)
 	return k.FeePool.Set(ctx, feePool)
 }
+
+// DelegatorInfo holds information about a delegator for iteration purposes
+type DelegatorInfo struct {
+	DelegatorAddr sdk.AccAddress
+	ValidatorAddr sdk.ValAddress
+	StartingInfo  types.DelegatorStartingInfo
+}
+
+// IterateValidatorDelegators iterates through all delegators for a specific validator.
+// The callback function receives the delegator address and starting info.
+// If the callback returns true, iteration stops.
+func (k Keeper) IterateValidatorDelegators(
+	ctx context.Context,
+	valAddr sdk.ValAddress,
+	callback func(delAddr sdk.AccAddress, startingInfo types.DelegatorStartingInfo) (stop bool),
+) error {
+	// Iterate through all delegator starting infos and filter by validator
+	k.IterateDelegatorStartingInfos(ctx, func(iterValAddr sdk.ValAddress, delAddr sdk.AccAddress, info types.DelegatorStartingInfo) (stop bool) {
+		// Only process delegators for the specified validator
+		if iterValAddr.Equals(valAddr) {
+			return callback(delAddr, info)
+		}
+		return false
+	})
+	return nil
+}
+
+// IterateAllValidatorsAndDelegators iterates through all validators and their delegators.
+// The callback function receives delegator info for each delegator of each validator.
+// If the callback returns true, iteration stops.
+func (k Keeper) IterateAllValidatorsAndDelegators(
+	ctx context.Context,
+	callback func(info DelegatorInfo) (stop bool),
+) error {
+	// Iterate through all delegator starting infos
+	// This is more efficient than iterating validators then delegators for each
+	k.IterateDelegatorStartingInfos(ctx, func(valAddr sdk.ValAddress, delAddr sdk.AccAddress, startingInfo types.DelegatorStartingInfo) (stop bool) {
+		info := DelegatorInfo{
+			DelegatorAddr: delAddr,
+			ValidatorAddr: valAddr,
+			StartingInfo:  startingInfo,
+		}
+		return callback(info)
+	})
+	return nil
+}
