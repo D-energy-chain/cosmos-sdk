@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
@@ -20,22 +22,31 @@ type DistributionMetrics struct {
 // DistributeRewardsToAllDelegators automatically distributes rewards to all delegators
 // at epoch end. This function iterates through all delegators and transfers their
 // accumulated rewards directly to their withdraw addresses.
+// Rewards below the minimum threshold are skipped and will accumulate for future epochs.
 func (k Keeper) DistributeRewardsToAllDelegators(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	// Get distribution parameters
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		k.Logger(ctx).Error("Failed to get distribution params", "error", err)
+		return err
+	}
 
 	// Initialize metrics
 	metrics := DistributionMetrics{
 		TotalAmountDistrib: sdk.NewCoins(),
 	}
 
-	k.Logger(ctx).Info("🎯 Starting automatic reward distribution to all delegators")
+	k.Logger(ctx).Info("🎯 Starting automatic reward distribution to all delegators",
+		"min_threshold", params.MinAutoDistributionAmount.String())
 
 	// Iterate through all delegators
-	err := k.IterateAllValidatorsAndDelegators(ctx, func(info DelegatorInfo) (stop bool) {
+	err = k.IterateAllValidatorsAndDelegators(ctx, func(info DelegatorInfo) (stop bool) {
 		metrics.TotalDelegators++
 
-		// Distribute rewards to this specific delegator
-		amount, err := k.distributeRewardsToSingleDelegator(ctx, info.DelegatorAddr, info.ValidatorAddr)
+		// Distribute rewards to this specific delegator with minimum threshold check
+		amount, err := k.distributeRewardsToSingleDelegator(ctx, info.DelegatorAddr, info.ValidatorAddr, params.MinAutoDistributionAmount)
 		if err != nil {
 			// Log error but continue with other delegators
 			k.Logger(ctx).Error("Failed to distribute rewards to delegator",
@@ -88,10 +99,14 @@ func (k Keeper) DistributeRewardsToAllDelegators(ctx context.Context) error {
 // distributeRewardsToSingleDelegator distributes rewards to a single delegator.
 // This is used both for automatic distribution and for immediate distribution
 // during unbonding/removal operations.
+// If minAmount is greater than zero, rewards below this threshold will be skipped
+// and accumulated for future distribution (starting info is not reset).
+// If minAmount is zero, the threshold check is disabled.
 func (k Keeper) distributeRewardsToSingleDelegator(
 	ctx context.Context,
 	delAddr sdk.AccAddress,
 	valAddr sdk.ValAddress,
+	minAmount math.LegacyDec,
 ) (sdk.Coins, error) {
 	// Get validator
 	val, err := k.stakingKeeper.Validator(ctx, valAddr)
@@ -203,6 +218,26 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	// If rewards are zero after truncation, return early
 	if totalRewards.IsZero() {
 		return sdk.NewCoins(), nil
+	}
+
+	// Check minimum distribution threshold (gas optimization)
+	// If rewards are below threshold, skip distribution and accumulate for next epoch
+	if !minAmount.IsZero() && !totalRewards.IsZero() {
+		// Convert first coin to Dec for comparison (assumes single denom for simplicity)
+		// In multi-denom scenarios, check the primary denom or total value
+		if len(totalRewards) > 0 {
+			firstCoinAmount := math.LegacyNewDecFromInt(totalRewards[0].Amount)
+			if firstCoinAmount.LT(minAmount) {
+				k.Logger(ctx).Debug("Skipping distribution below minimum threshold",
+					"delegator", delAddr.String(),
+					"validator", val.GetOperator(),
+					"amount", totalRewards.String(),
+					"threshold", minAmount.String(),
+				)
+				// Return zero without error - rewards will accumulate since starting info is not reset
+				return sdk.NewCoins(), nil
+			}
+		}
 	}
 
 	// Get withdraw address
