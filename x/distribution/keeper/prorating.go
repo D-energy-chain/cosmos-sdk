@@ -15,11 +15,6 @@ func (k Keeper) calculateProRatingFactor(
 	periodStartHeight uint64,
 	periodEndHeight uint64,
 ) math.LegacyDec {
-	// Migration handling: if historical entries have height==0, treat as full-epoch
-	if periodStartHeight == 0 || periodEndHeight == 0 {
-		return math.LegacyOneDec()
-	}
-
 	// Delegator was active from max(delegationHeight, periodStartHeight) to periodEndHeight
 	var activeStart uint64
 	if delegationHeight > periodStartHeight {
