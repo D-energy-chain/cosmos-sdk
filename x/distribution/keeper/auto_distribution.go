@@ -309,9 +309,9 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	)
 
 	// Reset delegator starting info for next epoch
-	// CRITICAL: Set starting period to CURRENT period (not current-1)
-	// because we just distributed rewards UP TO this period
-	err = k.resetDelegatorStartingInfo(ctx, valAddr, delAddr)
+	// CRITICAL: Set starting period to the ending period we just used
+	// This ensures future calculations start from where we left off
+	err = k.resetDelegatorStartingInfoToPeriod(ctx, valAddr, delAddr, endingPeriod)
 	if err != nil {
 		k.Logger(ctx).Error("Failed to reset delegator starting info after distribution",
 			"delegator", delAddr.String(),

@@ -11,18 +11,11 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// resetDelegatorStartingInfo resets the delegator's starting info to the CURRENT period
-// after rewards have been distributed. Unlike initializeDelegation, this sets the starting
-// period to the current period (not current-1) because rewards were just distributed up to this period.
-func (k Keeper) resetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) error {
+// resetDelegatorStartingInfoToPeriod resets the delegator's starting info to a specific period
+// after rewards have been distributed. This is used after automatic distribution to set the
+// starting period to the ending period that was just used for calculation.
+func (k Keeper) resetDelegatorStartingInfoToPeriod(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress, period uint64) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	// Get current period - this will be the starting period for next distribution
-	valCurrentRewards, err := k.GetValidatorCurrentRewards(ctx, val)
-	if err != nil {
-		return err
-	}
-	currentPeriod := valCurrentRewards.Period // Use current period, NOT current-1
 
 	// Get validator for token calculations
 	validator, err := k.stakingKeeper.Validator(ctx, val)
@@ -44,8 +37,17 @@ func (k Keeper) resetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddre
 		nftStake = nftShares
 	}
 
-	// Set starting info with current period
-	startingInfo := types.NewDelegatorStartingInfoWithNFT(currentPeriod, stake, nftStake, uint64(sdkCtx.BlockHeight()))
+	// Set starting info with the specified period
+	startingInfo := types.NewDelegatorStartingInfoWithNFT(period, stake, nftStake, uint64(sdkCtx.BlockHeight()))
+	
+	k.Logger(ctx).Debug("Reset delegator starting info",
+		"delegator", del.String(),
+		"validator", validator.GetOperator(),
+		"new_starting_period", period,
+		"native_stake", stake.String(),
+		"nft_stake", nftStake.String(),
+	)
+	
 	return k.SetDelegatorStartingInfo(ctx, val, del, startingInfo)
 }
 

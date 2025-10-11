@@ -166,7 +166,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 
 	// Log period increment with CORRECT values
 	k.logPeriodIncrement(ctx, sdk.ValAddress(valBz), oldPeriod, newPeriod, "epoch_end")
-	
+
 	k.Logger(ctx).Info("📊 Stored historical rewards",
 		"validator", val.GetOperator(),
 		"period", oldPeriod,
