@@ -159,6 +159,7 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 		"ending_period", endingPeriod,
 		"native_stake", nativeStake.String(),
 		"nft_stake", nftStake.String(),
+		"delegation_height", startingInfo.Height,
 	)
 
 	// Calculate rewards
