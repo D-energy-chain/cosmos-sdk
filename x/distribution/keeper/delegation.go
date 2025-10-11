@@ -22,7 +22,7 @@ func (k Keeper) resetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddre
 	if err != nil {
 		return err
 	}
-	currentPeriod := valCurrentRewards.Period  // Use current period, NOT current-1
+	currentPeriod := valCurrentRewards.Period // Use current period, NOT current-1
 
 	// Get validator for token calculations
 	validator, err := k.stakingKeeper.Validator(ctx, val)
@@ -153,15 +153,36 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 	// return staking * (ending - starting)
 	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
 	if err != nil {
+		k.Logger(ctx).Error("Missing starting period historical rewards",
+			"validator", val.GetOperator(),
+			"period", startingPeriod,
+			"error", err.Error(),
+		)
 		return sdk.DecCoins{}, err
 	}
 
 	ending, err := k.GetValidatorHistoricalRewards(ctx, valBz, endingPeriod)
 	if err != nil {
+		k.Logger(ctx).Error("Missing ending period historical rewards",
+			"validator", val.GetOperator(),
+			"period", endingPeriod,
+			"error", err.Error(),
+		)
 		return sdk.DecCoins{}, err
 	}
 
 	difference := ending.CumulativeRewardRatio.Sub(starting.CumulativeRewardRatio)
+
+	k.Logger(ctx).Debug("Native reward calculation",
+		"validator", val.GetOperator(),
+		"starting_period", startingPeriod,
+		"ending_period", endingPeriod,
+		"starting_ratio", starting.CumulativeRewardRatio.String(),
+		"ending_ratio", ending.CumulativeRewardRatio.String(),
+		"difference", difference.String(),
+		"stake", stake.String(),
+	)
+
 	if difference.IsAnyNegative() {
 		panic("negative rewards should not be possible")
 	}
@@ -192,15 +213,36 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 	// return nft_staking * (ending - starting) using NFT cumulative reward ratio
 	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
 	if err != nil {
+		k.Logger(ctx).Error("Missing starting period historical rewards (NFT)",
+			"validator", val.GetOperator(),
+			"period", startingPeriod,
+			"error", err.Error(),
+		)
 		return sdk.DecCoins{}, err
 	}
 
 	ending, err := k.GetValidatorHistoricalRewards(ctx, valBz, endingPeriod)
 	if err != nil {
+		k.Logger(ctx).Error("Missing ending period historical rewards (NFT)",
+			"validator", val.GetOperator(),
+			"period", endingPeriod,
+			"error", err.Error(),
+		)
 		return sdk.DecCoins{}, err
 	}
 
 	difference := ending.NftCumulativeRewardRatio.Sub(starting.NftCumulativeRewardRatio)
+
+	k.Logger(ctx).Debug("NFT reward calculation",
+		"validator", val.GetOperator(),
+		"starting_period", startingPeriod,
+		"ending_period", endingPeriod,
+		"starting_nft_ratio", starting.NftCumulativeRewardRatio.String(),
+		"ending_nft_ratio", ending.NftCumulativeRewardRatio.String(),
+		"difference", difference.String(),
+		"nft_stake", nftStake.String(),
+	)
+
 	if difference.IsAnyNegative() {
 		panic("negative NFT rewards should not be possible")
 	}

@@ -165,6 +165,13 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	if !nativeStake.IsZero() {
 		nativeRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nativeStake)
 		if err != nil {
+			k.Logger(ctx).Error("❌ Failed to calculate native rewards",
+				"delegator", delAddr.String(),
+				"validator", val.GetOperator(),
+				"error", err.Error(),
+				"starting_period", startingPeriod,
+				"ending_period", endingPeriod,
+			)
 			return nil, err
 		}
 		totalRewardsRaw = totalRewardsRaw.Add(nativeRewards...)
@@ -174,6 +181,13 @@ func (k Keeper) distributeRewardsToSingleDelegator(
 	if !nftStake.IsZero() {
 		nftRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
 		if err != nil {
+			k.Logger(ctx).Error("❌ Failed to calculate NFT rewards",
+				"delegator", delAddr.String(),
+				"validator", val.GetOperator(),
+				"error", err.Error(),
+				"starting_period", startingPeriod,
+				"ending_period", endingPeriod,
+			)
 			return nil, err
 		}
 		totalRewardsRaw = totalRewardsRaw.Add(nftRewards...)
