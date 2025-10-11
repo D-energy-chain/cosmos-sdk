@@ -7,7 +7,7 @@ import (
 // Verify interface at compile time
 var (
 	_ sdk.Msg = (*MsgSetWithdrawAddress)(nil)
-	_ sdk.Msg = (*MsgWithdrawDelegatorReward)(nil)
+	// _ sdk.Msg = (*MsgWithdrawDelegatorReward)(nil)
 	_ sdk.Msg = (*MsgWithdrawValidatorCommission)(nil)
 	_ sdk.Msg = (*MsgUpdateParams)(nil)
 	_ sdk.Msg = (*MsgCommunityPoolSpend)(nil)
@@ -21,12 +21,12 @@ func NewMsgSetWithdrawAddress(delAddr, withdrawAddr sdk.AccAddress) *MsgSetWithd
 	}
 }
 
-func NewMsgWithdrawDelegatorReward(delAddr, valAddr string) *MsgWithdrawDelegatorReward {
-	return &MsgWithdrawDelegatorReward{
-		DelegatorAddress: delAddr,
-		ValidatorAddress: valAddr,
-	}
-}
+// func NewMsgWithdrawDelegatorReward(delAddr, valAddr string) *MsgWithdrawDelegatorReward {
+// 	return &MsgWithdrawDelegatorReward{
+// 		DelegatorAddress: delAddr,
+// 		ValidatorAddress: valAddr,
+// 	}
+// }
 
 func NewMsgWithdrawValidatorCommission(valAddr string) *MsgWithdrawValidatorCommission {
 	return &MsgWithdrawValidatorCommission{

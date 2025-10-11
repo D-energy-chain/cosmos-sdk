@@ -66,10 +66,10 @@ func WeightedOperations(
 			weightMsgSetWithdrawAddress,
 			SimulateMsgSetWithdrawAddress(txConfig, ak, bk, k),
 		),
-		simulation.NewWeightedOperation(
-			weightMsgWithdrawDelegationReward,
-			SimulateMsgWithdrawDelegatorReward(txConfig, ak, bk, k, sk),
-		),
+		// simulation.NewWeightedOperation(
+		// 	weightMsgWithdrawDelegationReward,
+		// 	SimulateMsgWithdrawDelegatorReward(txConfig, ak, bk, k, sk),
+		// ),
 		simulation.NewWeightedOperation(
 			weightMsgWithdrawValidatorCommission,
 			SimulateMsgWithdrawValidatorCommission(txConfig, ak, bk, k, sk),
@@ -121,56 +121,56 @@ func SimulateMsgSetWithdrawAddress(txConfig client.TxConfig, ak types.AccountKee
 	}
 }
 
-// SimulateMsgWithdrawDelegatorReward generates a MsgWithdrawDelegatorReward with random values.
-func SimulateMsgWithdrawDelegatorReward(txConfig client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, sk types.StakingKeeper) simtypes.Operation {
-	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount, _ := simtypes.RandomAcc(r, accs)
-		delegations, err := sk.GetAllDelegatorDelegations(ctx, simAccount.Address)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "error getting delegations"), nil, err
-		}
-		if len(delegations) == 0 {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "number of delegators equal 0"), nil, nil
-		}
+// // SimulateMsgWithdrawDelegatorReward generates a MsgWithdrawDelegatorReward with random values.
+// func SimulateMsgWithdrawDelegatorReward(txConfig client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, sk types.StakingKeeper) simtypes.Operation {
+// 	return func(
+// 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+// 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+// 		simAccount, _ := simtypes.RandomAcc(r, accs)
+// 		delegations, err := sk.GetAllDelegatorDelegations(ctx, simAccount.Address)
+// 		if err != nil {
+// 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "error getting delegations"), nil, err
+// 		}
+// 		if len(delegations) == 0 {
+// 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "number of delegators equal 0"), nil, nil
+// 		}
 
-		delegation := delegations[r.Intn(len(delegations))]
+// 		delegation := delegations[r.Intn(len(delegations))]
 
-		delAddr, err := sk.ValidatorAddressCodec().StringToBytes(delegation.GetValidatorAddr())
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "error converting validator address"), nil, err
-		}
-		validator, err := sk.Validator(ctx, delAddr)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "error getting validator"), nil, err
-		}
-		if validator == nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "validator is nil"), nil, fmt.Errorf("validator %s not found", delegation.GetValidatorAddr())
-		}
+// 		delAddr, err := sk.ValidatorAddressCodec().StringToBytes(delegation.GetValidatorAddr())
+// 		if err != nil {
+// 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "error converting validator address"), nil, err
+// 		}
+// 		validator, err := sk.Validator(ctx, delAddr)
+// 		if err != nil {
+// 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "error getting validator"), nil, err
+// 		}
+// 		if validator == nil {
+// 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgWithdrawDelegatorReward{}), "validator is nil"), nil, fmt.Errorf("validator %s not found", delegation.GetValidatorAddr())
+// 		}
 
-		account := ak.GetAccount(ctx, simAccount.Address)
-		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+// 		account := ak.GetAccount(ctx, simAccount.Address)
+// 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
-		msg := types.NewMsgWithdrawDelegatorReward(simAccount.Address.String(), validator.GetOperator())
+// 		msg := types.NewMsgWithdrawDelegatorReward(simAccount.Address.String(), validator.GetOperator())
 
-		txCtx := simulation.OperationInput{
-			R:               r,
-			App:             app,
-			TxGen:           txConfig,
-			Cdc:             nil,
-			Msg:             msg,
-			Context:         ctx,
-			SimAccount:      simAccount,
-			AccountKeeper:   ak,
-			Bankkeeper:      bk,
-			ModuleName:      types.ModuleName,
-			CoinsSpentInMsg: spendable,
-		}
+// 		txCtx := simulation.OperationInput{
+// 			R:               r,
+// 			App:             app,
+// 			TxGen:           txConfig,
+// 			Cdc:             nil,
+// 			Msg:             msg,
+// 			Context:         ctx,
+// 			SimAccount:      simAccount,
+// 			AccountKeeper:   ak,
+// 			Bankkeeper:      bk,
+// 			ModuleName:      types.ModuleName,
+// 			CoinsSpentInMsg: spendable,
+// 		}
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
-	}
-}
+// 		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+// 	}
+// }
 
 // SimulateMsgWithdrawValidatorCommission generates a MsgWithdrawValidatorCommission with random values.
 func SimulateMsgWithdrawValidatorCommission(txConfig client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, sk types.StakingKeeper) simtypes.Operation {
