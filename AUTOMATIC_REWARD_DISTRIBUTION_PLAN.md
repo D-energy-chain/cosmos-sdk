@@ -15,10 +15,29 @@ Remove the lazy reward withdrawal mechanism and implement automatic reward distr
 ### Key Requirements
 
 - ✅ **No Transition Period**: Complete removal of manual withdrawal
-- ✅ **Pro-rated Rewards**: Mid-epoch delegators receive proportional rewards
+- 🔄 **Pro-rated Rewards**: Mid-epoch delegators receive proportional rewards (requires height-based implementation)
 - ✅ **No Migration**: Clean implementation without backward compatibility concerns
 - ✅ **Delegators First**: Implement for delegators, validators commission later
 - ✅ **Keep Queries**: Query endpoints remain, transaction endpoints removed
+
+### ⚠️ Critical Discovery: Pro-Rating Issue
+
+**Date**: October 11, 2025
+
+**Issue**: The F1 period-based pro-rating doesn't work for epoch-based reward allocation systems.
+
+**Reason**: 
+- F1 assumes rewards accumulate continuously (every block)
+- Our system allocates rewards once per epoch
+- Mid-epoch delegators have same `starting_period` as epoch-start delegators
+- Both receive full epoch rewards (unfair!)
+
+**Solution**: Implement height-based pro-rating
+- See `HEIGHT_BASED_PRORATING_PLAN.md` for detailed implementation
+- Pro-rate rewards based on actual blocks delegated within each period
+- Maintains F1 efficiency while adding fairness
+
+**Status**: Plan created, awaiting implementation approval
 
 ---
 
