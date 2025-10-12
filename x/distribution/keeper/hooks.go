@@ -279,13 +279,13 @@ func (h Hooks) BeforeNFTDelegationRemoved(ctx context.Context, delAddr sdk.AccAd
 	// Since NFT offsetting runs at epoch end (after reward allocation and period increment),
 	// the rewards are already calculated and ready to withdraw.
 	// The withdrawal function handles both native and NFT rewards together.
-	
+
 	rewards, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	if err != nil {
 		// Log error but don't fail the NFT delegation removal
 		// Some errors are expected (e.g., no delegation info if already withdrawn)
-		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() && 
-		   err.Error() != types.ErrNoValidatorDistInfo.Error() {
+		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() &&
+			err.Error() != types.ErrNoValidatorDistInfo.Error() {
 			h.k.Logger(ctx).Error("Failed to withdraw rewards before NFT delegation removal",
 				"delegator", delAddr.String(),
 				"validator", valAddr.String(),
@@ -329,13 +329,13 @@ func (h Hooks) BeforeDelegationRemoved(ctx context.Context, delAddr sdk.AccAddre
 	//
 	// Since undelegation is processed at epoch end (after reward allocation and period increment),
 	// the rewards are already calculated and ready to withdraw.
-	
+
 	rewards, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	if err != nil {
 		// Log error but don't fail the delegation removal
 		// Some errors are expected (e.g., no delegation info if already withdrawn)
-		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() && 
-		   err.Error() != types.ErrNoValidatorDistInfo.Error() {
+		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() &&
+			err.Error() != types.ErrNoValidatorDistInfo.Error() {
 			h.k.Logger(ctx).Error("Failed to withdraw rewards before delegation removal",
 				"delegator", delAddr.String(),
 				"validator", valAddr.String(),

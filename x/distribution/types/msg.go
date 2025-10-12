@@ -21,12 +21,12 @@ func NewMsgSetWithdrawAddress(delAddr, withdrawAddr sdk.AccAddress) *MsgSetWithd
 	}
 }
 
-// func NewMsgWithdrawDelegatorReward(delAddr, valAddr string) *MsgWithdrawDelegatorReward {
-// 	return &MsgWithdrawDelegatorReward{
-// 		DelegatorAddress: delAddr,
-// 		ValidatorAddress: valAddr,
-// 	}
-// }
+func NewMsgWithdrawDelegatorReward(delAddr, valAddr string) *MsgWithdrawDelegatorReward {
+	return &MsgWithdrawDelegatorReward{
+		DelegatorAddress: delAddr,
+		ValidatorAddress: valAddr,
+	}
+}
 
 func NewMsgWithdrawValidatorCommission(valAddr string) *MsgWithdrawValidatorCommission {
 	return &MsgWithdrawValidatorCommission{
