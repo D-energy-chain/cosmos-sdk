@@ -203,17 +203,6 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 		panic(err)
 	}
 
-	// Ensure period 0 exists (for backward compatibility with genesis validators and chain upgrades)
-	if startingPeriod == 0 {
-		if err := k.ensurePeriod0Exists(ctx, valBz); err != nil {
-			k.Logger(ctx).Error("Failed to ensure period 0 exists",
-				"validator", val.GetOperator(),
-				"error", err.Error(),
-			)
-			return sdk.DecCoins{}, err
-		}
-	}
-
 	// return staking * (ending - starting)
 	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
 	if err != nil {
@@ -243,6 +232,7 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 		)
 		starting.CumulativeRewardRatio = sdk.NewDecCoins()
 	}
+	
 	if ending.CumulativeRewardRatio == nil {
 		k.Logger(ctx).Warn("Ending period has nil cumulative ratio - treating as zero",
 			"validator", val.GetOperator(),
@@ -300,17 +290,6 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 	if err != nil {
 		panic(err)
-	}
-
-	// Ensure period 0 exists (for backward compatibility with genesis validators and chain upgrades)
-	if startingPeriod == 0 {
-		if err := k.ensurePeriod0Exists(ctx, valBz); err != nil {
-			k.Logger(ctx).Error("Failed to ensure period 0 exists for NFT calculation",
-				"validator", val.GetOperator(),
-				"error", err.Error(),
-			)
-			return sdk.DecCoins{}, err
-		}
 	}
 
 	// return nft_staking * (ending - starting) using NFT cumulative reward ratio
