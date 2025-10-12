@@ -224,6 +224,22 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 		return sdk.DecCoins{}, err
 	}
 
+	// Check for nil cumulative ratios (can happen with improperly initialized historical rewards)
+	if starting.CumulativeRewardRatio == nil {
+		k.Logger(ctx).Warn("Starting period has nil cumulative ratio - treating as zero",
+			"validator", val.GetOperator(),
+			"period", startingPeriod,
+		)
+		starting.CumulativeRewardRatio = sdk.NewDecCoins()
+	}
+	if ending.CumulativeRewardRatio == nil {
+		k.Logger(ctx).Warn("Ending period has nil cumulative ratio - treating as zero",
+			"validator", val.GetOperator(),
+			"period", endingPeriod,
+		)
+		ending.CumulativeRewardRatio = sdk.NewDecCoins()
+	}
+
 	difference := ending.CumulativeRewardRatio.Sub(starting.CumulativeRewardRatio)
 
 	k.Logger(ctx).Debug("Native reward calculation",
@@ -294,6 +310,22 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 			"error", err.Error(),
 		)
 		return sdk.DecCoins{}, err
+	}
+
+	// Check for nil NFT cumulative ratios (can happen with improperly initialized historical rewards)
+	if starting.NftCumulativeRewardRatio == nil {
+		k.Logger(ctx).Warn("Starting period has nil NFT cumulative ratio - treating as zero",
+			"validator", val.GetOperator(),
+			"period", startingPeriod,
+		)
+		starting.NftCumulativeRewardRatio = sdk.NewDecCoins()
+	}
+	if ending.NftCumulativeRewardRatio == nil {
+		k.Logger(ctx).Warn("Ending period has nil NFT cumulative ratio - treating as zero",
+			"validator", val.GetOperator(),
+			"period", endingPeriod,
+		)
+		ending.NftCumulativeRewardRatio = sdk.NewDecCoins()
 	}
 
 	difference := ending.NftCumulativeRewardRatio.Sub(starting.NftCumulativeRewardRatio)
