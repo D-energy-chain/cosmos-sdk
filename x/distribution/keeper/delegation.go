@@ -208,9 +208,10 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 	var starting types.ValidatorHistoricalRewards
 	if startingPeriod == 0 {
 		// Period 0 represents genesis/baseline: zero cumulative rewards
+		// Use empty slice explicitly, not sdk.NewDecCoins() which returns nil with no args
 		starting = types.ValidatorHistoricalRewards{
-			CumulativeRewardRatio:    sdk.NewDecCoins(),
-			NftCumulativeRewardRatio: sdk.NewDecCoins(),
+			CumulativeRewardRatio:    sdk.DecCoins{},
+			NftCumulativeRewardRatio: sdk.DecCoins{},
 			ReferenceCount:           0,
 			Height:                   0,
 		}
@@ -243,15 +244,15 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 			"validator", val.GetOperator(),
 			"period", startingPeriod,
 		)
-		starting.CumulativeRewardRatio = sdk.NewDecCoins()
+		starting.CumulativeRewardRatio = sdk.DecCoins{}
 	}
-	
+
 	if ending.CumulativeRewardRatio == nil {
 		k.Logger(ctx).Warn("Ending period has nil cumulative ratio - treating as zero",
 			"validator", val.GetOperator(),
 			"period", endingPeriod,
 		)
-		ending.CumulativeRewardRatio = sdk.NewDecCoins()
+		ending.CumulativeRewardRatio = sdk.DecCoins{}
 	}
 
 	difference := ending.CumulativeRewardRatio.Sub(starting.CumulativeRewardRatio)
@@ -310,9 +311,10 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 	var starting types.ValidatorHistoricalRewards
 	if startingPeriod == 0 {
 		// Period 0 represents genesis/baseline: zero cumulative rewards
+		// Use empty slice explicitly, not sdk.NewDecCoins() which returns nil with no args
 		starting = types.ValidatorHistoricalRewards{
-			CumulativeRewardRatio:    sdk.NewDecCoins(),
-			NftCumulativeRewardRatio: sdk.NewDecCoins(),
+			CumulativeRewardRatio:    sdk.DecCoins{},
+			NftCumulativeRewardRatio: sdk.DecCoins{},
 			ReferenceCount:           0,
 			Height:                   0,
 		}
@@ -345,14 +347,14 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 			"validator", val.GetOperator(),
 			"period", startingPeriod,
 		)
-		starting.NftCumulativeRewardRatio = sdk.NewDecCoins()
+		starting.NftCumulativeRewardRatio = sdk.DecCoins{}
 	}
 	if ending.NftCumulativeRewardRatio == nil {
 		k.Logger(ctx).Warn("Ending period has nil NFT cumulative ratio - treating as zero",
 			"validator", val.GetOperator(),
 			"period", endingPeriod,
 		)
-		ending.NftCumulativeRewardRatio = sdk.NewDecCoins()
+		ending.NftCumulativeRewardRatio = sdk.DecCoins{}
 	}
 
 	difference := ending.NftCumulativeRewardRatio.Sub(starting.NftCumulativeRewardRatio)
