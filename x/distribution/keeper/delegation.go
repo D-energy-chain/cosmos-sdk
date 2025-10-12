@@ -203,28 +203,26 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx context.Context, val staki
 		panic(err)
 	}
 
-	// return staking * (ending - starting)
-	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
-	if err != nil {
-		// Special case: Period 0 might not exist if validator was created before proper initialization
-		// Treat it as zero cumulative rewards
-		if startingPeriod == 0 {
-			k.Logger(ctx).Info("Period 0 historical rewards not found - treating as zero (genesis case)",
+	// Ensure period 0 exists (for backward compatibility with genesis validators and chain upgrades)
+	if startingPeriod == 0 {
+		if err := k.ensurePeriod0Exists(ctx, valBz); err != nil {
+			k.Logger(ctx).Error("Failed to ensure period 0 exists",
 				"validator", val.GetOperator(),
-			)
-			starting = types.ValidatorHistoricalRewards{
-				CumulativeRewardRatio:    sdk.NewDecCoins(),
-				NftCumulativeRewardRatio: sdk.NewDecCoins(),
-				ReferenceCount:           1,
-			}
-		} else {
-			k.Logger(ctx).Error("Missing starting period historical rewards",
-				"validator", val.GetOperator(),
-				"period", startingPeriod,
 				"error", err.Error(),
 			)
 			return sdk.DecCoins{}, err
 		}
+	}
+
+	// return staking * (ending - starting)
+	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
+	if err != nil {
+		k.Logger(ctx).Error("Missing starting period historical rewards",
+			"validator", val.GetOperator(),
+			"period", startingPeriod,
+			"error", err.Error(),
+		)
+		return sdk.DecCoins{}, err
 	}
 
 	ending, err := k.GetValidatorHistoricalRewards(ctx, valBz, endingPeriod)
@@ -304,28 +302,26 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 		panic(err)
 	}
 
-	// return nft_staking * (ending - starting) using NFT cumulative reward ratio
-	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
-	if err != nil {
-		// Special case: Period 0 might not exist if validator was created before proper initialization
-		// Treat it as zero cumulative rewards
-		if startingPeriod == 0 {
-			k.Logger(ctx).Info("Period 0 historical rewards not found for NFT - treating as zero (genesis case)",
+	// Ensure period 0 exists (for backward compatibility with genesis validators and chain upgrades)
+	if startingPeriod == 0 {
+		if err := k.ensurePeriod0Exists(ctx, valBz); err != nil {
+			k.Logger(ctx).Error("Failed to ensure period 0 exists for NFT calculation",
 				"validator", val.GetOperator(),
-			)
-			starting = types.ValidatorHistoricalRewards{
-				CumulativeRewardRatio:    sdk.NewDecCoins(),
-				NftCumulativeRewardRatio: sdk.NewDecCoins(),
-				ReferenceCount:           1,
-			}
-		} else {
-			k.Logger(ctx).Error("Missing starting period historical rewards (NFT)",
-				"validator", val.GetOperator(),
-				"period", startingPeriod,
 				"error", err.Error(),
 			)
 			return sdk.DecCoins{}, err
 		}
+	}
+
+	// return nft_staking * (ending - starting) using NFT cumulative reward ratio
+	starting, err := k.GetValidatorHistoricalRewards(ctx, valBz, startingPeriod)
+	if err != nil {
+		k.Logger(ctx).Error("Missing starting period historical rewards (NFT)",
+			"validator", val.GetOperator(),
+			"period", startingPeriod,
+			"error", err.Error(),
+		)
+		return sdk.DecCoins{}, err
 	}
 
 	ending, err := k.GetValidatorHistoricalRewards(ctx, valBz, endingPeriod)
