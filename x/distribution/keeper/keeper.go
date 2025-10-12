@@ -140,8 +140,15 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 			return nil, err
 		}
 	} else {
-		// No accumulated rewards, use current period as ending period
-		endingPeriod = currentRewards.Period
+		// No accumulated rewards - rewards already locked in the last completed period
+		// Historical rewards only exist for completed periods, not the current active period
+		// So we use currentRewards.Period - 1 (the last period that has historical rewards)
+		if currentRewards.Period == 0 {
+			// Edge case: validator just created, no rewards yet
+			endingPeriod = 0
+		} else {
+			endingPeriod = currentRewards.Period - 1
+		}
 	}
 
 	// Get delegator starting info
