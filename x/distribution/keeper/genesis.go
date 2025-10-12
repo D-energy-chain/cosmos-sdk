@@ -84,28 +84,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data types.GenesisState) {
 		if err != nil {
 			panic(err)
 		}
-		
-		// Ensure period 0 exists for this validator
-		// This handles genesis states that are missing period 0 historical rewards
-		_, err = k.GetValidatorHistoricalRewards(ctx, valAddr, 0)
-		if err != nil {
-			// Period 0 missing - create it now
-			initHeight := uint64(ctx.BlockHeight())
-			period0 := types.ValidatorHistoricalRewards{
-				CumulativeRewardRatio:    sdk.NewDecCoins(),
-				NftCumulativeRewardRatio: sdk.NewDecCoins(),
-				ReferenceCount:           1,
-				Height:                   initHeight,
-			}
-			err = k.SetValidatorHistoricalRewards(ctx, valAddr, 0, period0)
-			if err != nil {
-				panic(err)
-			}
-			ctx.Logger().Info("Created missing period 0 during genesis initialization",
-				"validator", cur.ValidatorAddress,
-			)
-		}
-		
+		// Period 0 is a logical baseline and doesn't need to be stored in the database
 		err = k.SetValidatorCurrentRewards(ctx, valAddr, cur.Rewards)
 		if err != nil {
 			panic(err)

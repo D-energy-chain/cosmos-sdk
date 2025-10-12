@@ -17,24 +17,20 @@ func (k Keeper) initializeValidator(ctx context.Context, val stakingtypes.Valida
 	if err != nil {
 		return err
 	}
-	// set initial historical rewards (period 0) with reference count of 1
-	// Initialize both native and NFT cumulative reward ratios to empty and set height
-	initHeight := uint64(sdk.UnwrapSDKContext(ctx).BlockHeight())
-	err = k.SetValidatorHistoricalRewards(ctx, valBz, 0, types.NewValidatorHistoricalRewardsWithHeight(sdk.DecCoins{}, sdk.DecCoins{}, 1, initHeight))
-	if err != nil {
-		return err
-	}
-	k.Logger(ctx).Info("Initialized validator historical rewards",
-		"validator", val.GetOperator(),
-		"period", 0,
-		"height", initHeight,
-	)
-
+	
+	// Period 0 is a logical baseline (zero cumulative rewards) and doesn't need to be stored
+	// We start tracking actual rewards from period 1 onwards
+	
 	// set current rewards (starting at period 1)
 	err = k.SetValidatorCurrentRewards(ctx, valBz, types.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
 	if err != nil {
 		return err
 	}
+	
+	k.Logger(ctx).Info("Initialized validator rewards",
+		"validator", val.GetOperator(),
+		"starting_period", 1,
+	)
 
 	// set accumulated commission
 	err = k.SetValidatorAccumulatedCommission(ctx, valBz, types.InitialValidatorAccumulatedCommission())
@@ -200,6 +196,11 @@ func (k Keeper) IncrementAllValidatorPeriods(ctx context.Context) error {
 
 // increment the reference count for a historical rewards value
 func (k Keeper) incrementReferenceCount(ctx context.Context, valAddr sdk.ValAddress, period uint64) error {
+	// Period 0 is a logical baseline and doesn't need reference counting
+	if period == 0 {
+		return nil
+	}
+	
 	historical, err := k.GetValidatorHistoricalRewards(ctx, valAddr, period)
 	if err != nil {
 		return err
@@ -213,6 +214,11 @@ func (k Keeper) incrementReferenceCount(ctx context.Context, valAddr sdk.ValAddr
 
 // decrement the reference count for a historical rewards value, and delete if zero references remain
 func (k Keeper) decrementReferenceCount(ctx context.Context, valAddr sdk.ValAddress, period uint64) error {
+	// Period 0 is a logical baseline and doesn't need reference counting
+	if period == 0 {
+		return nil
+	}
+	
 	historical, err := k.GetValidatorHistoricalRewards(ctx, valAddr, period)
 	if err != nil {
 		return err
