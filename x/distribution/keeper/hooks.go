@@ -271,43 +271,36 @@ func (h Hooks) AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAd
 }
 
 // BeforeNFTDelegationRemoved is called before an NFT delegation is removed.
-// Immediately distribute any accumulated rewards to ensure delegator doesn't lose them.
+// Withdraw accumulated rewards to ensure delegator doesn't lose them.
 func (h Hooks) BeforeNFTDelegationRemoved(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	// Check if delegator starting info exists
-	hasInfo, err := h.k.HasDelegatorStartingInfo(ctx, valAddr, delAddr)
-	if err != nil || !hasInfo {
-		// No starting info means no rewards to calculate
-		return nil
-	}
-
-	// Get starting info to check if rewards exist
-	startingInfo, err := h.k.GetDelegatorStartingInfo(ctx, valAddr, delAddr)
+	// Withdraw all accumulated rewards before removing the NFT delegation
+	// This ensures delegators don't lose earned rewards during NFT offsetting
+	//
+	// Since NFT offsetting runs at epoch end (after reward allocation and period increment),
+	// the rewards are already calculated and ready to withdraw.
+	// The withdrawal function handles both native and NFT rewards together.
+	
+	rewards, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	if err != nil {
+		// Log error but don't fail the NFT delegation removal
+		// Some errors are expected (e.g., no delegation info if already withdrawn)
+		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() && 
+		   err.Error() != types.ErrNoValidatorDistInfo.Error() {
+			h.k.Logger(ctx).Error("Failed to withdraw rewards before NFT delegation removal",
+				"delegator", delAddr.String(),
+				"validator", valAddr.String(),
+				"error", err.Error(),
+			)
+		}
 		return nil
 	}
 
-	// Get current period
-	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
-	if err != nil {
-		return nil
-	}
-
-	// If starting period == current period - 1, no new rewards have accumulated since last distribution
-	// This happens right after automatic distribution at epoch end
-	if startingInfo.PreviousPeriod >= currentRewards.Period-1 {
-		h.k.Logger(ctx).Debug("Skipping distribution on NFT delegation removal - no new rewards since last distribution",
+	if !rewards.IsZero() {
+		h.k.Logger(ctx).Info("💰 Rewards automatically withdrawn before NFT offsetting",
 			"delegator", delAddr.String(),
 			"validator", valAddr.String(),
-			"starting_period", startingInfo.PreviousPeriod,
-			"current_period", currentRewards.Period,
+			"amount", rewards.String(),
 		)
-		return nil
-	}
-
-	// Distribute NFT delegation rewards immediately before removal (zero threshold = no minimum)
-	if _, err := h.k.distributeRewardsToSingleDelegator(ctx, delAddr, valAddr, sdkmath.LegacyZeroDec()); err != nil {
-		// Log error but don't fail the delegation removal
-		h.k.Logger(ctx).Error("Failed to distribute NFT delegation rewards before removal", "error", err)
 	}
 
 	return nil
@@ -331,48 +324,33 @@ func (h Hooks) AfterValidatorBeginUnbonding(_ context.Context, _ sdk.ConsAddress
 }
 
 func (h Hooks) BeforeDelegationRemoved(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	// Check if delegation exists before attempting distribution
-	del, err := h.k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
-	if err != nil || del == nil {
-		// If delegation doesn't exist, nothing to distribute
-		return nil
-	}
-
-	// Check if delegator starting info exists
-	hasInfo, err := h.k.HasDelegatorStartingInfo(ctx, valAddr, delAddr)
-	if err != nil || !hasInfo {
-		// No starting info means no rewards to calculate
-		return nil
-	}
-
-	// Get starting info to check if rewards exist
-	startingInfo, err := h.k.GetDelegatorStartingInfo(ctx, valAddr, delAddr)
+	// Withdraw all accumulated rewards before removing the delegation
+	// This ensures delegators don't lose earned rewards when unbonding
+	//
+	// Since undelegation is processed at epoch end (after reward allocation and period increment),
+	// the rewards are already calculated and ready to withdraw.
+	
+	rewards, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	if err != nil {
+		// Log error but don't fail the delegation removal
+		// Some errors are expected (e.g., no delegation info if already withdrawn)
+		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() && 
+		   err.Error() != types.ErrNoValidatorDistInfo.Error() {
+			h.k.Logger(ctx).Error("Failed to withdraw rewards before delegation removal",
+				"delegator", delAddr.String(),
+				"validator", valAddr.String(),
+				"error", err.Error(),
+			)
+		}
 		return nil
 	}
 
-	// Get current period
-	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
-	if err != nil {
-		return nil
-	}
-
-	// If starting period == current period - 1, no new rewards have accumulated since last distribution
-	// This happens right after automatic distribution at epoch end
-	if startingInfo.PreviousPeriod >= currentRewards.Period-1 {
-		h.k.Logger(ctx).Debug("Skipping distribution on delegation removal - no new rewards since last distribution",
+	if !rewards.IsZero() {
+		h.k.Logger(ctx).Info("💰 Rewards automatically withdrawn before delegation removal",
 			"delegator", delAddr.String(),
 			"validator", valAddr.String(),
-			"starting_period", startingInfo.PreviousPeriod,
-			"current_period", currentRewards.Period,
+			"amount", rewards.String(),
 		)
-		return nil
-	}
-
-	// Distribute delegation rewards immediately before removal (zero threshold = no minimum)
-	if _, err := h.k.distributeRewardsToSingleDelegator(ctx, delAddr, valAddr, sdkmath.LegacyZeroDec()); err != nil {
-		// Log error but don't fail the delegation removal
-		h.k.Logger(ctx).Error("Failed to distribute delegation rewards before removal", "error", err)
 	}
 
 	return nil
@@ -414,13 +392,16 @@ func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumbe
 			return
 		}
 
-		// Automatically distribute rewards to all delegators
-		// This transfers accumulated rewards directly to delegator withdraw addresses
-		if err := h.k.DistributeRewardsToAllDelegators(ctx); err != nil {
-			ctx.Logger().Error("Failed to automatically distribute rewards to delegators", "error", err)
-			// Don't return here - epoch end should complete even if distribution fails
-			// Rewards remain in outstanding and can be distributed next epoch
-		}
+		// === AUTOMATIC DISTRIBUTION DISABLED - Using Lazy Withdrawal ===
+		// Delegators must manually claim rewards using MsgWithdrawDelegatorReward
+		// This reduces gas costs and distributes the computational load
+		// Rewards are automatically withdrawn when delegations are removed (unbonding/offsetting)
+		//
+		// if err := h.k.DistributeRewardsToAllDelegators(ctx); err != nil {
+		// 	ctx.Logger().Error("Failed to automatically distribute rewards to delegators", "error", err)
+		// }
+
+		ctx.Logger().Info("Epoch rewards allocated - awaiting manual withdrawal by delegators")
 
 		// Clean up old performance records (keep last 100 epochs)
 		if err := h.k.CleanupOldEpochPerformanceRecords(ctx, epochIdentifier, epochNumber, 100); err != nil {
@@ -428,7 +409,7 @@ func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumbe
 			// Don't return here as it's not critical
 		}
 
-		ctx.Logger().Info("Performance-based reward distribution completed successfully")
+		ctx.Logger().Info("Epoch processing completed - rewards allocated and ready for withdrawal")
 	} else {
 		// Use legacy single-block voting allocation
 		var previousTotalPower int64
