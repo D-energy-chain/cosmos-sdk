@@ -317,36 +317,23 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 
 	// Determine how to split the rewards
 	var nftRewards, nativeRewards sdk.DecCoins
-	var nftCommission, nativeCommission sdk.DecCoins
-	var nftShared, nativeShared sdk.DecCoins
 
 	// If there are no NFT shares, all rewards go to native token stakers
 	if nftShares.IsZero() {
 		// All rewards go to native token stakers
 		nativeRewards = tokens
-		nativeCommission = tokens.MulDec(val.GetCommission())
-		nativeShared = tokens.Sub(nativeCommission)
 	} else if nativeShares.IsZero() {
 		// All rewards go to NFT stakers
 		nftRewards = tokens
-		nftCommission = tokens.MulDec(val.GetCommission())
-		nftShared = tokens.Sub(nftCommission)
 	} else {
 		// Split rewards based on the configured ratios
 		// Calculate rewards for each type based on the total staking allocation (80%)
 		nftRewards = tokens.MulDecTruncate(nftStakingRatio)
 		nativeRewards = tokens.MulDecTruncate(nativeStakingRatio)
-
-		// Apply commission to each reward type
-		nftCommission = nftRewards.MulDec(val.GetCommission())
-		nftShared = nftRewards.Sub(nftCommission)
-
-		nativeCommission = nativeRewards.MulDec(val.GetCommission())
-		nativeShared = nativeRewards.Sub(nativeCommission)
 	}
 
 	// Combine commissions from both reward types
-	totalCommission := nftCommission.Add(nativeCommission...)
+	totalCommission := tokens.MulDec(val.GetCommission())
 
 	// Log validator reward allocation details
 	k.logValidatorRewardAllocation(ctx, val, tokens, nftRewards, nativeRewards, totalCommission)
@@ -370,17 +357,24 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		return err
 	}
 
-	// Update current rewards - keep native and NFT rewards separate
-	// For now, we store the total in the main rewards field for backward compatibility
-	// but we'll separate them during period increment
-	totalShared := nftShared.Add(nativeShared...)
 	currentRewards, err := k.GetValidatorCurrentRewards(ctx, valBz)
 	if err != nil {
 		return err
 	}
 
-	currentRewards.Rewards = currentRewards.Rewards.Add(totalShared...)
+	currentNFTRewards, err := k.GetValidatorCurrentNFTRewards(ctx, valBz)
+	if err != nil {
+		return err
+	}
+
+	currentRewards.Rewards = currentRewards.Rewards.Add(nativeRewards...)
+	currentNFTRewards.Rewards = currentNFTRewards.Rewards.Add(nftRewards...)
+
 	err = k.SetValidatorCurrentRewards(ctx, valBz, currentRewards)
+	if err != nil {
+		return err
+	}
+	err = k.SetValidatorCurrentNFTRewards(ctx, valBz, currentNFTRewards)
 	if err != nil {
 		return err
 	}
