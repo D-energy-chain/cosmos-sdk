@@ -9,33 +9,29 @@ import (
 // create a new ValidatorHistoricalRewards
 func NewValidatorHistoricalRewards(cumulativeRewardRatio sdk.DecCoins, referenceCount uint32) ValidatorHistoricalRewards {
 	return ValidatorHistoricalRewards{
-		CumulativeRewardRatio:    cumulativeRewardRatio,
-		NftCumulativeRewardRatio: sdk.DecCoins{},
-		ReferenceCount:           referenceCount,
+		CumulativeRewardRatio: cumulativeRewardRatio,
+		ReferenceCount:        referenceCount,
 	}
 }
 
-// create a new ValidatorHistoricalRewards with both native and NFT cumulative reward ratios
-func NewValidatorHistoricalRewardsWithNFT(cumulativeRewardRatio, nftCumulativeRewardRatio sdk.DecCoins, referenceCount uint32) ValidatorHistoricalRewards {
-	return ValidatorHistoricalRewards{
-		CumulativeRewardRatio:    cumulativeRewardRatio,
+// create a new ValidatorHistoricalRewards
+func NewValidatorHistoricalNFTRewards(nftCumulativeRewardRatio sdk.DecCoins, referenceCount uint32) ValidatorHistoricalNFTRewards {
+	return ValidatorHistoricalNFTRewards{
 		NftCumulativeRewardRatio: nftCumulativeRewardRatio,
 		ReferenceCount:           referenceCount,
-	}
-}
-
-// create a new ValidatorHistoricalRewards with height metadata
-func NewValidatorHistoricalRewardsWithHeight(cumulativeRewardRatio, nftCumulativeRewardRatio sdk.DecCoins, referenceCount uint32, height uint64) ValidatorHistoricalRewards {
-	return ValidatorHistoricalRewards{
-		CumulativeRewardRatio:    cumulativeRewardRatio,
-		NftCumulativeRewardRatio: nftCumulativeRewardRatio,
-		ReferenceCount:           referenceCount,
-		Height:                   height,
 	}
 }
 
 // create a new ValidatorCurrentRewards
 func NewValidatorCurrentRewards(rewards sdk.DecCoins, period uint64) ValidatorCurrentRewards {
+	return ValidatorCurrentRewards{
+		Rewards: rewards,
+		Period:  period,
+	}
+}
+
+// create a new ValidatorCurrentRewards
+func NewValidatorCurrentNFTRewards(rewards sdk.DecCoins, period uint64) ValidatorCurrentRewards {
 	return ValidatorCurrentRewards{
 		Rewards: rewards,
 		Period:  period,

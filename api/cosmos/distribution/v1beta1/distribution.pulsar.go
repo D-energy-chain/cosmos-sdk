@@ -26,7 +26,6 @@ var (
 	fd_Params_native_staking_ratio                  protoreflect.FieldDescriptor
 	fd_Params_min_commit_ratio                      protoreflect.FieldDescriptor
 	fd_Params_enable_performance_based_distribution protoreflect.FieldDescriptor
-	fd_Params_min_auto_distribution_amount          protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -40,7 +39,6 @@ func init() {
 	fd_Params_native_staking_ratio = md_Params.Fields().ByName("native_staking_ratio")
 	fd_Params_min_commit_ratio = md_Params.Fields().ByName("min_commit_ratio")
 	fd_Params_enable_performance_based_distribution = md_Params.Fields().ByName("enable_performance_based_distribution")
-	fd_Params_min_auto_distribution_amount = md_Params.Fields().ByName("min_auto_distribution_amount")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -156,12 +154,6 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if x.MinAutoDistributionAmount != "" {
-		value := protoreflect.ValueOfString(x.MinAutoDistributionAmount)
-		if !f(fd_Params_min_auto_distribution_amount, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -193,8 +185,6 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.MinCommitRatio != ""
 	case "cosmos.distribution.v1beta1.Params.enable_performance_based_distribution":
 		return x.EnablePerformanceBasedDistribution != false
-	case "cosmos.distribution.v1beta1.Params.min_auto_distribution_amount":
-		return x.MinAutoDistributionAmount != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -227,8 +217,6 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 		x.MinCommitRatio = ""
 	case "cosmos.distribution.v1beta1.Params.enable_performance_based_distribution":
 		x.EnablePerformanceBasedDistribution = false
-	case "cosmos.distribution.v1beta1.Params.min_auto_distribution_amount":
-		x.MinAutoDistributionAmount = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -269,9 +257,6 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "cosmos.distribution.v1beta1.Params.enable_performance_based_distribution":
 		value := x.EnablePerformanceBasedDistribution
 		return protoreflect.ValueOfBool(value)
-	case "cosmos.distribution.v1beta1.Params.min_auto_distribution_amount":
-		value := x.MinAutoDistributionAmount
-		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -308,8 +293,6 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 		x.MinCommitRatio = value.Interface().(string)
 	case "cosmos.distribution.v1beta1.Params.enable_performance_based_distribution":
 		x.EnablePerformanceBasedDistribution = value.Bool()
-	case "cosmos.distribution.v1beta1.Params.min_auto_distribution_amount":
-		x.MinAutoDistributionAmount = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -346,8 +329,6 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field min_commit_ratio of message cosmos.distribution.v1beta1.Params is not mutable"))
 	case "cosmos.distribution.v1beta1.Params.enable_performance_based_distribution":
 		panic(fmt.Errorf("field enable_performance_based_distribution of message cosmos.distribution.v1beta1.Params is not mutable"))
-	case "cosmos.distribution.v1beta1.Params.min_auto_distribution_amount":
-		panic(fmt.Errorf("field min_auto_distribution_amount of message cosmos.distribution.v1beta1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -377,8 +358,6 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 		return protoreflect.ValueOfString("")
 	case "cosmos.distribution.v1beta1.Params.enable_performance_based_distribution":
 		return protoreflect.ValueOfBool(false)
-	case "cosmos.distribution.v1beta1.Params.min_auto_distribution_amount":
-		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.Params"))
@@ -478,10 +457,6 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.EnablePerformanceBasedDistribution {
 			n += 2
 		}
-		l = len(x.MinAutoDistributionAmount)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -510,13 +485,6 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.MinAutoDistributionAmount) > 0 {
-			i -= len(x.MinAutoDistributionAmount)
-			copy(dAtA[i:], x.MinAutoDistributionAmount)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MinAutoDistributionAmount)))
-			i--
-			dAtA[i] = 0x4a
 		}
 		if x.EnablePerformanceBasedDistribution {
 			i--
@@ -861,38 +829,6 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.EnablePerformanceBasedDistribution = bool(v != 0)
-			case 9:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinAutoDistributionAmount", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MinAutoDistributionAmount = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -979,70 +915,17 @@ func (x *_ValidatorHistoricalRewards_1_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_ValidatorHistoricalRewards_3_list)(nil)
-
-type _ValidatorHistoricalRewards_3_list struct {
-	list *[]*v1beta1.DecCoin
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.DecCoin)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.DecCoin)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) AppendMutable() protoreflect.Value {
-	v := new(v1beta1.DecCoin)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) NewElement() protoreflect.Value {
-	v := new(v1beta1.DecCoin)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_ValidatorHistoricalRewards_3_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_ValidatorHistoricalRewards                             protoreflect.MessageDescriptor
-	fd_ValidatorHistoricalRewards_cumulative_reward_ratio     protoreflect.FieldDescriptor
-	fd_ValidatorHistoricalRewards_nft_cumulative_reward_ratio protoreflect.FieldDescriptor
-	fd_ValidatorHistoricalRewards_reference_count             protoreflect.FieldDescriptor
-	fd_ValidatorHistoricalRewards_height                      protoreflect.FieldDescriptor
+	md_ValidatorHistoricalRewards                         protoreflect.MessageDescriptor
+	fd_ValidatorHistoricalRewards_cumulative_reward_ratio protoreflect.FieldDescriptor
+	fd_ValidatorHistoricalRewards_reference_count         protoreflect.FieldDescriptor
+	fd_ValidatorHistoricalRewards_height                  protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_cosmos_distribution_v1beta1_distribution_proto_init()
 	md_ValidatorHistoricalRewards = File_cosmos_distribution_v1beta1_distribution_proto.Messages().ByName("ValidatorHistoricalRewards")
 	fd_ValidatorHistoricalRewards_cumulative_reward_ratio = md_ValidatorHistoricalRewards.Fields().ByName("cumulative_reward_ratio")
-	fd_ValidatorHistoricalRewards_nft_cumulative_reward_ratio = md_ValidatorHistoricalRewards.Fields().ByName("nft_cumulative_reward_ratio")
 	fd_ValidatorHistoricalRewards_reference_count = md_ValidatorHistoricalRewards.Fields().ByName("reference_count")
 	fd_ValidatorHistoricalRewards_height = md_ValidatorHistoricalRewards.Fields().ByName("height")
 }
@@ -1118,12 +1001,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) Range(f func(protoreflect.Fi
 			return
 		}
 	}
-	if len(x.NftCumulativeRewardRatio) != 0 {
-		value := protoreflect.ValueOfList(&_ValidatorHistoricalRewards_3_list{list: &x.NftCumulativeRewardRatio})
-		if !f(fd_ValidatorHistoricalRewards_nft_cumulative_reward_ratio, value) {
-			return
-		}
-	}
 	if x.ReferenceCount != uint32(0) {
 		value := protoreflect.ValueOfUint32(x.ReferenceCount)
 		if !f(fd_ValidatorHistoricalRewards_reference_count, value) {
@@ -1153,8 +1030,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) Has(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.cumulative_reward_ratio":
 		return len(x.CumulativeRewardRatio) != 0
-	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio":
-		return len(x.NftCumulativeRewardRatio) != 0
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.reference_count":
 		return x.ReferenceCount != uint32(0)
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.height":
@@ -1177,8 +1052,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) Clear(fd protoreflect.FieldD
 	switch fd.FullName() {
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.cumulative_reward_ratio":
 		x.CumulativeRewardRatio = nil
-	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio":
-		x.NftCumulativeRewardRatio = nil
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.reference_count":
 		x.ReferenceCount = uint32(0)
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.height":
@@ -1204,12 +1077,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) Get(descriptor protoreflect.
 			return protoreflect.ValueOfList(&_ValidatorHistoricalRewards_1_list{})
 		}
 		listValue := &_ValidatorHistoricalRewards_1_list{list: &x.CumulativeRewardRatio}
-		return protoreflect.ValueOfList(listValue)
-	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio":
-		if len(x.NftCumulativeRewardRatio) == 0 {
-			return protoreflect.ValueOfList(&_ValidatorHistoricalRewards_3_list{})
-		}
-		listValue := &_ValidatorHistoricalRewards_3_list{list: &x.NftCumulativeRewardRatio}
 		return protoreflect.ValueOfList(listValue)
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.reference_count":
 		value := x.ReferenceCount
@@ -1241,10 +1108,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) Set(fd protoreflect.FieldDes
 		lv := value.List()
 		clv := lv.(*_ValidatorHistoricalRewards_1_list)
 		x.CumulativeRewardRatio = *clv.list
-	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio":
-		lv := value.List()
-		clv := lv.(*_ValidatorHistoricalRewards_3_list)
-		x.NftCumulativeRewardRatio = *clv.list
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.reference_count":
 		x.ReferenceCount = uint32(value.Uint())
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.height":
@@ -1275,12 +1138,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) Mutable(fd protoreflect.Fiel
 		}
 		value := &_ValidatorHistoricalRewards_1_list{list: &x.CumulativeRewardRatio}
 		return protoreflect.ValueOfList(value)
-	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio":
-		if x.NftCumulativeRewardRatio == nil {
-			x.NftCumulativeRewardRatio = []*v1beta1.DecCoin{}
-		}
-		value := &_ValidatorHistoricalRewards_3_list{list: &x.NftCumulativeRewardRatio}
-		return protoreflect.ValueOfList(value)
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.reference_count":
 		panic(fmt.Errorf("field reference_count of message cosmos.distribution.v1beta1.ValidatorHistoricalRewards is not mutable"))
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.height":
@@ -1301,9 +1158,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) NewField(fd protoreflect.Fie
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.cumulative_reward_ratio":
 		list := []*v1beta1.DecCoin{}
 		return protoreflect.ValueOfList(&_ValidatorHistoricalRewards_1_list{list: &list})
-	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio":
-		list := []*v1beta1.DecCoin{}
-		return protoreflect.ValueOfList(&_ValidatorHistoricalRewards_3_list{list: &list})
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.reference_count":
 		return protoreflect.ValueOfUint32(uint32(0))
 	case "cosmos.distribution.v1beta1.ValidatorHistoricalRewards.height":
@@ -1383,12 +1237,6 @@ func (x *fastReflection_ValidatorHistoricalRewards) ProtoMethods() *protoiface.M
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if len(x.NftCumulativeRewardRatio) > 0 {
-			for _, e := range x.NftCumulativeRewardRatio {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
 		if x.ReferenceCount != 0 {
 			n += 1 + runtime.Sov(uint64(x.ReferenceCount))
 		}
@@ -1427,23 +1275,7 @@ func (x *fastReflection_ValidatorHistoricalRewards) ProtoMethods() *protoiface.M
 		if x.Height != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Height))
 			i--
-			dAtA[i] = 0x20
-		}
-		if len(x.NftCumulativeRewardRatio) > 0 {
-			for iNdEx := len(x.NftCumulativeRewardRatio) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.NftCumulativeRewardRatio[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x1a
-			}
+			dAtA[i] = 0x18
 		}
 		if x.ReferenceCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ReferenceCount))
@@ -1549,7 +1381,563 @@ func (x *fastReflection_ValidatorHistoricalRewards) ProtoMethods() *protoiface.M
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReferenceCount", wireType)
+				}
+				x.ReferenceCount = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ReferenceCount |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+				}
+				x.Height = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Height |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_ValidatorHistoricalNFTRewards_1_list)(nil)
+
+type _ValidatorHistoricalNFTRewards_1_list struct {
+	list *[]*v1beta1.DecCoin
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*v1beta1.DecCoin)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*v1beta1.DecCoin)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) AppendMutable() protoreflect.Value {
+	v := new(v1beta1.DecCoin)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) NewElement() protoreflect.Value {
+	v := new(v1beta1.DecCoin)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_ValidatorHistoricalNFTRewards_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_ValidatorHistoricalNFTRewards                             protoreflect.MessageDescriptor
+	fd_ValidatorHistoricalNFTRewards_nft_cumulative_reward_ratio protoreflect.FieldDescriptor
+	fd_ValidatorHistoricalNFTRewards_reference_count             protoreflect.FieldDescriptor
+	fd_ValidatorHistoricalNFTRewards_height                      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_distribution_v1beta1_distribution_proto_init()
+	md_ValidatorHistoricalNFTRewards = File_cosmos_distribution_v1beta1_distribution_proto.Messages().ByName("ValidatorHistoricalNFTRewards")
+	fd_ValidatorHistoricalNFTRewards_nft_cumulative_reward_ratio = md_ValidatorHistoricalNFTRewards.Fields().ByName("nft_cumulative_reward_ratio")
+	fd_ValidatorHistoricalNFTRewards_reference_count = md_ValidatorHistoricalNFTRewards.Fields().ByName("reference_count")
+	fd_ValidatorHistoricalNFTRewards_height = md_ValidatorHistoricalNFTRewards.Fields().ByName("height")
+}
+
+var _ protoreflect.Message = (*fastReflection_ValidatorHistoricalNFTRewards)(nil)
+
+type fastReflection_ValidatorHistoricalNFTRewards ValidatorHistoricalNFTRewards
+
+func (x *ValidatorHistoricalNFTRewards) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ValidatorHistoricalNFTRewards)(x)
+}
+
+func (x *ValidatorHistoricalNFTRewards) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ValidatorHistoricalNFTRewards_messageType fastReflection_ValidatorHistoricalNFTRewards_messageType
+var _ protoreflect.MessageType = fastReflection_ValidatorHistoricalNFTRewards_messageType{}
+
+type fastReflection_ValidatorHistoricalNFTRewards_messageType struct{}
+
+func (x fastReflection_ValidatorHistoricalNFTRewards_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ValidatorHistoricalNFTRewards)(nil)
+}
+func (x fastReflection_ValidatorHistoricalNFTRewards_messageType) New() protoreflect.Message {
+	return new(fastReflection_ValidatorHistoricalNFTRewards)
+}
+func (x fastReflection_ValidatorHistoricalNFTRewards_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ValidatorHistoricalNFTRewards
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Descriptor() protoreflect.MessageDescriptor {
+	return md_ValidatorHistoricalNFTRewards
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Type() protoreflect.MessageType {
+	return _fastReflection_ValidatorHistoricalNFTRewards_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) New() protoreflect.Message {
+	return new(fastReflection_ValidatorHistoricalNFTRewards)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Interface() protoreflect.ProtoMessage {
+	return (*ValidatorHistoricalNFTRewards)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.NftCumulativeRewardRatio) != 0 {
+		value := protoreflect.ValueOfList(&_ValidatorHistoricalNFTRewards_1_list{list: &x.NftCumulativeRewardRatio})
+		if !f(fd_ValidatorHistoricalNFTRewards_nft_cumulative_reward_ratio, value) {
+			return
+		}
+	}
+	if x.ReferenceCount != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.ReferenceCount)
+		if !f(fd_ValidatorHistoricalNFTRewards_reference_count, value) {
+			return
+		}
+	}
+	if x.Height != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Height)
+		if !f(fd_ValidatorHistoricalNFTRewards_height, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio":
+		return len(x.NftCumulativeRewardRatio) != 0
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.reference_count":
+		return x.ReferenceCount != uint32(0)
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.height":
+		return x.Height != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio":
+		x.NftCumulativeRewardRatio = nil
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.reference_count":
+		x.ReferenceCount = uint32(0)
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.height":
+		x.Height = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio":
+		if len(x.NftCumulativeRewardRatio) == 0 {
+			return protoreflect.ValueOfList(&_ValidatorHistoricalNFTRewards_1_list{})
+		}
+		listValue := &_ValidatorHistoricalNFTRewards_1_list{list: &x.NftCumulativeRewardRatio}
+		return protoreflect.ValueOfList(listValue)
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.reference_count":
+		value := x.ReferenceCount
+		return protoreflect.ValueOfUint32(value)
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.height":
+		value := x.Height
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio":
+		lv := value.List()
+		clv := lv.(*_ValidatorHistoricalNFTRewards_1_list)
+		x.NftCumulativeRewardRatio = *clv.list
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.reference_count":
+		x.ReferenceCount = uint32(value.Uint())
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.height":
+		x.Height = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio":
+		if x.NftCumulativeRewardRatio == nil {
+			x.NftCumulativeRewardRatio = []*v1beta1.DecCoin{}
+		}
+		value := &_ValidatorHistoricalNFTRewards_1_list{list: &x.NftCumulativeRewardRatio}
+		return protoreflect.ValueOfList(value)
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.reference_count":
+		panic(fmt.Errorf("field reference_count of message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards is not mutable"))
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.height":
+		panic(fmt.Errorf("field height of message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio":
+		list := []*v1beta1.DecCoin{}
+		return protoreflect.ValueOfList(&_ValidatorHistoricalNFTRewards_1_list{list: &list})
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.reference_count":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.height":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ValidatorHistoricalNFTRewards) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ValidatorHistoricalNFTRewards)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.NftCumulativeRewardRatio) > 0 {
+			for _, e := range x.NftCumulativeRewardRatio {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.ReferenceCount != 0 {
+			n += 1 + runtime.Sov(uint64(x.ReferenceCount))
+		}
+		if x.Height != 0 {
+			n += 1 + runtime.Sov(uint64(x.Height))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ValidatorHistoricalNFTRewards)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Height != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Height))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.ReferenceCount != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ReferenceCount))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.NftCumulativeRewardRatio) > 0 {
+			for iNdEx := len(x.NftCumulativeRewardRatio) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.NftCumulativeRewardRatio[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ValidatorHistoricalNFTRewards)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ValidatorHistoricalNFTRewards: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ValidatorHistoricalNFTRewards: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NftCumulativeRewardRatio", wireType)
 				}
@@ -1602,7 +1990,7 @@ func (x *fastReflection_ValidatorHistoricalRewards) ProtoMethods() *protoiface.M
 						break
 					}
 				}
-			case 4:
+			case 3:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
 				}
@@ -1729,7 +2117,7 @@ func (x *ValidatorCurrentRewards) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorCurrentRewards) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[2]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2269,7 +2657,7 @@ func (x *ValidatorAccumulatedCommission) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorAccumulatedCommission) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[3]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2763,7 +3151,7 @@ func (x *ValidatorOutstandingRewards) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorOutstandingRewards) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[4]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3208,7 +3596,7 @@ func (x *ValidatorSlashEvent) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorSlashEvent) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[5]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3725,7 +4113,7 @@ func (x *ValidatorSlashEvents) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorSlashEvents) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[6]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4219,7 +4607,7 @@ func (x *FeePool) ProtoReflect() protoreflect.Message {
 }
 
 func (x *FeePool) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[7]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4719,7 +5107,7 @@ func (x *CommunityPoolSpendProposal) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CommunityPoolSpendProposal) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[8]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5356,7 +5744,7 @@ func (x *DelegatorStartingInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DelegatorStartingInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[9]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5956,6 +6344,522 @@ func (x *fastReflection_DelegatorStartingInfo) ProtoMethods() *protoiface.Method
 	}
 }
 
+var (
+	md_NFTDelegatorStartingInfo                 protoreflect.MessageDescriptor
+	fd_NFTDelegatorStartingInfo_previous_period protoreflect.FieldDescriptor
+	fd_NFTDelegatorStartingInfo_nft_stake       protoreflect.FieldDescriptor
+	fd_NFTDelegatorStartingInfo_height          protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_distribution_v1beta1_distribution_proto_init()
+	md_NFTDelegatorStartingInfo = File_cosmos_distribution_v1beta1_distribution_proto.Messages().ByName("NFTDelegatorStartingInfo")
+	fd_NFTDelegatorStartingInfo_previous_period = md_NFTDelegatorStartingInfo.Fields().ByName("previous_period")
+	fd_NFTDelegatorStartingInfo_nft_stake = md_NFTDelegatorStartingInfo.Fields().ByName("nft_stake")
+	fd_NFTDelegatorStartingInfo_height = md_NFTDelegatorStartingInfo.Fields().ByName("height")
+}
+
+var _ protoreflect.Message = (*fastReflection_NFTDelegatorStartingInfo)(nil)
+
+type fastReflection_NFTDelegatorStartingInfo NFTDelegatorStartingInfo
+
+func (x *NFTDelegatorStartingInfo) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_NFTDelegatorStartingInfo)(x)
+}
+
+func (x *NFTDelegatorStartingInfo) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_NFTDelegatorStartingInfo_messageType fastReflection_NFTDelegatorStartingInfo_messageType
+var _ protoreflect.MessageType = fastReflection_NFTDelegatorStartingInfo_messageType{}
+
+type fastReflection_NFTDelegatorStartingInfo_messageType struct{}
+
+func (x fastReflection_NFTDelegatorStartingInfo_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_NFTDelegatorStartingInfo)(nil)
+}
+func (x fastReflection_NFTDelegatorStartingInfo_messageType) New() protoreflect.Message {
+	return new(fastReflection_NFTDelegatorStartingInfo)
+}
+func (x fastReflection_NFTDelegatorStartingInfo_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_NFTDelegatorStartingInfo
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_NFTDelegatorStartingInfo) Descriptor() protoreflect.MessageDescriptor {
+	return md_NFTDelegatorStartingInfo
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_NFTDelegatorStartingInfo) Type() protoreflect.MessageType {
+	return _fastReflection_NFTDelegatorStartingInfo_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_NFTDelegatorStartingInfo) New() protoreflect.Message {
+	return new(fastReflection_NFTDelegatorStartingInfo)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_NFTDelegatorStartingInfo) Interface() protoreflect.ProtoMessage {
+	return (*NFTDelegatorStartingInfo)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_NFTDelegatorStartingInfo) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.PreviousPeriod != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PreviousPeriod)
+		if !f(fd_NFTDelegatorStartingInfo_previous_period, value) {
+			return
+		}
+	}
+	if x.NftStake != "" {
+		value := protoreflect.ValueOfString(x.NftStake)
+		if !f(fd_NFTDelegatorStartingInfo_nft_stake, value) {
+			return
+		}
+	}
+	if x.Height != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Height)
+		if !f(fd_NFTDelegatorStartingInfo_height, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_NFTDelegatorStartingInfo) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.previous_period":
+		return x.PreviousPeriod != uint64(0)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.nft_stake":
+		return x.NftStake != ""
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.height":
+		return x.Height != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfo) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.previous_period":
+		x.PreviousPeriod = uint64(0)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.nft_stake":
+		x.NftStake = ""
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.height":
+		x.Height = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_NFTDelegatorStartingInfo) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.previous_period":
+		value := x.PreviousPeriod
+		return protoreflect.ValueOfUint64(value)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.nft_stake":
+		value := x.NftStake
+		return protoreflect.ValueOfString(value)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.height":
+		value := x.Height
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfo) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.previous_period":
+		x.PreviousPeriod = value.Uint()
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.nft_stake":
+		x.NftStake = value.Interface().(string)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.height":
+		x.Height = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfo) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.previous_period":
+		panic(fmt.Errorf("field previous_period of message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo is not mutable"))
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.nft_stake":
+		panic(fmt.Errorf("field nft_stake of message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo is not mutable"))
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.height":
+		panic(fmt.Errorf("field height of message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_NFTDelegatorStartingInfo) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.previous_period":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.nft_stake":
+		return protoreflect.ValueOfString("")
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfo.height":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_NFTDelegatorStartingInfo) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.distribution.v1beta1.NFTDelegatorStartingInfo", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_NFTDelegatorStartingInfo) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfo) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_NFTDelegatorStartingInfo) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_NFTDelegatorStartingInfo) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*NFTDelegatorStartingInfo)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.PreviousPeriod != 0 {
+			n += 1 + runtime.Sov(uint64(x.PreviousPeriod))
+		}
+		l = len(x.NftStake)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Height != 0 {
+			n += 1 + runtime.Sov(uint64(x.Height))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*NFTDelegatorStartingInfo)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Height != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Height))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.NftStake) > 0 {
+			i -= len(x.NftStake)
+			copy(dAtA[i:], x.NftStake)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NftStake)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.PreviousPeriod != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PreviousPeriod))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*NFTDelegatorStartingInfo)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NFTDelegatorStartingInfo: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NFTDelegatorStartingInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PreviousPeriod", wireType)
+				}
+				x.PreviousPeriod = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PreviousPeriod |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NftStake", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.NftStake = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+				}
+				x.Height = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Height |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 var _ protoreflect.List = (*_DelegationDelegatorReward_2_list)(nil)
 
 type _DelegationDelegatorReward_2_list struct {
@@ -6029,7 +6933,7 @@ func (x *DelegationDelegatorReward) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DelegationDelegatorReward) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[10]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6546,7 +7450,7 @@ func (x *ValidatorEpochPerformance) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorEpochPerformance) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[11]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7298,7 +8202,7 @@ func (x *CommunityPoolSpendProposalWithDeposit) ProtoReflect() protoreflect.Mess
 }
 
 func (x *CommunityPoolSpendProposalWithDeposit) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[12]
+	mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7993,12 +8897,6 @@ type Params struct {
 	// instead of single-block voting status. When enabled, validators are rewarded based
 	// on their commit ratio throughout the epoch rather than just the final block vote.
 	EnablePerformanceBasedDistribution bool `protobuf:"varint,8,opt,name=enable_performance_based_distribution,json=enablePerformanceBasedDistribution,proto3" json:"enable_performance_based_distribution,omitempty"`
-	// min_auto_distribution_amount defines the minimum reward amount required for automatic
-	// distribution at epoch end. Delegators with rewards below this threshold will have their
-	// rewards accumulated and distributed in a future epoch when the amount exceeds the threshold.
-	// This optimization reduces gas costs by skipping transfers of dust amounts.
-	// Default: 0.000001 (1 micro-token)
-	MinAutoDistributionAmount string `protobuf:"bytes,9,opt,name=min_auto_distribution_amount,json=minAutoDistributionAmount,proto3" json:"min_auto_distribution_amount,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -8079,13 +8977,6 @@ func (x *Params) GetEnablePerformanceBasedDistribution() bool {
 	return false
 }
 
-func (x *Params) GetMinAutoDistributionAmount() string {
-	if x != nil {
-		return x.MinAutoDistributionAmount
-	}
-	return ""
-}
-
 // ValidatorHistoricalRewards represents historical rewards for a validator.
 // Height is implicit within the store key.
 // Cumulative reward ratio is the sum from the zeroeth period
@@ -8105,11 +8996,9 @@ type ValidatorHistoricalRewards struct {
 	unknownFields protoimpl.UnknownFields
 
 	CumulativeRewardRatio []*v1beta1.DecCoin `protobuf:"bytes,1,rep,name=cumulative_reward_ratio,json=cumulativeRewardRatio,proto3" json:"cumulative_reward_ratio,omitempty"`
-	// nft_cumulative_reward_ratio is the cumulative reward ratio for NFT delegations
-	NftCumulativeRewardRatio []*v1beta1.DecCoin `protobuf:"bytes,3,rep,name=nft_cumulative_reward_ratio,json=nftCumulativeRewardRatio,proto3" json:"nft_cumulative_reward_ratio,omitempty"`
-	ReferenceCount           uint32             `protobuf:"varint,2,opt,name=reference_count,json=referenceCount,proto3" json:"reference_count,omitempty"`
+	ReferenceCount        uint32             `protobuf:"varint,2,opt,name=reference_count,json=referenceCount,proto3" json:"reference_count,omitempty"`
 	// height is the block height when this historical reward period was created
-	Height uint64 `protobuf:"varint,4,opt,name=height,proto3" json:"height,omitempty"`
+	Height uint64 `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
 }
 
 func (x *ValidatorHistoricalRewards) Reset() {
@@ -8139,13 +9028,6 @@ func (x *ValidatorHistoricalRewards) GetCumulativeRewardRatio() []*v1beta1.DecCo
 	return nil
 }
 
-func (x *ValidatorHistoricalRewards) GetNftCumulativeRewardRatio() []*v1beta1.DecCoin {
-	if x != nil {
-		return x.NftCumulativeRewardRatio
-	}
-	return nil
-}
-
 func (x *ValidatorHistoricalRewards) GetReferenceCount() uint32 {
 	if x != nil {
 		return x.ReferenceCount
@@ -8154,6 +9036,72 @@ func (x *ValidatorHistoricalRewards) GetReferenceCount() uint32 {
 }
 
 func (x *ValidatorHistoricalRewards) GetHeight() uint64 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+// ValidatorHistoricalNFTRewards represents historical NFT rewards for a validator.
+// Height is implicit within the store key.
+// Cumulative reward ratio is the sum from the zeroeth period
+// until this period of rewards / tokens, per the spec.
+// The reference count indicates the number of objects
+// which might need to reference this historical entry at any point.
+// ReferenceCount =
+//
+//	  number of outstanding delegations which ended the associated period (and
+//	  might need to read that record)
+//	+ number of slashes which ended the associated period (and might need to
+//	read that record)
+//	+ one per validator for the zeroeth period, set on initialization
+type ValidatorHistoricalNFTRewards struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// nft_cumulative_reward_ratio is the cumulative reward ratio for NFT delegations
+	NftCumulativeRewardRatio []*v1beta1.DecCoin `protobuf:"bytes,1,rep,name=nft_cumulative_reward_ratio,json=nftCumulativeRewardRatio,proto3" json:"nft_cumulative_reward_ratio,omitempty"`
+	ReferenceCount           uint32             `protobuf:"varint,2,opt,name=reference_count,json=referenceCount,proto3" json:"reference_count,omitempty"`
+	// height is the block height when this historical reward period was created
+	Height uint64 `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (x *ValidatorHistoricalNFTRewards) Reset() {
+	*x = ValidatorHistoricalNFTRewards{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ValidatorHistoricalNFTRewards) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidatorHistoricalNFTRewards) ProtoMessage() {}
+
+// Deprecated: Use ValidatorHistoricalNFTRewards.ProtoReflect.Descriptor instead.
+func (*ValidatorHistoricalNFTRewards) Descriptor() ([]byte, []int) {
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ValidatorHistoricalNFTRewards) GetNftCumulativeRewardRatio() []*v1beta1.DecCoin {
+	if x != nil {
+		return x.NftCumulativeRewardRatio
+	}
+	return nil
+}
+
+func (x *ValidatorHistoricalNFTRewards) GetReferenceCount() uint32 {
+	if x != nil {
+		return x.ReferenceCount
+	}
+	return 0
+}
+
+func (x *ValidatorHistoricalNFTRewards) GetHeight() uint64 {
 	if x != nil {
 		return x.Height
 	}
@@ -8175,7 +9123,7 @@ type ValidatorCurrentRewards struct {
 func (x *ValidatorCurrentRewards) Reset() {
 	*x = ValidatorCurrentRewards{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[2]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8189,7 +9137,7 @@ func (*ValidatorCurrentRewards) ProtoMessage() {}
 
 // Deprecated: Use ValidatorCurrentRewards.ProtoReflect.Descriptor instead.
 func (*ValidatorCurrentRewards) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{2}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ValidatorCurrentRewards) GetRewards() []*v1beta1.DecCoin {
@@ -8219,7 +9167,7 @@ type ValidatorAccumulatedCommission struct {
 func (x *ValidatorAccumulatedCommission) Reset() {
 	*x = ValidatorAccumulatedCommission{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[3]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8233,7 +9181,7 @@ func (*ValidatorAccumulatedCommission) ProtoMessage() {}
 
 // Deprecated: Use ValidatorAccumulatedCommission.ProtoReflect.Descriptor instead.
 func (*ValidatorAccumulatedCommission) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{3}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ValidatorAccumulatedCommission) GetCommission() []*v1beta1.DecCoin {
@@ -8256,7 +9204,7 @@ type ValidatorOutstandingRewards struct {
 func (x *ValidatorOutstandingRewards) Reset() {
 	*x = ValidatorOutstandingRewards{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[4]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8270,7 +9218,7 @@ func (*ValidatorOutstandingRewards) ProtoMessage() {}
 
 // Deprecated: Use ValidatorOutstandingRewards.ProtoReflect.Descriptor instead.
 func (*ValidatorOutstandingRewards) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{4}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ValidatorOutstandingRewards) GetRewards() []*v1beta1.DecCoin {
@@ -8296,7 +9244,7 @@ type ValidatorSlashEvent struct {
 func (x *ValidatorSlashEvent) Reset() {
 	*x = ValidatorSlashEvent{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[5]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8310,7 +9258,7 @@ func (*ValidatorSlashEvent) ProtoMessage() {}
 
 // Deprecated: Use ValidatorSlashEvent.ProtoReflect.Descriptor instead.
 func (*ValidatorSlashEvent) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{5}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ValidatorSlashEvent) GetValidatorPeriod() uint64 {
@@ -8339,7 +9287,7 @@ type ValidatorSlashEvents struct {
 func (x *ValidatorSlashEvents) Reset() {
 	*x = ValidatorSlashEvents{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[6]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8353,7 +9301,7 @@ func (*ValidatorSlashEvents) ProtoMessage() {}
 
 // Deprecated: Use ValidatorSlashEvents.ProtoReflect.Descriptor instead.
 func (*ValidatorSlashEvents) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{6}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ValidatorSlashEvents) GetValidatorSlashEvents() []*ValidatorSlashEvent {
@@ -8375,7 +9323,7 @@ type FeePool struct {
 func (x *FeePool) Reset() {
 	*x = FeePool{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[7]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8389,7 +9337,7 @@ func (*FeePool) ProtoMessage() {}
 
 // Deprecated: Use FeePool.ProtoReflect.Descriptor instead.
 func (*FeePool) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{7}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *FeePool) GetCommunityPool() []*v1beta1.DecCoin {
@@ -8423,7 +9371,7 @@ type CommunityPoolSpendProposal struct {
 func (x *CommunityPoolSpendProposal) Reset() {
 	*x = CommunityPoolSpendProposal{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[8]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8437,7 +9385,7 @@ func (*CommunityPoolSpendProposal) ProtoMessage() {}
 
 // Deprecated: Use CommunityPoolSpendProposal.ProtoReflect.Descriptor instead.
 func (*CommunityPoolSpendProposal) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{8}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CommunityPoolSpendProposal) GetTitle() string {
@@ -8491,7 +9439,7 @@ type DelegatorStartingInfo struct {
 func (x *DelegatorStartingInfo) Reset() {
 	*x = DelegatorStartingInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[9]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8505,7 +9453,7 @@ func (*DelegatorStartingInfo) ProtoMessage() {}
 
 // Deprecated: Use DelegatorStartingInfo.ProtoReflect.Descriptor instead.
 func (*DelegatorStartingInfo) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{9}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DelegatorStartingInfo) GetPreviousPeriod() uint64 {
@@ -8543,6 +9491,65 @@ func (x *DelegatorStartingInfo) GetNftHeight() uint64 {
 	return 0
 }
 
+// NFTDelegatorStartingInfo represents the starting info for a delegator reward
+// period. It tracks the previous validator period, the delegation's amount of
+// staking token, and the creation height (to check later on if any slashes have
+// occurred). NOTE: Even though validators are slashed to whole staking tokens,
+// the delegators within the validator may be left with less than a full token,
+// thus sdk.Dec is used.
+type NFTDelegatorStartingInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PreviousPeriod uint64 `protobuf:"varint,1,opt,name=previous_period,json=previousPeriod,proto3" json:"previous_period,omitempty"`
+	// nft_stake tracks the amount of NFT delegation stake for this delegator
+	NftStake string `protobuf:"bytes,2,opt,name=nft_stake,json=nftStake,proto3" json:"nft_stake,omitempty"`
+	// height is the block height when the first NFT delegation was created for this delegator and validator
+	Height uint64 `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (x *NFTDelegatorStartingInfo) Reset() {
+	*x = NFTDelegatorStartingInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NFTDelegatorStartingInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NFTDelegatorStartingInfo) ProtoMessage() {}
+
+// Deprecated: Use NFTDelegatorStartingInfo.ProtoReflect.Descriptor instead.
+func (*NFTDelegatorStartingInfo) Descriptor() ([]byte, []int) {
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *NFTDelegatorStartingInfo) GetPreviousPeriod() uint64 {
+	if x != nil {
+		return x.PreviousPeriod
+	}
+	return 0
+}
+
+func (x *NFTDelegatorStartingInfo) GetNftStake() string {
+	if x != nil {
+		return x.NftStake
+	}
+	return ""
+}
+
+func (x *NFTDelegatorStartingInfo) GetHeight() uint64 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
 // DelegationDelegatorReward represents the properties
 // of a delegator's delegation reward.
 type DelegationDelegatorReward struct {
@@ -8557,7 +9564,7 @@ type DelegationDelegatorReward struct {
 func (x *DelegationDelegatorReward) Reset() {
 	*x = DelegationDelegatorReward{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[10]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8571,7 +9578,7 @@ func (*DelegationDelegatorReward) ProtoMessage() {}
 
 // Deprecated: Use DelegationDelegatorReward.ProtoReflect.Descriptor instead.
 func (*DelegationDelegatorReward) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{10}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DelegationDelegatorReward) GetValidatorAddress() string {
@@ -8607,7 +9614,7 @@ type ValidatorEpochPerformance struct {
 func (x *ValidatorEpochPerformance) Reset() {
 	*x = ValidatorEpochPerformance{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[11]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8621,7 +9628,7 @@ func (*ValidatorEpochPerformance) ProtoMessage() {}
 
 // Deprecated: Use ValidatorEpochPerformance.ProtoReflect.Descriptor instead.
 func (*ValidatorEpochPerformance) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{11}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ValidatorEpochPerformance) GetValidatorAddress() string {
@@ -8690,7 +9697,7 @@ type CommunityPoolSpendProposalWithDeposit struct {
 func (x *CommunityPoolSpendProposalWithDeposit) Reset() {
 	*x = CommunityPoolSpendProposalWithDeposit{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[12]
+		mi := &file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -8704,7 +9711,7 @@ func (*CommunityPoolSpendProposalWithDeposit) ProtoMessage() {}
 
 // Deprecated: Use CommunityPoolSpendProposalWithDeposit.ProtoReflect.Descriptor instead.
 func (*CommunityPoolSpendProposalWithDeposit) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{12}
+	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CommunityPoolSpendProposalWithDeposit) GetTitle() string {
@@ -8756,7 +9763,7 @@ var file_cosmos_distribution_v1beta1_distribution_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11,
 	0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x22, 0x96, 0x07, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x5b, 0x0a, 0x0d,
+	0x6f, 0x22, 0x9d, 0x06, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x5b, 0x0a, 0x0d,
 	0x63, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x5f, 0x74, 0x61, 0x78, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c,
@@ -8803,208 +9810,221 @@ var file_cosmos_distribution_v1beta1_distribution_proto_rawDesc = []byte{
 	0x73, 0x65, 0x64, 0x5f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e,
 	0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x22, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x50, 0x65,
 	0x72, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x61, 0x73, 0x65, 0x64, 0x44, 0x69,
-	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x77, 0x0a, 0x1c, 0x6d, 0x69,
-	0x6e, 0x5f, 0x61, 0x75, 0x74, 0x6f, 0x5f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09,
-	0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61,
-	0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x19, 0x6d, 0x69, 0x6e, 0x41, 0x75, 0x74,
-	0x6f, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6d, 0x6f,
-	0x75, 0x6e, 0x74, 0x3a, 0x25, 0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x78, 0x2f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0x86, 0x03, 0x0a, 0x1a, 0x56,
-	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x69, 0x63,
-	0x61, 0x6c, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x8e, 0x01, 0x0a, 0x17, 0x63, 0x75,
-	0x6d, 0x75, 0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x5f,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa,
-	0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f,
-	0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7,
-	0xb0, 0x2a, 0x01, 0x52, 0x15, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x52,
-	0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x61, 0x74, 0x69, 0x6f, 0x12, 0x95, 0x01, 0x0a, 0x1b, 0x6e,
-	0x66, 0x74, 0x5f, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x72, 0x65,
-	0x77, 0x61, 0x72, 0x64, 0x5f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38,
-	0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f,
-	0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x6e, 0x66, 0x74, 0x43, 0x75, 0x6d,
-	0x75, 0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x61, 0x74,
-	0x69, 0x6f, 0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0e, 0x72, 0x65, 0x66,
-	0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x68,
-	0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x69,
-	0x67, 0x68, 0x74, 0x22, 0xa3, 0x01, 0x0a, 0x17, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
-	0x72, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12,
-	0x70, 0x0a, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38,
-	0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f,
-	0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64,
-	0x73, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x22, 0x98, 0x01, 0x0a, 0x1e, 0x56, 0x61,
-	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74,
-	0x65, 0x64, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x76, 0x0a, 0x0a,
-	0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38,
-	0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f,
-	0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0a, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x22, 0x8f, 0x01, 0x0a, 0x1b, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
-	0x6f, 0x72, 0x4f, 0x75, 0x74, 0x73, 0x74, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x77,
-	0x61, 0x72, 0x64, 0x73, 0x12, 0x70, 0x0a, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
-	0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43,
-	0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
-	0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x72,
-	0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x22, 0x8f, 0x01, 0x0a, 0x13, 0x56, 0x61, 0x6c, 0x69, 0x64,
-	0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x29,
-	0x0a, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x70, 0x65, 0x72, 0x69,
-	0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x4d, 0x0a, 0x08, 0x66, 0x72, 0x61,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xc8, 0xde, 0x1f,
-	0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
-	0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63,
-	0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x52, 0x08,
-	0x66, 0x72, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x89, 0x01, 0x0a, 0x14, 0x56, 0x61, 0x6c,
-	0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x73, 0x12, 0x71, 0x0a, 0x16, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73,
-	0x6c, 0x61, 0x73, 0x68, 0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x30, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
-	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x14,
-	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x73, 0x22, 0x88, 0x01, 0x0a, 0x07, 0x46, 0x65, 0x65, 0x50, 0x6f, 0x6f, 0x6c,
-	0x12, 0x7d, 0x0a, 0x0e, 0x63, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x6f,
-	0x6f, 0x6c, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44,
-	0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
-	0x52, 0x0d, 0x63, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x50, 0x6f, 0x6f, 0x6c, 0x22,
-	0x97, 0x02, 0x0a, 0x1a, 0x43, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x50, 0x6f, 0x6f,
-	0x6c, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x50, 0x72, 0x6f, 0x70, 0x6f, 0x73, 0x61, 0x6c, 0x12, 0x14,
-	0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74,
-	0x69, 0x74, 0x6c, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72,
-	0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69,
-	0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70,
-	0x69, 0x65, 0x6e, 0x74, 0x12, 0x79, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42,
-	0x46, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
-	0x73, 0x9a, 0xe7, 0xb0, 0x2a, 0x0c, 0x6c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x5f, 0x63, 0x6f, 0x69,
-	0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a,
-	0x28, 0x18, 0x01, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0xca, 0xb4, 0x2d, 0x1a, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x67, 0x6f, 0x76, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x22, 0xc8, 0x02, 0x0a, 0x15, 0x44, 0x65,
-	0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49,
-	0x6e, 0x66, 0x6f, 0x12, 0x27, 0x0a, 0x0f, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f,
-	0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x70, 0x72,
-	0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x4c, 0x0a, 0x05,
-	0x73, 0x74, 0x61, 0x6b, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f,
-	0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
-	0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63,
-	0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7,
-	0xb0, 0x2a, 0x01, 0x52, 0x05, 0x73, 0x74, 0x61, 0x6b, 0x65, 0x12, 0x53, 0x0a, 0x09, 0x6e, 0x66,
-	0x74, 0x5f, 0x73, 0x74, 0x61, 0x6b, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8,
-	0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
-	0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44,
-	0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63,
-	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x6e, 0x66, 0x74, 0x53, 0x74, 0x61, 0x6b, 0x65, 0x12,
-	0x44, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x42,
-	0x2c, 0xea, 0xde, 0x1f, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x68, 0x65,
-	0x69, 0x67, 0x68, 0x74, 0xa2, 0xe7, 0xb0, 0x2a, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x68,
-	0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x6e, 0x66, 0x74, 0x5f, 0x68, 0x65, 0x69,
-	0x67, 0x68, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6e, 0x66, 0x74, 0x48, 0x65,
-	0x69, 0x67, 0x68, 0x74, 0x22, 0xe1, 0x01, 0x0a, 0x19, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x77, 0x61,
-	0x72, 0x64, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f,
-	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x21, 0xd2,
-	0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
-	0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x12, 0x6e, 0x0a, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x18, 0x02, 0x20, 0x03,
+	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x3a, 0x25, 0x8a, 0xe7, 0xb0, 0x2a,
+	0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x78, 0x2f, 0x64, 0x69,
+	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x22, 0xee, 0x01, 0x0a, 0x1a, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x48,
+	0x69, 0x73, 0x74, 0x6f, 0x72, 0x69, 0x63, 0x61, 0x6c, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73,
+	0x12, 0x8e, 0x01, 0x0a, 0x17, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x5f,
+	0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x5f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x18, 0x01, 0x20, 0x03,
 	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
 	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e,
 	0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
 	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63,
-	0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x72, 0x65, 0x77, 0x61,
-	0x72, 0x64, 0x3a, 0x04, 0x88, 0xa0, 0x1f, 0x00, 0x22, 0xb5, 0x03, 0x0a, 0x19, 0x56, 0x61, 0x6c,
-	0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x45, 0x70, 0x6f, 0x63, 0x68, 0x50, 0x65, 0x72, 0x66, 0x6f,
-	0x72, 0x6d, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61,
-	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
-	0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x29, 0x0a, 0x10, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x5f,
-	0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66, 0x69, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0f, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66, 0x69, 0x65,
-	0x72, 0x12, 0x21, 0x0a, 0x0c, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65,
-	0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x4e, 0x75,
-	0x6d, 0x62, 0x65, 0x72, 0x12, 0x21, 0x0a, 0x0c, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x5f, 0x76,
-	0x6f, 0x74, 0x65, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x6d,
-	0x69, 0x74, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x74, 0x6f, 0x74, 0x61, 0x6c,
-	0x5f, 0x76, 0x6f, 0x74, 0x65, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x74, 0x6f,
-	0x74, 0x61, 0x6c, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x12, 0x59, 0x0a, 0x0c, 0x63, 0x6f, 0x6d, 0x6d,
-	0x69, 0x74, 0x5f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36,
-	0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
-	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79,
-	0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65,
-	0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x52, 0x61,
-	0x74, 0x69, 0x6f, 0x12, 0x5b, 0x0a, 0x0d, 0x61, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x5f, 0x70,
-	0x6f, 0x77, 0x65, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00,
-	0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
-	0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2,
-	0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0,
-	0x2a, 0x01, 0x52, 0x0c, 0x61, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x77, 0x65, 0x72,
-	0x22, 0xd3, 0x01, 0x0a, 0x25, 0x43, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x50, 0x6f,
-	0x6f, 0x6c, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x50, 0x72, 0x6f, 0x70, 0x6f, 0x73, 0x61, 0x6c, 0x57,
-	0x69, 0x74, 0x68, 0x44, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69,
-	0x74, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65,
-	0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69,
-	0x6f, 0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74,
-	0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x64, 0x65, 0x70, 0x6f,
-	0x73, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x64, 0x65, 0x70, 0x6f, 0x73,
-	0x69, 0x74, 0x3a, 0x22, 0x88, 0xa0, 0x1f, 0x00, 0xca, 0xb4, 0x2d, 0x1a, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x67, 0x6f, 0x76, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43,
-	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x42, 0x88, 0x02, 0x0a, 0x1f, 0x63, 0x6f, 0x6d, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x11, 0x44, 0x69, 0x73, 0x74,
-	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x40, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70,
-	0x69, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x3b, 0x64, 0x69,
-	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0xa2, 0x02, 0x03, 0x43, 0x44, 0x58, 0xaa, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x31,
-	0x62, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44,
-	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0xe2, 0x02, 0x27, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44, 0x69, 0x73,
-	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1d,
-	0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa8, 0xe2, 0x1e,
-	0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x15, 0x63, 0x75, 0x6d, 0x75,
+	0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x61, 0x74, 0x69,
+	0x6f, 0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0e, 0x72, 0x65, 0x66, 0x65,
+	0x72, 0x65, 0x6e, 0x63, 0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65,
+	0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67,
+	0x68, 0x74, 0x22, 0xf8, 0x01, 0x0a, 0x1d, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72,
+	0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x69, 0x63, 0x61, 0x6c, 0x4e, 0x46, 0x54, 0x52, 0x65, 0x77,
+	0x61, 0x72, 0x64, 0x73, 0x12, 0x95, 0x01, 0x0a, 0x1b, 0x6e, 0x66, 0x74, 0x5f, 0x63, 0x75, 0x6d,
+	0x75, 0x6c, 0x61, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x5f, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf,
+	0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x18, 0x6e, 0x66, 0x74, 0x43, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x69, 0x76,
+	0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x61, 0x74, 0x69, 0x6f, 0x12, 0x27, 0x0a, 0x0f,
+	0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0e, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x22, 0xa3, 0x01,
+	0x0a, 0x17, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43, 0x75, 0x72, 0x72, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x70, 0x0a, 0x07, 0x72, 0x65, 0x77,
+	0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf,
+	0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x70,
+	0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x70, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x22, 0x98, 0x01, 0x0a, 0x1e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x43, 0x6f, 0x6d, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x76, 0x0a, 0x0a, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf,
+	0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x0a, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x8f,
+	0x01, 0x0a, 0x1b, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x4f, 0x75, 0x74, 0x73,
+	0x74, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x70,
+	0x0a, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8,
+	0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d,
+	0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69,
+	0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73,
+	0x22, 0x8f, 0x01, 0x0a, 0x13, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c,
+	0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x76, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x0f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x50, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x12, 0x4d, 0x0a, 0x08, 0x66, 0x72, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
+	0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x52, 0x08, 0x66, 0x72, 0x61, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x22, 0x89, 0x01, 0x0a, 0x14, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72,
+	0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x71, 0x0a, 0x16, 0x76,
+	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73, 0x6c, 0x61, 0x73, 0x68, 0x5f, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f,
+	0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61,
+	0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x42, 0x09, 0xc8,
+	0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x14, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
+	0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x22, 0x88,
+	0x01, 0x0a, 0x07, 0x46, 0x65, 0x65, 0x50, 0x6f, 0x6f, 0x6c, 0x12, 0x7d, 0x0a, 0x0e, 0x63, 0x6f,
+	0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x6f, 0x6f, 0x6c, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e,
+	0x42, 0x38, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63,
+	0x43, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x63, 0x6f, 0x6d, 0x6d,
+	0x75, 0x6e, 0x69, 0x74, 0x79, 0x50, 0x6f, 0x6f, 0x6c, 0x22, 0x97, 0x02, 0x0a, 0x1a, 0x43, 0x6f,
+	0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x50, 0x6f, 0x6f, 0x6c, 0x53, 0x70, 0x65, 0x6e, 0x64,
+	0x50, 0x72, 0x6f, 0x70, 0x6f, 0x73, 0x61, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x20,
+	0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x79,
+	0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19,
+	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x46, 0xc8, 0xde, 0x1f, 0x00, 0xaa,
+	0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x9a, 0xe7, 0xb0, 0x2a, 0x0c,
+	0x6c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x5f, 0x63, 0x6f, 0x69, 0x6e, 0x73, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a, 0x28, 0x18, 0x01, 0x88, 0xa0, 0x1f,
+	0x00, 0xe8, 0xa0, 0x1f, 0x00, 0xca, 0xb4, 0x2d, 0x1a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x67, 0x6f, 0x76, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x22, 0xc8, 0x02, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f,
+	0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x27, 0x0a,
+	0x0f, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73,
+	0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x4c, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x6b, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
+	0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x05, 0x73,
+	0x74, 0x61, 0x6b, 0x65, 0x12, 0x53, 0x0a, 0x09, 0x6e, 0x66, 0x74, 0x5f, 0x73, 0x74, 0x61, 0x6b,
+	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f,
+	0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
+	0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x08, 0x6e, 0x66, 0x74, 0x53, 0x74, 0x61, 0x6b, 0x65, 0x12, 0x44, 0x0a, 0x06, 0x68, 0x65, 0x69,
+	0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x42, 0x2c, 0xea, 0xde, 0x1f, 0x0f, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0xa2, 0xe7,
+	0xb0, 0x2a, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x68, 0x65, 0x69, 0x67,
+	0x68, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
+	0x1d, 0x0a, 0x0a, 0x6e, 0x66, 0x74, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x09, 0x6e, 0x66, 0x74, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x22, 0xde,
+	0x01, 0x0a, 0x18, 0x4e, 0x46, 0x54, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53,
+	0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x27, 0x0a, 0x0f, 0x70,
+	0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x50, 0x65,
+	0x72, 0x69, 0x6f, 0x64, 0x12, 0x53, 0x0a, 0x09, 0x6e, 0x66, 0x74, 0x5f, 0x73, 0x74, 0x61, 0x6b,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f,
+	0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
+	0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x08, 0x6e, 0x66, 0x74, 0x53, 0x74, 0x61, 0x6b, 0x65, 0x12, 0x44, 0x0a, 0x06, 0x68, 0x65, 0x69,
+	0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x42, 0x2c, 0xea, 0xde, 0x1f, 0x0f, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0xa2, 0xe7,
+	0xb0, 0x2a, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x68, 0x65, 0x69, 0x67,
+	0x68, 0x74, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x22,
+	0xe1, 0x01, 0x0a, 0x19, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x12, 0x4e, 0x0a,
+	0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c,
+	0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x6e, 0x0a,
+	0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x38, 0xc8, 0xde, 0x1f,
+	0x00, 0xaa, 0xdf, 0x1f, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64,
+	0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x43, 0x6f, 0x69, 0x6e, 0x73,
+	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x3a, 0x04, 0x88,
+	0xa0, 0x1f, 0x00, 0x22, 0xb5, 0x03, 0x0a, 0x19, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x45, 0x70, 0x6f, 0x63, 0x68, 0x50, 0x65, 0x72, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x6e, 0x63,
+	0x65, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4,
+	0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
+	0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52,
+	0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x12, 0x29, 0x0a, 0x10, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x5f, 0x69, 0x64, 0x65, 0x6e, 0x74,
+	0x69, 0x66, 0x69, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x65, 0x70, 0x6f,
+	0x63, 0x68, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x66, 0x69, 0x65, 0x72, 0x12, 0x21, 0x0a, 0x0c,
+	0x65, 0x70, 0x6f, 0x63, 0x68, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x03, 0x52, 0x0b, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12,
+	0x21, 0x0a, 0x0c, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x5f, 0x76, 0x6f, 0x74, 0x65, 0x73, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x56, 0x6f, 0x74,
+	0x65, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x76, 0x6f, 0x74, 0x65,
+	0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x56, 0x6f,
+	0x74, 0x65, 0x73, 0x12, 0x59, 0x0a, 0x0c, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x5f, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda,
+	0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4,
+	0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x52, 0x61, 0x74, 0x69, 0x6f, 0x12, 0x5b,
+	0x0a, 0x0d, 0x61, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x5f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x18,
+	0x07, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
+	0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0c, 0x61,
+	0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x77, 0x65, 0x72, 0x22, 0xd3, 0x01, 0x0a, 0x25,
+	0x43, 0x6f, 0x6d, 0x6d, 0x75, 0x6e, 0x69, 0x74, 0x79, 0x50, 0x6f, 0x6f, 0x6c, 0x53, 0x70, 0x65,
+	0x6e, 0x64, 0x50, 0x72, 0x6f, 0x70, 0x6f, 0x73, 0x61, 0x6c, 0x57, 0x69, 0x74, 0x68, 0x44, 0x65,
+	0x70, 0x6f, 0x73, 0x69, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x64,
+	0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x0a,
+	0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x3a, 0x22, 0x88,
+	0xa0, 0x1f, 0x00, 0xca, 0xb4, 0x2d, 0x1a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x67, 0x6f,
+	0x76, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
+	0x74, 0x42, 0x88, 0x02, 0x0a, 0x1f, 0x63, 0x6f, 0x6d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x11, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x40, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x3b, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa2, 0x02, 0x03, 0x43,
+	0x44, 0x58, 0xaa, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0xca, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69,
+	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xe2, 0x02,
+	0x27, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1d, 0x43, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x3a, 0x3a, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa8, 0xe2, 0x1e, 0x01, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -9019,34 +10039,36 @@ func file_cosmos_distribution_v1beta1_distribution_proto_rawDescGZIP() []byte {
 	return file_cosmos_distribution_v1beta1_distribution_proto_rawDescData
 }
 
-var file_cosmos_distribution_v1beta1_distribution_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_cosmos_distribution_v1beta1_distribution_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_cosmos_distribution_v1beta1_distribution_proto_goTypes = []interface{}{
 	(*Params)(nil),                                // 0: cosmos.distribution.v1beta1.Params
 	(*ValidatorHistoricalRewards)(nil),            // 1: cosmos.distribution.v1beta1.ValidatorHistoricalRewards
-	(*ValidatorCurrentRewards)(nil),               // 2: cosmos.distribution.v1beta1.ValidatorCurrentRewards
-	(*ValidatorAccumulatedCommission)(nil),        // 3: cosmos.distribution.v1beta1.ValidatorAccumulatedCommission
-	(*ValidatorOutstandingRewards)(nil),           // 4: cosmos.distribution.v1beta1.ValidatorOutstandingRewards
-	(*ValidatorSlashEvent)(nil),                   // 5: cosmos.distribution.v1beta1.ValidatorSlashEvent
-	(*ValidatorSlashEvents)(nil),                  // 6: cosmos.distribution.v1beta1.ValidatorSlashEvents
-	(*FeePool)(nil),                               // 7: cosmos.distribution.v1beta1.FeePool
-	(*CommunityPoolSpendProposal)(nil),            // 8: cosmos.distribution.v1beta1.CommunityPoolSpendProposal
-	(*DelegatorStartingInfo)(nil),                 // 9: cosmos.distribution.v1beta1.DelegatorStartingInfo
-	(*DelegationDelegatorReward)(nil),             // 10: cosmos.distribution.v1beta1.DelegationDelegatorReward
-	(*ValidatorEpochPerformance)(nil),             // 11: cosmos.distribution.v1beta1.ValidatorEpochPerformance
-	(*CommunityPoolSpendProposalWithDeposit)(nil), // 12: cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit
-	(*v1beta1.DecCoin)(nil),                       // 13: cosmos.base.v1beta1.DecCoin
-	(*v1beta1.Coin)(nil),                          // 14: cosmos.base.v1beta1.Coin
+	(*ValidatorHistoricalNFTRewards)(nil),         // 2: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards
+	(*ValidatorCurrentRewards)(nil),               // 3: cosmos.distribution.v1beta1.ValidatorCurrentRewards
+	(*ValidatorAccumulatedCommission)(nil),        // 4: cosmos.distribution.v1beta1.ValidatorAccumulatedCommission
+	(*ValidatorOutstandingRewards)(nil),           // 5: cosmos.distribution.v1beta1.ValidatorOutstandingRewards
+	(*ValidatorSlashEvent)(nil),                   // 6: cosmos.distribution.v1beta1.ValidatorSlashEvent
+	(*ValidatorSlashEvents)(nil),                  // 7: cosmos.distribution.v1beta1.ValidatorSlashEvents
+	(*FeePool)(nil),                               // 8: cosmos.distribution.v1beta1.FeePool
+	(*CommunityPoolSpendProposal)(nil),            // 9: cosmos.distribution.v1beta1.CommunityPoolSpendProposal
+	(*DelegatorStartingInfo)(nil),                 // 10: cosmos.distribution.v1beta1.DelegatorStartingInfo
+	(*NFTDelegatorStartingInfo)(nil),              // 11: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo
+	(*DelegationDelegatorReward)(nil),             // 12: cosmos.distribution.v1beta1.DelegationDelegatorReward
+	(*ValidatorEpochPerformance)(nil),             // 13: cosmos.distribution.v1beta1.ValidatorEpochPerformance
+	(*CommunityPoolSpendProposalWithDeposit)(nil), // 14: cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit
+	(*v1beta1.DecCoin)(nil),                       // 15: cosmos.base.v1beta1.DecCoin
+	(*v1beta1.Coin)(nil),                          // 16: cosmos.base.v1beta1.Coin
 }
 var file_cosmos_distribution_v1beta1_distribution_proto_depIdxs = []int32{
-	13, // 0: cosmos.distribution.v1beta1.ValidatorHistoricalRewards.cumulative_reward_ratio:type_name -> cosmos.base.v1beta1.DecCoin
-	13, // 1: cosmos.distribution.v1beta1.ValidatorHistoricalRewards.nft_cumulative_reward_ratio:type_name -> cosmos.base.v1beta1.DecCoin
-	13, // 2: cosmos.distribution.v1beta1.ValidatorCurrentRewards.rewards:type_name -> cosmos.base.v1beta1.DecCoin
-	13, // 3: cosmos.distribution.v1beta1.ValidatorAccumulatedCommission.commission:type_name -> cosmos.base.v1beta1.DecCoin
-	13, // 4: cosmos.distribution.v1beta1.ValidatorOutstandingRewards.rewards:type_name -> cosmos.base.v1beta1.DecCoin
-	5,  // 5: cosmos.distribution.v1beta1.ValidatorSlashEvents.validator_slash_events:type_name -> cosmos.distribution.v1beta1.ValidatorSlashEvent
-	13, // 6: cosmos.distribution.v1beta1.FeePool.community_pool:type_name -> cosmos.base.v1beta1.DecCoin
-	14, // 7: cosmos.distribution.v1beta1.CommunityPoolSpendProposal.amount:type_name -> cosmos.base.v1beta1.Coin
-	13, // 8: cosmos.distribution.v1beta1.DelegationDelegatorReward.reward:type_name -> cosmos.base.v1beta1.DecCoin
+	15, // 0: cosmos.distribution.v1beta1.ValidatorHistoricalRewards.cumulative_reward_ratio:type_name -> cosmos.base.v1beta1.DecCoin
+	15, // 1: cosmos.distribution.v1beta1.ValidatorHistoricalNFTRewards.nft_cumulative_reward_ratio:type_name -> cosmos.base.v1beta1.DecCoin
+	15, // 2: cosmos.distribution.v1beta1.ValidatorCurrentRewards.rewards:type_name -> cosmos.base.v1beta1.DecCoin
+	15, // 3: cosmos.distribution.v1beta1.ValidatorAccumulatedCommission.commission:type_name -> cosmos.base.v1beta1.DecCoin
+	15, // 4: cosmos.distribution.v1beta1.ValidatorOutstandingRewards.rewards:type_name -> cosmos.base.v1beta1.DecCoin
+	6,  // 5: cosmos.distribution.v1beta1.ValidatorSlashEvents.validator_slash_events:type_name -> cosmos.distribution.v1beta1.ValidatorSlashEvent
+	15, // 6: cosmos.distribution.v1beta1.FeePool.community_pool:type_name -> cosmos.base.v1beta1.DecCoin
+	16, // 7: cosmos.distribution.v1beta1.CommunityPoolSpendProposal.amount:type_name -> cosmos.base.v1beta1.Coin
+	15, // 8: cosmos.distribution.v1beta1.DelegationDelegatorReward.reward:type_name -> cosmos.base.v1beta1.DecCoin
 	9,  // [9:9] is the sub-list for method output_type
 	9,  // [9:9] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
@@ -9085,7 +10107,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorCurrentRewards); i {
+			switch v := v.(*ValidatorHistoricalNFTRewards); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9097,7 +10119,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorAccumulatedCommission); i {
+			switch v := v.(*ValidatorCurrentRewards); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9109,7 +10131,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorOutstandingRewards); i {
+			switch v := v.(*ValidatorAccumulatedCommission); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9121,7 +10143,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorSlashEvent); i {
+			switch v := v.(*ValidatorOutstandingRewards); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9133,7 +10155,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorSlashEvents); i {
+			switch v := v.(*ValidatorSlashEvent); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9145,7 +10167,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FeePool); i {
+			switch v := v.(*ValidatorSlashEvents); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9157,7 +10179,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CommunityPoolSpendProposal); i {
+			switch v := v.(*FeePool); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9169,7 +10191,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DelegatorStartingInfo); i {
+			switch v := v.(*CommunityPoolSpendProposal); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9181,7 +10203,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DelegationDelegatorReward); i {
+			switch v := v.(*DelegatorStartingInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9193,7 +10215,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorEpochPerformance); i {
+			switch v := v.(*NFTDelegatorStartingInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9205,6 +10227,30 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DelegationDelegatorReward); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ValidatorEpochPerformance); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_distribution_v1beta1_distribution_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CommunityPoolSpendProposalWithDeposit); i {
 			case 0:
 				return &v.state
@@ -9223,7 +10269,7 @@ func file_cosmos_distribution_v1beta1_distribution_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_cosmos_distribution_v1beta1_distribution_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

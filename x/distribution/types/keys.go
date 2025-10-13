@@ -62,6 +62,9 @@ var (
 	ValidatorAccumulatedCommissionPrefix = []byte{0x07} // key for accumulated validator commission
 	ValidatorSlashEventPrefix            = []byte{0x08} // key for validator slash fraction
 	ValidatorEpochPerformancePrefix      = []byte{0x0A} // key for validator epoch performance
+	NFTDelegatorStartingInfoPrefix       = []byte{0x0B} // key for NFT delegator starting info
+	ValidatorCurrentNFTRewardsPrefix     = []byte{0x0C} // key for current validator NFT rewards
+	ValidatorHistoricalNFTRewardsPrefix  = []byte{0x0D} // key for historical validator NFT rewards
 
 	ParamsKey = collections.NewPrefix(9) // key for distribution module params
 )
@@ -108,6 +111,36 @@ func GetDelegatorStartingInfoAddresses(key []byte) (valAddr sdk.ValAddress, delA
 	return
 }
 
+// GetDelegatorStartingInfoAddresses creates the addresses from a delegator starting info key.
+func GetNFTDelegatorStartingInfoAddresses(key []byte) (valAddr sdk.ValAddress, delAddr sdk.AccAddress) {
+	// key is in the format:
+	// 0x0B<valAddrLen (1 Byte)><valAddr_Bytes><accAddrLen (1 Byte)><accAddr_Bytes>
+	kv.AssertKeyAtLeastLength(key, 2)
+	valAddrLen := int(key[1])
+	kv.AssertKeyAtLeastLength(key, 3+valAddrLen)
+	valAddr = sdk.ValAddress(key[2 : 2+valAddrLen])
+	delAddrLen := int(key[2+valAddrLen])
+	kv.AssertKeyAtLeastLength(key, 4+valAddrLen)
+	delAddr = sdk.AccAddress(key[3+valAddrLen:])
+	kv.AssertKeyLength(delAddr.Bytes(), delAddrLen)
+
+	return
+}
+
+// GetValidatorHistoricalNFTRewardsAddressPeriod creates the address & period from a validator's historical rewards key.
+func GetValidatorHistoricalNFTRewardsAddressPeriod(key []byte) (valAddr sdk.ValAddress, period uint64) {
+	// key is in the format:
+	// 0x0D<valAddrLen (1 Byte)><valAddr_Bytes><period_Bytes>
+	kv.AssertKeyAtLeastLength(key, 2)
+	valAddrLen := int(key[1])
+	kv.AssertKeyAtLeastLength(key, 3+valAddrLen)
+	valAddr = sdk.ValAddress(key[2 : 2+valAddrLen])
+	b := key[2+valAddrLen:]
+	kv.AssertKeyLength(b, 8)
+	period = binary.LittleEndian.Uint64(b)
+	return
+}
+
 // GetValidatorHistoricalRewardsAddressPeriod creates the address & period from a validator's historical rewards key.
 func GetValidatorHistoricalRewardsAddressPeriod(key []byte) (valAddr sdk.ValAddress, period uint64) {
 	// key is in the format:
@@ -126,6 +159,19 @@ func GetValidatorHistoricalRewardsAddressPeriod(key []byte) (valAddr sdk.ValAddr
 func GetValidatorCurrentRewardsAddress(key []byte) (valAddr sdk.ValAddress) {
 	// key is in the format:
 	// 0x06<valAddrLen (1 Byte)><valAddr_Bytes>: ValidatorCurrentRewards
+
+	// Remove prefix and address length.
+	kv.AssertKeyAtLeastLength(key, 3)
+	addr := key[2:]
+	kv.AssertKeyLength(addr, int(key[1]))
+
+	return sdk.ValAddress(addr)
+}
+
+// GetValidatorCurrentNFTRewardsAddress creates the address from a validator's current rewards key.
+func GetValidatorCurrentNFTRewardsAddress(key []byte) (valAddr sdk.ValAddress) {
+	// key is in the format:
+	// 0x0C<valAddrLen (1 Byte)><valAddr_Bytes>: ValidatorCurrentNFTRewards
 
 	// Remove prefix and address length.
 	kv.AssertKeyAtLeastLength(key, 3)
@@ -178,9 +224,19 @@ func GetDelegatorStartingInfoKey(v sdk.ValAddress, d sdk.AccAddress) []byte {
 	return append(append(DelegatorStartingInfoPrefix, address.MustLengthPrefix(v.Bytes())...), address.MustLengthPrefix(d.Bytes())...)
 }
 
+// GetNFTDelegatorStartingInfoKey creates the key for a delegator's starting info.
+func GetNFTDelegatorStartingInfoKey(v sdk.ValAddress, d sdk.AccAddress) []byte {
+	return append(append(NFTDelegatorStartingInfoPrefix, address.MustLengthPrefix(v.Bytes())...), address.MustLengthPrefix(d.Bytes())...)
+}
+
 // GetValidatorHistoricalRewardsPrefix creates the prefix key for a validator's historical rewards.
 func GetValidatorHistoricalRewardsPrefix(v sdk.ValAddress) []byte {
 	return append(ValidatorHistoricalRewardsPrefix, address.MustLengthPrefix(v.Bytes())...)
+}
+
+// GetValidatorHistoricalNFTRewardsPrefix creates the prefix key for a validator's historical NFT rewards.
+func GetValidatorHistoricalNFTRewardsPrefix(v sdk.ValAddress) []byte {
+	return append(ValidatorHistoricalNFTRewardsPrefix, address.MustLengthPrefix(v.Bytes())...)
 }
 
 // GetValidatorHistoricalRewardsKey creates the key for a validator's historical rewards.
@@ -190,9 +246,21 @@ func GetValidatorHistoricalRewardsKey(v sdk.ValAddress, k uint64) []byte {
 	return append(append(ValidatorHistoricalRewardsPrefix, address.MustLengthPrefix(v.Bytes())...), b...)
 }
 
+// GetValidatorHistoricalNFTRewardsKey creates the key for a validator's historical NFT rewards.
+func GetValidatorHistoricalNFTRewardsKey(v sdk.ValAddress, k uint64) []byte {
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, k)
+	return append(append(ValidatorHistoricalNFTRewardsPrefix, address.MustLengthPrefix(v.Bytes())...), b...)
+}
+
 // GetValidatorCurrentRewardsKey creates the key for a validator's current rewards.
 func GetValidatorCurrentRewardsKey(v sdk.ValAddress) []byte {
 	return append(ValidatorCurrentRewardsPrefix, address.MustLengthPrefix(v.Bytes())...)
+}
+
+// GetValidatorCurrentNFTRewardsKey creates the key for a validator's current rewards.
+func GetValidatorCurrentNFTRewardsKey(v sdk.ValAddress) []byte {
+	return append(ValidatorCurrentNFTRewardsPrefix, address.MustLengthPrefix(v.Bytes())...)
 }
 
 // GetValidatorAccumulatedCommissionKey creates the key for a validator's current commission.
@@ -229,7 +297,7 @@ func GetValidatorSlashEventKey(v sdk.ValAddress, height, period uint64) []byte {
 func GetValidatorEpochPerformanceKey(v sdk.ValAddress, epochIdentifier string, epochNumber int64) []byte {
 	epochNumberBz := make([]byte, 8)
 	binary.BigEndian.PutUint64(epochNumberBz, uint64(epochNumber))
-	
+
 	return append(
 		ValidatorEpochPerformancePrefix,
 		append(
@@ -255,14 +323,14 @@ func GetValidatorEpochPerformanceAddressEpochNumber(key []byte) (valAddr sdk.Val
 	valAddrLen := int(key[1])
 	kv.AssertKeyAtLeastLength(key, 3+valAddrLen)
 	valAddr = sdk.ValAddress(key[2 : 2+valAddrLen])
-	
+
 	epochIdentifierLen := int(key[2+valAddrLen])
 	kv.AssertKeyAtLeastLength(key, 4+valAddrLen+epochIdentifierLen)
 	epochIdentifier = string(key[3+valAddrLen : 3+valAddrLen+epochIdentifierLen])
-	
+
 	epochNumberBz := key[3+valAddrLen+epochIdentifierLen:]
 	kv.AssertKeyLength(epochNumberBz, 8)
 	epochNumber = int64(binary.BigEndian.Uint64(epochNumberBz))
-	
+
 	return
 }

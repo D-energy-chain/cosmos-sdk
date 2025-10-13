@@ -125,65 +125,31 @@ func (h Hooks) AfterValidatorRemoved(ctx context.Context, _ sdk.ConsAddress, val
 	return nil
 }
 
-// increment period - now only on delegation creation for immediate effect
-// Note: Main period increments happen at epoch end for epoch-based rewards
+// increment period
 func (h Hooks) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return err
 	}
 
-	// Only increment period if there are accumulated rewards that need to be locked in
-	// This handles the case where someone delegates mid-epoch
-	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
-	if err != nil {
-		return err
-	}
-
-	// If there are accumulated rewards, increment period to lock them in
-	// before the new delegation affects the reward calculation
-	// This ensures pro-rated rewards for mid-epoch delegators
-	if !currentRewards.Rewards.IsZero() {
-		oldPeriod := currentRewards.Period
-		newPeriod, err := h.k.IncrementValidatorPeriod(ctx, val)
-		if err != nil {
-			return err
-		}
-		h.k.Logger(ctx).Info("🔄 Period incremented for mid-epoch delegation",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"old_period", oldPeriod,
-			"new_period", newPeriod+1,
-			"reason", "locking rewards before new delegation",
-			"accumulated_rewards", currentRewards.Rewards.String(),
-		)
-	}
-
-	return nil
+	_, err = h.k.IncrementValidatorPeriod(ctx, val)
+	return err
 }
 
-// BeforeDelegationSharesModified is called before delegation shares are modified.
-// Since rewards are now automatically distributed at epoch end, we don't withdraw here.
-// We only need to ensure the period is incremented if there are accumulated rewards,
-// so that the delegator's starting info is updated correctly for pro-rated rewards.
+// withdraw delegation rewards (which also increments period)
 func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return err
 	}
 
-	// Increment period if there are accumulated rewards
-	// This locks in rewards before the share change affects calculations
-	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
+	del, err := h.k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
 	if err != nil {
 		return err
 	}
 
-	if !currentRewards.Rewards.IsZero() {
-		_, err = h.k.IncrementValidatorPeriod(ctx, val)
-		if err != nil {
-			return err
-		}
+	if _, err := h.k.withdrawDelegationRewards(ctx, val, del); err != nil {
+		return err
 	}
 
 	return nil
@@ -207,7 +173,7 @@ func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAd
 
 	// Only increment period if there are accumulated rewards that need to be locked in
 	// This handles the case where someone delegates mid-epoch
-	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
+	currentNFTRewards, err := h.k.GetValidatorCurrentNFTRewards(ctx, valAddr)
 	if err != nil {
 		h.k.Logger(ctx).Error("Failed to get current rewards for NFT delegation", "error", err)
 		return err
@@ -216,9 +182,9 @@ func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAd
 	// If there are accumulated rewards, increment period to lock them in
 	// before the new NFT delegation affects the reward calculation
 	// This ensures pro-rated rewards for mid-epoch NFT delegators
-	if !currentRewards.Rewards.IsZero() {
-		oldPeriod := currentRewards.Period
-		newPeriod, err := h.k.IncrementValidatorPeriod(ctx, val)
+	if !currentNFTRewards.Rewards.IsZero() {
+		oldPeriod := currentNFTRewards.Period
+		newPeriod, err := h.k.IncrementValidatorNFTPeriod(ctx, val)
 		if err != nil {
 			h.k.Logger(ctx).Error("Failed to increment period for NFT delegation", "error", err)
 			return err
@@ -229,7 +195,7 @@ func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAd
 			"old_period", oldPeriod,
 			"new_period", newPeriod+1,
 			"reason", "locking rewards before new NFT delegation",
-			"accumulated_rewards", currentRewards.Rewards.String(),
+			"accumulated_rewards", currentNFTRewards.Rewards.String(),
 		)
 	}
 
@@ -240,6 +206,7 @@ func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAd
 // Since rewards are now automatically distributed at epoch end, we don't withdraw here.
 // We only need to ensure the period is incremented if there are accumulated rewards.
 func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	// TODO: Withdraw rewards here
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		h.k.Logger(ctx).Error("Failed to get validator for NFT delegation shares modification", "error", err)
@@ -248,14 +215,14 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 
 	// Increment period if there are accumulated rewards
 	// This locks in rewards before the share change affects calculations
-	currentRewards, err := h.k.GetValidatorCurrentRewards(ctx, valAddr)
+	currentNFTRewards, err := h.k.GetValidatorCurrentNFTRewards(ctx, valAddr)
 	if err != nil {
 		h.k.Logger(ctx).Error("Failed to get current rewards for NFT delegation", "error", err)
 		return err
 	}
 
-	if !currentRewards.Rewards.IsZero() {
-		_, err = h.k.IncrementValidatorPeriod(ctx, val)
+	if !currentNFTRewards.Rewards.IsZero() {
+		_, err = h.k.IncrementValidatorNFTPeriod(ctx, val)
 		if err != nil {
 			h.k.Logger(ctx).Error("Failed to increment period for NFT delegation", "error", err)
 			return err
@@ -267,7 +234,7 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 
 // create new NFT delegation period record
 func (h Hooks) AfterNFTDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	return h.k.initializeDelegation(ctx, valAddr, delAddr)
+	return h.k.initializeNFTDelegation(ctx, valAddr, delAddr)
 }
 
 // BeforeNFTDelegationRemoved is called before an NFT delegation is removed.
@@ -280,28 +247,28 @@ func (h Hooks) BeforeNFTDelegationRemoved(ctx context.Context, delAddr sdk.AccAd
 	// the rewards are already calculated and ready to withdraw.
 	// The withdrawal function handles both native and NFT rewards together.
 
-	rewards, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr)
-	if err != nil {
-		// Log error but don't fail the NFT delegation removal
-		// Some errors are expected (e.g., no delegation info if already withdrawn)
-		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() &&
-			err.Error() != types.ErrNoValidatorDistInfo.Error() {
-			h.k.Logger(ctx).Error("Failed to withdraw rewards before NFT delegation removal",
-				"delegator", delAddr.String(),
-				"validator", valAddr.String(),
-				"error", err.Error(),
-			)
-		}
-		return nil
-	}
+	// rewards, err := h.k.WithdrawNFTDelegationRewards(ctx, delAddr, valAddr)
+	// if err != nil {
+	// 	// Log error but don't fail the NFT delegation removal
+	// 	// Some errors are expected (e.g., no delegation info if already withdrawn)
+	// 	if err.Error() != types.ErrEmptyDelegationDistInfo.Error() &&
+	// 		err.Error() != types.ErrNoValidatorDistInfo.Error() {
+	// 		h.k.Logger(ctx).Error("Failed to withdraw rewards before NFT delegation removal",
+	// 			"delegator", delAddr.String(),
+	// 			"validator", valAddr.String(),
+	// 			"error", err.Error(),
+	// 		)
+	// 	}
+	// 	return nil
+	// }
 
-	if !rewards.IsZero() {
-		h.k.Logger(ctx).Info("💰 Rewards automatically withdrawn before NFT offsetting",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"amount", rewards.String(),
-		)
-	}
+	// if !rewards.IsZero() {
+	// 	h.k.Logger(ctx).Info("💰 Rewards automatically withdrawn before NFT offsetting",
+	// 		"delegator", delAddr.String(),
+	// 		"validator", valAddr.String(),
+	// 		"amount", rewards.String(),
+	// 	)
+	// }
 
 	return nil
 }
@@ -323,36 +290,7 @@ func (h Hooks) AfterValidatorBeginUnbonding(_ context.Context, _ sdk.ConsAddress
 	return nil
 }
 
-func (h Hooks) BeforeDelegationRemoved(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	// Withdraw all accumulated rewards before removing the delegation
-	// This ensures delegators don't lose earned rewards when unbonding
-	//
-	// Since undelegation is processed at epoch end (after reward allocation and period increment),
-	// the rewards are already calculated and ready to withdraw.
-
-	rewards, err := h.k.WithdrawDelegationRewards(ctx, delAddr, valAddr)
-	if err != nil {
-		// Log error but don't fail the delegation removal
-		// Some errors are expected (e.g., no delegation info if already withdrawn)
-		if err.Error() != types.ErrEmptyDelegationDistInfo.Error() &&
-			err.Error() != types.ErrNoValidatorDistInfo.Error() {
-			h.k.Logger(ctx).Error("Failed to withdraw rewards before delegation removal",
-				"delegator", delAddr.String(),
-				"validator", valAddr.String(),
-				"error", err.Error(),
-			)
-		}
-		return nil
-	}
-
-	if !rewards.IsZero() {
-		h.k.Logger(ctx).Info("💰 Rewards automatically withdrawn before delegation removal",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"amount", rewards.String(),
-		)
-	}
-
+func (h Hooks) BeforeDelegationRemoved(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
 	return nil
 }
 
@@ -387,21 +325,10 @@ func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumbe
 
 		// CRITICAL: Increment periods for all validators to lock in this epoch's rewards
 		// This converts accumulated rewards to cumulative ratios for proper F1 distribution
-		if err := h.k.IncrementAllValidatorPeriods(ctx); err != nil {
-			ctx.Logger().Error("Failed to increment validator periods after epoch", "error", err)
-			return
-		}
-
-		// === AUTOMATIC DISTRIBUTION DISABLED - Using Lazy Withdrawal ===
-		// Delegators must manually claim rewards using MsgWithdrawDelegatorReward
-		// This reduces gas costs and distributes the computational load
-		// Rewards are automatically withdrawn when delegations are removed (unbonding/offsetting)
-		//
-		// if err := h.k.DistributeRewardsToAllDelegators(ctx); err != nil {
-		// 	ctx.Logger().Error("Failed to automatically distribute rewards to delegators", "error", err)
+		// if err := h.k.IncrementAllValidatorPeriods(ctx); err != nil {
+		// 	ctx.Logger().Error("Failed to increment validator periods after epoch", "error", err)
+		// 	return
 		// }
-
-		ctx.Logger().Info("Epoch rewards allocated - awaiting manual withdrawal by delegators")
 
 		// Clean up old performance records (keep last 100 epochs)
 		if err := h.k.CleanupOldEpochPerformanceRecords(ctx, epochIdentifier, epochNumber, 100); err != nil {

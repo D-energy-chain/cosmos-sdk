@@ -103,9 +103,8 @@ func (k Keeper) SetWithdrawAddr(ctx context.Context, delegatorAddr, withdrawAddr
 	return nil
 }
 
-// withdraw rewards from a delegation - FIXED VERSION (prevents double period increment and outstanding reward deduction)
-func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
-	// Fetch the validator
+// withdraw rewards from a delegation
+func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
 	val, err := k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return nil, err
@@ -115,206 +114,27 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAd
 		return nil, types.ErrNoValidatorDistInfo
 	}
 
-	// Check if delegator starting info exists (needed for both native and NFT)
-	hasInfo, err := k.HasDelegatorStartingInfo(ctx, valAddr, delAddr)
+	del, err := k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
 	if err != nil {
 		return nil, err
 	}
 
-	if !hasInfo {
+	if del == nil {
 		return nil, types.ErrEmptyDelegationDistInfo
 	}
 
-	// Only increment period if there are accumulated rewards that need to be locked in
-	// This prevents double period increments when called after epoch end
-	currentRewards, err := k.GetValidatorCurrentRewards(ctx, valAddr)
+	// withdraw rewards
+	rewards, err := k.withdrawDelegationRewards(ctx, val, del)
 	if err != nil {
 		return nil, err
 	}
 
-	var endingPeriod uint64
-	if !currentRewards.Rewards.IsZero() {
-		// There are accumulated rewards, increment period to lock them in
-		endingPeriod, err = k.IncrementValidatorPeriod(ctx, val)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// No accumulated rewards - rewards already locked in the last completed period
-		// Historical rewards only exist for completed periods, not the current active period
-		// So we use currentRewards.Period - 1 (the last period that has historical rewards)
-		if currentRewards.Period == 0 {
-			// Edge case: validator just created, no rewards yet
-			endingPeriod = 0
-		} else {
-			endingPeriod = currentRewards.Period - 1
-		}
-	}
-
-	// Get delegator starting info
-	startingInfo, err := k.GetDelegatorStartingInfo(ctx, valAddr, delAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	startingPeriod := startingInfo.PreviousPeriod
-	nativeStake := startingInfo.Stake
-	nftStake := startingInfo.NftStake
-
-	// Get current outstanding rewards ONCE
-	outstanding, err := k.GetValidatorOutstandingRewardsCoins(ctx, valAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	var totalRewardsRaw sdk.DecCoins
-	var nativeRewardsRaw, nftRewardsRaw sdk.DecCoins
-
-	// Calculate native delegation rewards if they exist
-	del, err := k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
-	if err == nil && del != nil && !nativeStake.IsZero() {
-		nativeRewardsRaw, err = k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nativeStake)
-		if err != nil {
-			return nil, err
-		}
-		totalRewardsRaw = totalRewardsRaw.Add(nativeRewardsRaw...)
-	}
-
-	// Calculate NFT delegation rewards if they exist
-	if !nftStake.IsZero() {
-		nftRewardsRaw, err = k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, nftStake)
-		if err != nil {
-			return nil, err
-		}
-		totalRewardsRaw = totalRewardsRaw.Add(nftRewardsRaw...)
-	}
-
-	// Log detailed calculation breakdown
-	k.Logger(ctx).Info("💰 WITHDRAWAL CALCULATION",
-		"delegator", delAddr.String(),
-		"validator", val.GetOperator(),
-		"===== PERIOD INFO =====", "",
-		"starting_period", startingPeriod,
-		"ending_period", endingPeriod,
-		"===== STAKES =====", "",
-		"native_stake", nativeStake.String(),
-		"nft_stake", nftStake.String(),
-		"===== CALCULATED REWARDS (BEFORE INTERSECTION) =====", "",
-		"native_rewards_raw", nativeRewardsRaw.String(),
-		"nft_rewards_raw", nftRewardsRaw.String(),
-		"total_rewards_raw", totalRewardsRaw.String(),
-		"===== VALIDATOR STATE =====", "",
-		"outstanding_rewards", outstanding.String(),
-	)
-
-	// Apply intersection ONCE to total rewards
-	totalRewardsDecCoins := totalRewardsRaw.Intersect(outstanding)
-	if !totalRewardsDecCoins.Equal(totalRewardsRaw) {
-		logger := k.Logger(ctx)
-		logger.Info(
-			"rounding error withdrawing rewards from validator",
-			"delegator", delAddr.String(),
-			"validator", val.GetOperator(),
-			"got", totalRewardsDecCoins.String(),
-			"expected", totalRewardsRaw.String(),
-		)
-	}
-
-	// Update outstanding rewards ONCE
-	if !totalRewardsDecCoins.IsZero() {
-		outstanding = outstanding.Sub(totalRewardsDecCoins)
-		err = k.SetValidatorOutstandingRewards(ctx, valAddr, types.ValidatorOutstandingRewards{Rewards: outstanding})
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Convert to coins and handle remainder
-	totalRewards, remainder := totalRewardsDecCoins.TruncateDecimal()
-	if !remainder.IsZero() {
-		// add remainder to community pool
-		feePool, err := k.FeePool.Get(ctx)
-		if err != nil {
-			return nil, err
-		}
-		feePool.CommunityPool = feePool.CommunityPool.Add(remainder...)
-		err = k.FeePool.Set(ctx, feePool)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// If no rewards, return empty coins (not error if delegations exist)
-	if totalRewards.IsZero() {
-		return sdk.NewCoins(), nil
-	}
-
-	// Transfer rewards to delegator's withdraw address
-	withdrawAddr, err := k.GetDelegatorWithdrawAddr(ctx, delAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	// Log BEFORE transfer
-	k.Logger(ctx).Info("💰 WITHDRAWAL - BEFORE TRANSFER",
-		"delegator", delAddr.String(),
-		"validator", val.GetOperator(),
-		"withdraw_address", withdrawAddr.String(),
-		"amount_to_transfer", totalRewards.String(),
-		"remainder_to_community", remainder.String(),
-	)
-
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, totalRewards)
-	if err != nil {
-		k.Logger(ctx).Error("❌ WITHDRAWAL FAILED - Transfer error",
-			"delegator", delAddr.String(),
-			"validator", val.GetOperator(),
-			"error", err.Error(),
-		)
-		return nil, err
-	}
-
-	// Log AFTER successful transfer
-	k.Logger(ctx).Info("✅ WITHDRAWAL SUCCESS",
-		"delegator", delAddr.String(),
-		"validator", val.GetOperator(),
-		"===== BREAKDOWN =====", "",
-		"native_rewards", nativeRewardsRaw.String(),
-		"nft_rewards", nftRewardsRaw.String(),
-		"total_calculated", totalRewardsRaw.String(),
-		"after_intersection", totalRewardsDecCoins.String(),
-		"===== FINAL TRANSFER =====", "",
-		"transferred_to", withdrawAddr.String(),
-		"amount_transferred", totalRewards.String(),
-		"remainder_to_community", remainder.String(),
-		"===== VALIDATOR STATE UPDATE =====", "",
-		"new_outstanding_rewards", outstanding.String(),
-	)
-
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeWithdrawRewards,
-			sdk.NewAttribute(sdk.AttributeKeyAmount, totalRewards.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, valAddr.String()),
-		),
-	)
-
-	// reinitialize the delegation tracking (works for both native and NFT)
+	// reinitialize the delegation
 	err = k.initializeDelegation(ctx, valAddr, delAddr)
 	if err != nil {
 		return nil, err
 	}
-
-	// Log delegation reward withdrawal
-	k.logDelegationRewardWithdrawal(ctx, delAddr, valAddr, totalRewards, "combined")
-
-	return totalRewards, nil
-}
-
-// WithdrawDelegationRewards - public API that calls the internal fixed version
-func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
-	return k.withdrawDelegationRewards(ctx, delAddr, valAddr)
+	return rewards, nil
 }
 
 // withdraw validator commission
@@ -395,50 +215,4 @@ func (k Keeper) FundCommunityPool(ctx context.Context, amount sdk.Coins, sender 
 
 	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amount...)...)
 	return k.FeePool.Set(ctx, feePool)
-}
-
-// DelegatorInfo holds information about a delegator for iteration purposes
-type DelegatorInfo struct {
-	DelegatorAddr sdk.AccAddress
-	ValidatorAddr sdk.ValAddress
-	StartingInfo  types.DelegatorStartingInfo
-}
-
-// IterateValidatorDelegators iterates through all delegators for a specific validator.
-// The callback function receives the delegator address and starting info.
-// If the callback returns true, iteration stops.
-func (k Keeper) IterateValidatorDelegators(
-	ctx context.Context,
-	valAddr sdk.ValAddress,
-	callback func(delAddr sdk.AccAddress, startingInfo types.DelegatorStartingInfo) (stop bool),
-) error {
-	// Iterate through all delegator starting infos and filter by validator
-	k.IterateDelegatorStartingInfos(ctx, func(iterValAddr sdk.ValAddress, delAddr sdk.AccAddress, info types.DelegatorStartingInfo) (stop bool) {
-		// Only process delegators for the specified validator
-		if iterValAddr.Equals(valAddr) {
-			return callback(delAddr, info)
-		}
-		return false
-	})
-	return nil
-}
-
-// IterateAllValidatorsAndDelegators iterates through all validators and their delegators.
-// The callback function receives delegator info for each delegator of each validator.
-// If the callback returns true, iteration stops.
-func (k Keeper) IterateAllValidatorsAndDelegators(
-	ctx context.Context,
-	callback func(info DelegatorInfo) (stop bool),
-) error {
-	// Iterate through all delegator starting infos
-	// This is more efficient than iterating validators then delegators for each
-	k.IterateDelegatorStartingInfos(ctx, func(valAddr sdk.ValAddress, delAddr sdk.AccAddress, startingInfo types.DelegatorStartingInfo) (stop bool) {
-		info := DelegatorInfo{
-			DelegatorAddr: delAddr,
-			ValidatorAddr: valAddr,
-			StartingInfo:  startingInfo,
-		}
-		return callback(info)
-	})
-	return nil
 }

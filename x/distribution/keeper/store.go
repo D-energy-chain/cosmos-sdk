@@ -128,6 +128,56 @@ func (k Keeper) IterateDelegatorStartingInfos(ctx context.Context, handler func(
 	}
 }
 
+// get the starting info associated with a delegator
+func (k Keeper) GetNFTDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) (period types.NFTDelegatorStartingInfo, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	b, err := store.Get(types.GetNFTDelegatorStartingInfoKey(val, del))
+	if err != nil {
+		return
+	}
+
+	err = k.cdc.Unmarshal(b, &period)
+	return period, err
+}
+
+// set the starting info associated with a delegator
+func (k Keeper) SetNFTDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress, period types.NFTDelegatorStartingInfo) error {
+	store := k.storeService.OpenKVStore(ctx)
+	b, err := k.cdc.Marshal(&period)
+	if err != nil {
+		return err
+	}
+
+	return store.Set(types.GetNFTDelegatorStartingInfoKey(val, del), b)
+}
+
+// check existence of the starting info associated with a delegator
+func (k Keeper) HasNFTDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) (bool, error) {
+	store := k.storeService.OpenKVStore(ctx)
+	return store.Has(types.GetNFTDelegatorStartingInfoKey(val, del))
+}
+
+// delete the starting info associated with a delegator
+func (k Keeper) DeleteNFTDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) error {
+	store := k.storeService.OpenKVStore(ctx)
+	return store.Delete(types.GetNFTDelegatorStartingInfoKey(val, del))
+}
+
+// iterate over delegator starting infos
+func (k Keeper) IterateNFTDelegatorStartingInfos(ctx context.Context, handler func(val sdk.ValAddress, del sdk.AccAddress, info types.NFTDelegatorStartingInfo) (stop bool)) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iter := storetypes.KVStorePrefixIterator(store, types.NFTDelegatorStartingInfoPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var info types.NFTDelegatorStartingInfo
+		k.cdc.MustUnmarshal(iter.Value(), &info)
+		val, del := types.GetNFTDelegatorStartingInfoAddresses(iter.Key())
+		if handler(val, del, info) {
+			break
+		}
+	}
+}
+
 // get historical rewards for a particular period
 func (k Keeper) GetValidatorHistoricalRewards(ctx context.Context, val sdk.ValAddress, period uint64) (rewards types.ValidatorHistoricalRewards, err error) {
 	store := k.storeService.OpenKVStore(ctx)
@@ -243,6 +293,127 @@ func (k Keeper) IterateValidatorCurrentRewards(ctx context.Context, handler func
 		var rewards types.ValidatorCurrentRewards
 		k.cdc.MustUnmarshal(iter.Value(), &rewards)
 		addr := types.GetValidatorCurrentRewardsAddress(iter.Key())
+		if handler(addr, rewards) {
+			break
+		}
+	}
+}
+
+// get historical rewards for a particular period
+func (k Keeper) GetValidatorHistoricalNFTRewards(ctx context.Context, val sdk.ValAddress, period uint64) (rewards types.ValidatorHistoricalNFTRewards, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	b, err := store.Get(types.GetValidatorHistoricalNFTRewardsKey(val, period))
+	if err != nil {
+		return
+	}
+
+	err = k.cdc.Unmarshal(b, &rewards)
+	return
+}
+
+// set historical rewards for a particular period
+func (k Keeper) SetValidatorHistoricalNFTRewards(ctx context.Context, val sdk.ValAddress, period uint64, rewards types.ValidatorHistoricalNFTRewards) error {
+	store := k.storeService.OpenKVStore(ctx)
+	b, err := k.cdc.Marshal(&rewards)
+	if err != nil {
+		return err
+	}
+
+	return store.Set(types.GetValidatorHistoricalNFTRewardsKey(val, period), b)
+}
+
+// iterate over historical rewards
+func (k Keeper) IterateValidatorHistoricalNFTRewards(ctx context.Context, handler func(val sdk.ValAddress, period uint64, rewards types.ValidatorHistoricalNFTRewards) (stop bool)) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iter := storetypes.KVStorePrefixIterator(store, types.ValidatorHistoricalNFTRewardsPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var rewards types.ValidatorHistoricalNFTRewards
+		k.cdc.MustUnmarshal(iter.Value(), &rewards)
+		addr, period := types.GetValidatorHistoricalNFTRewardsAddressPeriod(iter.Key())
+		if handler(addr, period, rewards) {
+			break
+		}
+	}
+}
+
+// delete a historical reward
+func (k Keeper) DeleteValidatorHistoricalNFTReward(ctx context.Context, val sdk.ValAddress, period uint64) error {
+	store := k.storeService.OpenKVStore(ctx)
+	return store.Delete(types.GetValidatorHistoricalNFTRewardsKey(val, period))
+}
+
+// delete historical rewards for a validator
+func (k Keeper) DeleteValidatorHistoricalNFTRewards(ctx context.Context, val sdk.ValAddress) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iter := storetypes.KVStorePrefixIterator(store, types.GetValidatorHistoricalNFTRewardsPrefix(val))
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		store.Delete(iter.Key())
+	}
+}
+
+// delete all historical rewards
+func (k Keeper) DeleteAllValidatorHistoricalNFTRewards(ctx context.Context) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iter := storetypes.KVStorePrefixIterator(store, types.ValidatorHistoricalNFTRewardsPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		store.Delete(iter.Key())
+	}
+}
+
+// historical reference count (used for testcases)
+func (k Keeper) GetValidatorNFTHistoricalReferenceCount(ctx context.Context) (count uint64) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iter := storetypes.KVStorePrefixIterator(store, types.ValidatorHistoricalNFTRewardsPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var rewards types.ValidatorHistoricalNFTRewards
+		k.cdc.MustUnmarshal(iter.Value(), &rewards)
+		count += uint64(rewards.ReferenceCount)
+	}
+	return
+}
+
+// get current rewards for a validator
+func (k Keeper) GetValidatorCurrentNFTRewards(ctx context.Context, val sdk.ValAddress) (rewards types.ValidatorCurrentRewards, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	b, err := store.Get(types.GetValidatorCurrentNFTRewardsKey(val))
+	if err != nil {
+		return
+	}
+
+	err = k.cdc.Unmarshal(b, &rewards)
+	return
+}
+
+// set current rewards for a validator
+func (k Keeper) SetValidatorCurrentNFTRewards(ctx context.Context, val sdk.ValAddress, rewards types.ValidatorCurrentRewards) error {
+	store := k.storeService.OpenKVStore(ctx)
+	b, err := k.cdc.Marshal(&rewards)
+	if err != nil {
+		return err
+	}
+
+	return store.Set(types.GetValidatorCurrentNFTRewardsKey(val), b)
+}
+
+// delete current rewards for a validator
+func (k Keeper) DeleteValidatorCurrentNFTRewards(ctx context.Context, val sdk.ValAddress) error {
+	store := k.storeService.OpenKVStore(ctx)
+	return store.Delete(types.GetValidatorCurrentNFTRewardsKey(val))
+}
+
+// iterate over current rewards
+func (k Keeper) IterateValidatorCurrentNFTRewards(ctx context.Context, handler func(val sdk.ValAddress, rewards types.ValidatorCurrentRewards) (stop bool)) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iter := storetypes.KVStorePrefixIterator(store, types.ValidatorCurrentNFTRewardsPrefix)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var rewards types.ValidatorCurrentRewards
+		k.cdc.MustUnmarshal(iter.Value(), &rewards)
+		addr := types.GetValidatorCurrentNFTRewardsAddress(iter.Key())
 		if handler(addr, rewards) {
 			break
 		}

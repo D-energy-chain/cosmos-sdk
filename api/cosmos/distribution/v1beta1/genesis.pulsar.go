@@ -2604,6 +2604,505 @@ func (x *fastReflection_ValidatorCurrentRewardsRecord) ProtoMethods() *protoifac
 }
 
 var (
+	md_ValidatorCurrentNFTRewardsRecord                   protoreflect.MessageDescriptor
+	fd_ValidatorCurrentNFTRewardsRecord_validator_address protoreflect.FieldDescriptor
+	fd_ValidatorCurrentNFTRewardsRecord_rewards           protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_distribution_v1beta1_genesis_proto_init()
+	md_ValidatorCurrentNFTRewardsRecord = File_cosmos_distribution_v1beta1_genesis_proto.Messages().ByName("ValidatorCurrentNFTRewardsRecord")
+	fd_ValidatorCurrentNFTRewardsRecord_validator_address = md_ValidatorCurrentNFTRewardsRecord.Fields().ByName("validator_address")
+	fd_ValidatorCurrentNFTRewardsRecord_rewards = md_ValidatorCurrentNFTRewardsRecord.Fields().ByName("rewards")
+}
+
+var _ protoreflect.Message = (*fastReflection_ValidatorCurrentNFTRewardsRecord)(nil)
+
+type fastReflection_ValidatorCurrentNFTRewardsRecord ValidatorCurrentNFTRewardsRecord
+
+func (x *ValidatorCurrentNFTRewardsRecord) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ValidatorCurrentNFTRewardsRecord)(x)
+}
+
+func (x *ValidatorCurrentNFTRewardsRecord) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ValidatorCurrentNFTRewardsRecord_messageType fastReflection_ValidatorCurrentNFTRewardsRecord_messageType
+var _ protoreflect.MessageType = fastReflection_ValidatorCurrentNFTRewardsRecord_messageType{}
+
+type fastReflection_ValidatorCurrentNFTRewardsRecord_messageType struct{}
+
+func (x fastReflection_ValidatorCurrentNFTRewardsRecord_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ValidatorCurrentNFTRewardsRecord)(nil)
+}
+func (x fastReflection_ValidatorCurrentNFTRewardsRecord_messageType) New() protoreflect.Message {
+	return new(fastReflection_ValidatorCurrentNFTRewardsRecord)
+}
+func (x fastReflection_ValidatorCurrentNFTRewardsRecord_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ValidatorCurrentNFTRewardsRecord
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Descriptor() protoreflect.MessageDescriptor {
+	return md_ValidatorCurrentNFTRewardsRecord
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Type() protoreflect.MessageType {
+	return _fastReflection_ValidatorCurrentNFTRewardsRecord_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) New() protoreflect.Message {
+	return new(fastReflection_ValidatorCurrentNFTRewardsRecord)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Interface() protoreflect.ProtoMessage {
+	return (*ValidatorCurrentNFTRewardsRecord)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.ValidatorAddress != "" {
+		value := protoreflect.ValueOfString(x.ValidatorAddress)
+		if !f(fd_ValidatorCurrentNFTRewardsRecord_validator_address, value) {
+			return
+		}
+	}
+	if x.Rewards != nil {
+		value := protoreflect.ValueOfMessage(x.Rewards.ProtoReflect())
+		if !f(fd_ValidatorCurrentNFTRewardsRecord_rewards, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.validator_address":
+		return x.ValidatorAddress != ""
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards":
+		return x.Rewards != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.validator_address":
+		x.ValidatorAddress = ""
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards":
+		x.Rewards = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.validator_address":
+		value := x.ValidatorAddress
+		return protoreflect.ValueOfString(value)
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards":
+		value := x.Rewards
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.validator_address":
+		x.ValidatorAddress = value.Interface().(string)
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards":
+		x.Rewards = value.Message().Interface().(*ValidatorCurrentRewards)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards":
+		if x.Rewards == nil {
+			x.Rewards = new(ValidatorCurrentRewards)
+		}
+		return protoreflect.ValueOfMessage(x.Rewards.ProtoReflect())
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.validator_address":
+		panic(fmt.Errorf("field validator_address of message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.validator_address":
+		return protoreflect.ValueOfString("")
+	case "cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards":
+		m := new(ValidatorCurrentRewards)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ValidatorCurrentNFTRewardsRecord) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ValidatorCurrentNFTRewardsRecord)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.ValidatorAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Rewards != nil {
+			l = options.Size(x.Rewards)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ValidatorCurrentNFTRewardsRecord)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Rewards != nil {
+			encoded, err := options.Marshal(x.Rewards)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.ValidatorAddress) > 0 {
+			i -= len(x.ValidatorAddress)
+			copy(dAtA[i:], x.ValidatorAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ValidatorAddress)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ValidatorCurrentNFTRewardsRecord)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ValidatorCurrentNFTRewardsRecord: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ValidatorCurrentNFTRewardsRecord: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ValidatorAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Rewards", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Rewards == nil {
+					x.Rewards = &ValidatorCurrentRewards{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Rewards); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_DelegatorStartingInfoRecord                   protoreflect.MessageDescriptor
 	fd_DelegatorStartingInfoRecord_delegator_address protoreflect.FieldDescriptor
 	fd_DelegatorStartingInfoRecord_validator_address protoreflect.FieldDescriptor
@@ -2627,7 +3126,7 @@ func (x *DelegatorStartingInfoRecord) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DelegatorStartingInfoRecord) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[5]
+	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3167,6 +3666,569 @@ func (x *fastReflection_DelegatorStartingInfoRecord) ProtoMethods() *protoiface.
 }
 
 var (
+	md_NFTDelegatorStartingInfoRecord                   protoreflect.MessageDescriptor
+	fd_NFTDelegatorStartingInfoRecord_delegator_address protoreflect.FieldDescriptor
+	fd_NFTDelegatorStartingInfoRecord_validator_address protoreflect.FieldDescriptor
+	fd_NFTDelegatorStartingInfoRecord_starting_info     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_distribution_v1beta1_genesis_proto_init()
+	md_NFTDelegatorStartingInfoRecord = File_cosmos_distribution_v1beta1_genesis_proto.Messages().ByName("NFTDelegatorStartingInfoRecord")
+	fd_NFTDelegatorStartingInfoRecord_delegator_address = md_NFTDelegatorStartingInfoRecord.Fields().ByName("delegator_address")
+	fd_NFTDelegatorStartingInfoRecord_validator_address = md_NFTDelegatorStartingInfoRecord.Fields().ByName("validator_address")
+	fd_NFTDelegatorStartingInfoRecord_starting_info = md_NFTDelegatorStartingInfoRecord.Fields().ByName("starting_info")
+}
+
+var _ protoreflect.Message = (*fastReflection_NFTDelegatorStartingInfoRecord)(nil)
+
+type fastReflection_NFTDelegatorStartingInfoRecord NFTDelegatorStartingInfoRecord
+
+func (x *NFTDelegatorStartingInfoRecord) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_NFTDelegatorStartingInfoRecord)(x)
+}
+
+func (x *NFTDelegatorStartingInfoRecord) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_NFTDelegatorStartingInfoRecord_messageType fastReflection_NFTDelegatorStartingInfoRecord_messageType
+var _ protoreflect.MessageType = fastReflection_NFTDelegatorStartingInfoRecord_messageType{}
+
+type fastReflection_NFTDelegatorStartingInfoRecord_messageType struct{}
+
+func (x fastReflection_NFTDelegatorStartingInfoRecord_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_NFTDelegatorStartingInfoRecord)(nil)
+}
+func (x fastReflection_NFTDelegatorStartingInfoRecord_messageType) New() protoreflect.Message {
+	return new(fastReflection_NFTDelegatorStartingInfoRecord)
+}
+func (x fastReflection_NFTDelegatorStartingInfoRecord_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_NFTDelegatorStartingInfoRecord
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Descriptor() protoreflect.MessageDescriptor {
+	return md_NFTDelegatorStartingInfoRecord
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Type() protoreflect.MessageType {
+	return _fastReflection_NFTDelegatorStartingInfoRecord_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) New() protoreflect.Message {
+	return new(fastReflection_NFTDelegatorStartingInfoRecord)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Interface() protoreflect.ProtoMessage {
+	return (*NFTDelegatorStartingInfoRecord)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.DelegatorAddress != "" {
+		value := protoreflect.ValueOfString(x.DelegatorAddress)
+		if !f(fd_NFTDelegatorStartingInfoRecord_delegator_address, value) {
+			return
+		}
+	}
+	if x.ValidatorAddress != "" {
+		value := protoreflect.ValueOfString(x.ValidatorAddress)
+		if !f(fd_NFTDelegatorStartingInfoRecord_validator_address, value) {
+			return
+		}
+	}
+	if x.StartingInfo != nil {
+		value := protoreflect.ValueOfMessage(x.StartingInfo.ProtoReflect())
+		if !f(fd_NFTDelegatorStartingInfoRecord_starting_info, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.delegator_address":
+		return x.DelegatorAddress != ""
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.validator_address":
+		return x.ValidatorAddress != ""
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info":
+		return x.StartingInfo != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.delegator_address":
+		x.DelegatorAddress = ""
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.validator_address":
+		x.ValidatorAddress = ""
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info":
+		x.StartingInfo = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.delegator_address":
+		value := x.DelegatorAddress
+		return protoreflect.ValueOfString(value)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.validator_address":
+		value := x.ValidatorAddress
+		return protoreflect.ValueOfString(value)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info":
+		value := x.StartingInfo
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.delegator_address":
+		x.DelegatorAddress = value.Interface().(string)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.validator_address":
+		x.ValidatorAddress = value.Interface().(string)
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info":
+		x.StartingInfo = value.Message().Interface().(*NFTDelegatorStartingInfo)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info":
+		if x.StartingInfo == nil {
+			x.StartingInfo = new(NFTDelegatorStartingInfo)
+		}
+		return protoreflect.ValueOfMessage(x.StartingInfo.ProtoReflect())
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.delegator_address":
+		panic(fmt.Errorf("field delegator_address of message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord is not mutable"))
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.validator_address":
+		panic(fmt.Errorf("field validator_address of message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.delegator_address":
+		return protoreflect.ValueOfString("")
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.validator_address":
+		return protoreflect.ValueOfString("")
+	case "cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info":
+		m := new(NFTDelegatorStartingInfo)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord"))
+		}
+		panic(fmt.Errorf("message cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_NFTDelegatorStartingInfoRecord) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*NFTDelegatorStartingInfoRecord)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.DelegatorAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ValidatorAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.StartingInfo != nil {
+			l = options.Size(x.StartingInfo)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*NFTDelegatorStartingInfoRecord)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.StartingInfo != nil {
+			encoded, err := options.Marshal(x.StartingInfo)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.ValidatorAddress) > 0 {
+			i -= len(x.ValidatorAddress)
+			copy(dAtA[i:], x.ValidatorAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ValidatorAddress)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.DelegatorAddress) > 0 {
+			i -= len(x.DelegatorAddress)
+			copy(dAtA[i:], x.DelegatorAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DelegatorAddress)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*NFTDelegatorStartingInfoRecord)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NFTDelegatorStartingInfoRecord: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: NFTDelegatorStartingInfoRecord: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ValidatorAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StartingInfo", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.StartingInfo == nil {
+					x.StartingInfo = &NFTDelegatorStartingInfo{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.StartingInfo); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_ValidatorSlashEventRecord                       protoreflect.MessageDescriptor
 	fd_ValidatorSlashEventRecord_validator_address     protoreflect.FieldDescriptor
 	fd_ValidatorSlashEventRecord_height                protoreflect.FieldDescriptor
@@ -3192,7 +4254,7 @@ func (x *ValidatorSlashEventRecord) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorSlashEventRecord) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[6]
+	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4019,7 +5081,7 @@ func (x *_GenesisState_8_list) IsValid() bool {
 var _ protoreflect.List = (*_GenesisState_9_list)(nil)
 
 type _GenesisState_9_list struct {
-	list *[]*DelegatorStartingInfoRecord
+	list *[]*ValidatorCurrentNFTRewardsRecord
 }
 
 func (x *_GenesisState_9_list) Len() int {
@@ -4035,18 +5097,18 @@ func (x *_GenesisState_9_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisState_9_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*DelegatorStartingInfoRecord)
+	concreteValue := valueUnwrapped.Interface().(*ValidatorCurrentNFTRewardsRecord)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisState_9_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*DelegatorStartingInfoRecord)
+	concreteValue := valueUnwrapped.Interface().(*ValidatorCurrentNFTRewardsRecord)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisState_9_list) AppendMutable() protoreflect.Value {
-	v := new(DelegatorStartingInfoRecord)
+	v := new(ValidatorCurrentNFTRewardsRecord)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -4059,7 +5121,7 @@ func (x *_GenesisState_9_list) Truncate(n int) {
 }
 
 func (x *_GenesisState_9_list) NewElement() protoreflect.Value {
-	v := new(DelegatorStartingInfoRecord)
+	v := new(ValidatorCurrentNFTRewardsRecord)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -4070,7 +5132,7 @@ func (x *_GenesisState_9_list) IsValid() bool {
 var _ protoreflect.List = (*_GenesisState_10_list)(nil)
 
 type _GenesisState_10_list struct {
-	list *[]*ValidatorSlashEventRecord
+	list *[]*DelegatorStartingInfoRecord
 }
 
 func (x *_GenesisState_10_list) Len() int {
@@ -4086,18 +5148,18 @@ func (x *_GenesisState_10_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisState_10_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ValidatorSlashEventRecord)
+	concreteValue := valueUnwrapped.Interface().(*DelegatorStartingInfoRecord)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisState_10_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ValidatorSlashEventRecord)
+	concreteValue := valueUnwrapped.Interface().(*DelegatorStartingInfoRecord)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisState_10_list) AppendMutable() protoreflect.Value {
-	v := new(ValidatorSlashEventRecord)
+	v := new(DelegatorStartingInfoRecord)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -4110,11 +5172,113 @@ func (x *_GenesisState_10_list) Truncate(n int) {
 }
 
 func (x *_GenesisState_10_list) NewElement() protoreflect.Value {
-	v := new(ValidatorSlashEventRecord)
+	v := new(DelegatorStartingInfoRecord)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
 func (x *_GenesisState_10_list) IsValid() bool {
+	return x.list != nil
+}
+
+var _ protoreflect.List = (*_GenesisState_11_list)(nil)
+
+type _GenesisState_11_list struct {
+	list *[]*NFTDelegatorStartingInfoRecord
+}
+
+func (x *_GenesisState_11_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_11_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GenesisState_11_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*NFTDelegatorStartingInfoRecord)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_11_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*NFTDelegatorStartingInfoRecord)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_11_list) AppendMutable() protoreflect.Value {
+	v := new(NFTDelegatorStartingInfoRecord)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_11_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_11_list) NewElement() protoreflect.Value {
+	v := new(NFTDelegatorStartingInfoRecord)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_11_list) IsValid() bool {
+	return x.list != nil
+}
+
+var _ protoreflect.List = (*_GenesisState_12_list)(nil)
+
+type _GenesisState_12_list struct {
+	list *[]*ValidatorSlashEventRecord
+}
+
+func (x *_GenesisState_12_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_12_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GenesisState_12_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*ValidatorSlashEventRecord)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_12_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*ValidatorSlashEventRecord)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_12_list) AppendMutable() protoreflect.Value {
+	v := new(ValidatorSlashEventRecord)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_12_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_12_list) NewElement() protoreflect.Value {
+	v := new(ValidatorSlashEventRecord)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_12_list) IsValid() bool {
 	return x.list != nil
 }
 
@@ -4128,7 +5292,9 @@ var (
 	fd_GenesisState_validator_accumulated_commissions protoreflect.FieldDescriptor
 	fd_GenesisState_validator_historical_rewards      protoreflect.FieldDescriptor
 	fd_GenesisState_validator_current_rewards         protoreflect.FieldDescriptor
+	fd_GenesisState_validator_current_nft_rewards     protoreflect.FieldDescriptor
 	fd_GenesisState_delegator_starting_infos          protoreflect.FieldDescriptor
+	fd_GenesisState_nft_delegator_starting_infos      protoreflect.FieldDescriptor
 	fd_GenesisState_validator_slash_events            protoreflect.FieldDescriptor
 )
 
@@ -4143,7 +5309,9 @@ func init() {
 	fd_GenesisState_validator_accumulated_commissions = md_GenesisState.Fields().ByName("validator_accumulated_commissions")
 	fd_GenesisState_validator_historical_rewards = md_GenesisState.Fields().ByName("validator_historical_rewards")
 	fd_GenesisState_validator_current_rewards = md_GenesisState.Fields().ByName("validator_current_rewards")
+	fd_GenesisState_validator_current_nft_rewards = md_GenesisState.Fields().ByName("validator_current_nft_rewards")
 	fd_GenesisState_delegator_starting_infos = md_GenesisState.Fields().ByName("delegator_starting_infos")
+	fd_GenesisState_nft_delegator_starting_infos = md_GenesisState.Fields().ByName("nft_delegator_starting_infos")
 	fd_GenesisState_validator_slash_events = md_GenesisState.Fields().ByName("validator_slash_events")
 }
 
@@ -4156,7 +5324,7 @@ func (x *GenesisState) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GenesisState) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[7]
+	mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4260,14 +5428,26 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
+	if len(x.ValidatorCurrentNftRewards) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_9_list{list: &x.ValidatorCurrentNftRewards})
+		if !f(fd_GenesisState_validator_current_nft_rewards, value) {
+			return
+		}
+	}
 	if len(x.DelegatorStartingInfos) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_9_list{list: &x.DelegatorStartingInfos})
+		value := protoreflect.ValueOfList(&_GenesisState_10_list{list: &x.DelegatorStartingInfos})
 		if !f(fd_GenesisState_delegator_starting_infos, value) {
 			return
 		}
 	}
+	if len(x.NftDelegatorStartingInfos) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_11_list{list: &x.NftDelegatorStartingInfos})
+		if !f(fd_GenesisState_nft_delegator_starting_infos, value) {
+			return
+		}
+	}
 	if len(x.ValidatorSlashEvents) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_10_list{list: &x.ValidatorSlashEvents})
+		value := protoreflect.ValueOfList(&_GenesisState_12_list{list: &x.ValidatorSlashEvents})
 		if !f(fd_GenesisState_validator_slash_events, value) {
 			return
 		}
@@ -4303,8 +5483,12 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.ValidatorHistoricalRewards) != 0
 	case "cosmos.distribution.v1beta1.GenesisState.validator_current_rewards":
 		return len(x.ValidatorCurrentRewards) != 0
+	case "cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards":
+		return len(x.ValidatorCurrentNftRewards) != 0
 	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
 		return len(x.DelegatorStartingInfos) != 0
+	case "cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos":
+		return len(x.NftDelegatorStartingInfos) != 0
 	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
 		return len(x.ValidatorSlashEvents) != 0
 	default:
@@ -4339,8 +5523,12 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.ValidatorHistoricalRewards = nil
 	case "cosmos.distribution.v1beta1.GenesisState.validator_current_rewards":
 		x.ValidatorCurrentRewards = nil
+	case "cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards":
+		x.ValidatorCurrentNftRewards = nil
 	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
 		x.DelegatorStartingInfos = nil
+	case "cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos":
+		x.NftDelegatorStartingInfos = nil
 	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
 		x.ValidatorSlashEvents = nil
 	default:
@@ -4398,17 +5586,29 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_8_list{list: &x.ValidatorCurrentRewards}
 		return protoreflect.ValueOfList(listValue)
-	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
-		if len(x.DelegatorStartingInfos) == 0 {
+	case "cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards":
+		if len(x.ValidatorCurrentNftRewards) == 0 {
 			return protoreflect.ValueOfList(&_GenesisState_9_list{})
 		}
-		listValue := &_GenesisState_9_list{list: &x.DelegatorStartingInfos}
+		listValue := &_GenesisState_9_list{list: &x.ValidatorCurrentNftRewards}
+		return protoreflect.ValueOfList(listValue)
+	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
+		if len(x.DelegatorStartingInfos) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_10_list{})
+		}
+		listValue := &_GenesisState_10_list{list: &x.DelegatorStartingInfos}
+		return protoreflect.ValueOfList(listValue)
+	case "cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos":
+		if len(x.NftDelegatorStartingInfos) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_11_list{})
+		}
+		listValue := &_GenesisState_11_list{list: &x.NftDelegatorStartingInfos}
 		return protoreflect.ValueOfList(listValue)
 	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
 		if len(x.ValidatorSlashEvents) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_10_list{})
+			return protoreflect.ValueOfList(&_GenesisState_12_list{})
 		}
-		listValue := &_GenesisState_10_list{list: &x.ValidatorSlashEvents}
+		listValue := &_GenesisState_12_list{list: &x.ValidatorSlashEvents}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
@@ -4456,13 +5656,21 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_8_list)
 		x.ValidatorCurrentRewards = *clv.list
-	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
+	case "cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards":
 		lv := value.List()
 		clv := lv.(*_GenesisState_9_list)
-		x.DelegatorStartingInfos = *clv.list
-	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
+		x.ValidatorCurrentNftRewards = *clv.list
+	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
 		lv := value.List()
 		clv := lv.(*_GenesisState_10_list)
+		x.DelegatorStartingInfos = *clv.list
+	case "cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos":
+		lv := value.List()
+		clv := lv.(*_GenesisState_11_list)
+		x.NftDelegatorStartingInfos = *clv.list
+	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
+		lv := value.List()
+		clv := lv.(*_GenesisState_12_list)
 		x.ValidatorSlashEvents = *clv.list
 	default:
 		if fd.IsExtension() {
@@ -4524,17 +5732,29 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_8_list{list: &x.ValidatorCurrentRewards}
 		return protoreflect.ValueOfList(value)
+	case "cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards":
+		if x.ValidatorCurrentNftRewards == nil {
+			x.ValidatorCurrentNftRewards = []*ValidatorCurrentNFTRewardsRecord{}
+		}
+		value := &_GenesisState_9_list{list: &x.ValidatorCurrentNftRewards}
+		return protoreflect.ValueOfList(value)
 	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
 		if x.DelegatorStartingInfos == nil {
 			x.DelegatorStartingInfos = []*DelegatorStartingInfoRecord{}
 		}
-		value := &_GenesisState_9_list{list: &x.DelegatorStartingInfos}
+		value := &_GenesisState_10_list{list: &x.DelegatorStartingInfos}
+		return protoreflect.ValueOfList(value)
+	case "cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos":
+		if x.NftDelegatorStartingInfos == nil {
+			x.NftDelegatorStartingInfos = []*NFTDelegatorStartingInfoRecord{}
+		}
+		value := &_GenesisState_11_list{list: &x.NftDelegatorStartingInfos}
 		return protoreflect.ValueOfList(value)
 	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
 		if x.ValidatorSlashEvents == nil {
 			x.ValidatorSlashEvents = []*ValidatorSlashEventRecord{}
 		}
-		value := &_GenesisState_10_list{list: &x.ValidatorSlashEvents}
+		value := &_GenesisState_12_list{list: &x.ValidatorSlashEvents}
 		return protoreflect.ValueOfList(value)
 	case "cosmos.distribution.v1beta1.GenesisState.previous_proposer":
 		panic(fmt.Errorf("field previous_proposer of message cosmos.distribution.v1beta1.GenesisState is not mutable"))
@@ -4574,12 +5794,18 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "cosmos.distribution.v1beta1.GenesisState.validator_current_rewards":
 		list := []*ValidatorCurrentRewardsRecord{}
 		return protoreflect.ValueOfList(&_GenesisState_8_list{list: &list})
+	case "cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards":
+		list := []*ValidatorCurrentNFTRewardsRecord{}
+		return protoreflect.ValueOfList(&_GenesisState_9_list{list: &list})
 	case "cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos":
 		list := []*DelegatorStartingInfoRecord{}
-		return protoreflect.ValueOfList(&_GenesisState_9_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_10_list{list: &list})
+	case "cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos":
+		list := []*NFTDelegatorStartingInfoRecord{}
+		return protoreflect.ValueOfList(&_GenesisState_11_list{list: &list})
 	case "cosmos.distribution.v1beta1.GenesisState.validator_slash_events":
 		list := []*ValidatorSlashEventRecord{}
-		return protoreflect.ValueOfList(&_GenesisState_10_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_12_list{list: &list})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.distribution.v1beta1.GenesisState"))
@@ -4691,8 +5917,20 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if len(x.ValidatorCurrentNftRewards) > 0 {
+			for _, e := range x.ValidatorCurrentNftRewards {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
 		if len(x.DelegatorStartingInfos) > 0 {
 			for _, e := range x.DelegatorStartingInfos {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if len(x.NftDelegatorStartingInfos) > 0 {
+			for _, e := range x.NftDelegatorStartingInfos {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -4745,12 +5983,44 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x52
+				dAtA[i] = 0x62
+			}
+		}
+		if len(x.NftDelegatorStartingInfos) > 0 {
+			for iNdEx := len(x.NftDelegatorStartingInfos) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.NftDelegatorStartingInfos[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x5a
 			}
 		}
 		if len(x.DelegatorStartingInfos) > 0 {
 			for iNdEx := len(x.DelegatorStartingInfos) - 1; iNdEx >= 0; iNdEx-- {
 				encoded, err := options.Marshal(x.DelegatorStartingInfos[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x52
+			}
+		}
+		if len(x.ValidatorCurrentNftRewards) > 0 {
+			for iNdEx := len(x.ValidatorCurrentNftRewards) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.ValidatorCurrentNftRewards[iNdEx])
 				if err != nil {
 					return protoiface.MarshalOutput{
 						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -5204,6 +6474,40 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 9:
 				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValidatorCurrentNftRewards", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ValidatorCurrentNftRewards = append(x.ValidatorCurrentNftRewards, &ValidatorCurrentNFTRewardsRecord{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ValidatorCurrentNftRewards[len(x.ValidatorCurrentNftRewards)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 10:
+				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegatorStartingInfos", wireType)
 				}
 				var msglen int
@@ -5236,7 +6540,41 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 10:
+			case 11:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NftDelegatorStartingInfos", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.NftDelegatorStartingInfos = append(x.NftDelegatorStartingInfos, &NFTDelegatorStartingInfoRecord{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NftDelegatorStartingInfos[len(x.NftDelegatorStartingInfos)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 12:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValidatorSlashEvents", wireType)
 				}
@@ -5561,6 +6899,52 @@ func (x *ValidatorCurrentRewardsRecord) GetRewards() *ValidatorCurrentRewards {
 	return nil
 }
 
+// ValidatorCurrentNFTRewardsRecord is used for import / export via genesis json.
+type ValidatorCurrentNFTRewardsRecord struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// validator_address is the address of the validator.
+	ValidatorAddress string `protobuf:"bytes,1,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty"`
+	// rewards defines the current rewards of a validator.
+	Rewards *ValidatorCurrentRewards `protobuf:"bytes,2,opt,name=rewards,proto3" json:"rewards,omitempty"`
+}
+
+func (x *ValidatorCurrentNFTRewardsRecord) Reset() {
+	*x = ValidatorCurrentNFTRewardsRecord{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ValidatorCurrentNFTRewardsRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidatorCurrentNFTRewardsRecord) ProtoMessage() {}
+
+// Deprecated: Use ValidatorCurrentNFTRewardsRecord.ProtoReflect.Descriptor instead.
+func (*ValidatorCurrentNFTRewardsRecord) Descriptor() ([]byte, []int) {
+	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ValidatorCurrentNFTRewardsRecord) GetValidatorAddress() string {
+	if x != nil {
+		return x.ValidatorAddress
+	}
+	return ""
+}
+
+func (x *ValidatorCurrentNFTRewardsRecord) GetRewards() *ValidatorCurrentRewards {
+	if x != nil {
+		return x.Rewards
+	}
+	return nil
+}
+
 // DelegatorStartingInfoRecord used for import / export via genesis json.
 type DelegatorStartingInfoRecord struct {
 	state         protoimpl.MessageState
@@ -5578,7 +6962,7 @@ type DelegatorStartingInfoRecord struct {
 func (x *DelegatorStartingInfoRecord) Reset() {
 	*x = DelegatorStartingInfoRecord{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[5]
+		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5592,7 +6976,7 @@ func (*DelegatorStartingInfoRecord) ProtoMessage() {}
 
 // Deprecated: Use DelegatorStartingInfoRecord.ProtoReflect.Descriptor instead.
 func (*DelegatorStartingInfoRecord) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{5}
+	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DelegatorStartingInfoRecord) GetDelegatorAddress() string {
@@ -5610,6 +6994,61 @@ func (x *DelegatorStartingInfoRecord) GetValidatorAddress() string {
 }
 
 func (x *DelegatorStartingInfoRecord) GetStartingInfo() *DelegatorStartingInfo {
+	if x != nil {
+		return x.StartingInfo
+	}
+	return nil
+}
+
+// NFTDelegatorStartingInfoRecord used for import / export via genesis json.
+type NFTDelegatorStartingInfoRecord struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// delegator_address is the address of the delegator.
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
+	// validator_address is the address of the validator.
+	ValidatorAddress string `protobuf:"bytes,2,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty"`
+	// starting_info defines the starting info of a delegator.
+	StartingInfo *NFTDelegatorStartingInfo `protobuf:"bytes,3,opt,name=starting_info,json=startingInfo,proto3" json:"starting_info,omitempty"`
+}
+
+func (x *NFTDelegatorStartingInfoRecord) Reset() {
+	*x = NFTDelegatorStartingInfoRecord{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NFTDelegatorStartingInfoRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NFTDelegatorStartingInfoRecord) ProtoMessage() {}
+
+// Deprecated: Use NFTDelegatorStartingInfoRecord.ProtoReflect.Descriptor instead.
+func (*NFTDelegatorStartingInfoRecord) Descriptor() ([]byte, []int) {
+	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *NFTDelegatorStartingInfoRecord) GetDelegatorAddress() string {
+	if x != nil {
+		return x.DelegatorAddress
+	}
+	return ""
+}
+
+func (x *NFTDelegatorStartingInfoRecord) GetValidatorAddress() string {
+	if x != nil {
+		return x.ValidatorAddress
+	}
+	return ""
+}
+
+func (x *NFTDelegatorStartingInfoRecord) GetStartingInfo() *NFTDelegatorStartingInfo {
 	if x != nil {
 		return x.StartingInfo
 	}
@@ -5635,7 +7074,7 @@ type ValidatorSlashEventRecord struct {
 func (x *ValidatorSlashEventRecord) Reset() {
 	*x = ValidatorSlashEventRecord{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[6]
+		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5649,7 +7088,7 @@ func (*ValidatorSlashEventRecord) ProtoMessage() {}
 
 // Deprecated: Use ValidatorSlashEventRecord.ProtoReflect.Descriptor instead.
 func (*ValidatorSlashEventRecord) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{6}
+	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ValidatorSlashEventRecord) GetValidatorAddress() string {
@@ -5702,16 +7141,20 @@ type GenesisState struct {
 	ValidatorHistoricalRewards []*ValidatorHistoricalRewardsRecord `protobuf:"bytes,7,rep,name=validator_historical_rewards,json=validatorHistoricalRewards,proto3" json:"validator_historical_rewards,omitempty"`
 	// fee_pool defines the current rewards of all validators at genesis.
 	ValidatorCurrentRewards []*ValidatorCurrentRewardsRecord `protobuf:"bytes,8,rep,name=validator_current_rewards,json=validatorCurrentRewards,proto3" json:"validator_current_rewards,omitempty"`
+	// fee_pool defines the current nft rewards of all validators at genesis.
+	ValidatorCurrentNftRewards []*ValidatorCurrentNFTRewardsRecord `protobuf:"bytes,9,rep,name=validator_current_nft_rewards,json=validatorCurrentNftRewards,proto3" json:"validator_current_nft_rewards,omitempty"`
 	// fee_pool defines the delegator starting infos at genesis.
-	DelegatorStartingInfos []*DelegatorStartingInfoRecord `protobuf:"bytes,9,rep,name=delegator_starting_infos,json=delegatorStartingInfos,proto3" json:"delegator_starting_infos,omitempty"`
+	DelegatorStartingInfos []*DelegatorStartingInfoRecord `protobuf:"bytes,10,rep,name=delegator_starting_infos,json=delegatorStartingInfos,proto3" json:"delegator_starting_infos,omitempty"`
+	// fee_pool defines the NFT delegator starting infos at genesis.
+	NftDelegatorStartingInfos []*NFTDelegatorStartingInfoRecord `protobuf:"bytes,11,rep,name=nft_delegator_starting_infos,json=nftDelegatorStartingInfos,proto3" json:"nft_delegator_starting_infos,omitempty"`
 	// fee_pool defines the validator slash events at genesis.
-	ValidatorSlashEvents []*ValidatorSlashEventRecord `protobuf:"bytes,10,rep,name=validator_slash_events,json=validatorSlashEvents,proto3" json:"validator_slash_events,omitempty"`
+	ValidatorSlashEvents []*ValidatorSlashEventRecord `protobuf:"bytes,12,rep,name=validator_slash_events,json=validatorSlashEvents,proto3" json:"validator_slash_events,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
 	*x = GenesisState{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[7]
+		mi := &file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5725,7 +7168,7 @@ func (*GenesisState) ProtoMessage() {}
 
 // Deprecated: Use GenesisState.ProtoReflect.Descriptor instead.
 func (*GenesisState) Descriptor() ([]byte, []int) {
-	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{7}
+	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GenesisState) GetParams() *Params {
@@ -5784,9 +7227,23 @@ func (x *GenesisState) GetValidatorCurrentRewards() []*ValidatorCurrentRewardsRe
 	return nil
 }
 
+func (x *GenesisState) GetValidatorCurrentNftRewards() []*ValidatorCurrentNFTRewardsRecord {
+	if x != nil {
+		return x.ValidatorCurrentNftRewards
+	}
+	return nil
+}
+
 func (x *GenesisState) GetDelegatorStartingInfos() []*DelegatorStartingInfoRecord {
 	if x != nil {
 		return x.DelegatorStartingInfos
+	}
+	return nil
+}
+
+func (x *GenesisState) GetNftDelegatorStartingInfos() []*NFTDelegatorStartingInfoRecord {
+	if x != nil {
+		return x.NftDelegatorStartingInfos
 	}
 	return nil
 }
@@ -5886,132 +7343,182 @@ var file_cosmos_distribution_v1beta1_genesis_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x72, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64,
 	0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x72, 0x65,
 	0x77, 0x61, 0x72, 0x64, 0x73, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22,
-	0xa2, 0x02, 0x0a, 0x1b, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61,
-	0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12,
-	0x45, 0x0a, 0x11, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
-	0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61,
-	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
-	0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x62, 0x0a, 0x0d, 0x73, 0x74, 0x61, 0x72, 0x74, 0x69,
-	0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x32, 0x2e,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65,
-	0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66,
-	0x6f, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0c, 0x73, 0x74,
-	0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00,
-	0xe8, 0xa0, 0x1f, 0x00, 0x22, 0x96, 0x02, 0x0a, 0x19, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
-	0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x63, 0x6f,
-	0x72, 0x64, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f,
-	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x21, 0xd2,
-	0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
-	0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x65,
-	0x72, 0x69, 0x6f, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69,
-	0x6f, 0x64, 0x12, 0x6f, 0x0a, 0x15, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f,
-	0x73, 0x6c, 0x61, 0x73, 0x68, 0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x30, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
-	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x13,
-	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22, 0x8c, 0x09,
-	0x0a, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x46,
-	0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x23,
-	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x72,
-	0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06,
-	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x4a, 0x0a, 0x08, 0x66, 0x65, 0x65, 0x5f, 0x70, 0x6f,
-	0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x50, 0x6f, 0x6f, 0x6c, 0x42, 0x09,
-	0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x66, 0x65, 0x65, 0x50, 0x6f,
-	0x6f, 0x6c, 0x12, 0x77, 0x0a, 0x18, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f,
-	0x77, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x18, 0x03,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x32, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69,
-	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x57, 0x69, 0x74, 0x68,
-	0x64, 0x72, 0x61, 0x77, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7,
-	0xb0, 0x2a, 0x01, 0x52, 0x16, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x57, 0x69,
-	0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x49, 0x6e, 0x66, 0x6f, 0x73, 0x12, 0x45, 0x0a, 0x11, 0x70,
-	0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x70, 0x6f, 0x73, 0x65, 0x72,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
-	0x52, 0x10, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x50, 0x72, 0x6f, 0x70, 0x6f, 0x73,
-	0x65, 0x72, 0x12, 0x7a, 0x0a, 0x13, 0x6f, 0x75, 0x74, 0x73, 0x74, 0x61, 0x6e, 0x64, 0x69, 0x6e,
-	0x67, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x3e, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61,
-	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x4f, 0x75, 0x74, 0x73, 0x74, 0x61, 0x6e, 0x64, 0x69,
-	0x6e, 0x67, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42,
-	0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x12, 0x6f, 0x75, 0x74, 0x73,
-	0x74, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x98,
-	0x01, 0x0a, 0x21, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x63, 0x63,
-	0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x41, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
-	0x6f, 0x72, 0x41, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x43, 0x6f, 0x6d,
-	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8,
-	0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x43, 0x6f,
-	0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x8a, 0x01, 0x0a, 0x1c, 0x76, 0x61,
-	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x68, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x69, 0x63,
-	0x61, 0x6c, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x3d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69,
-	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56,
-	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x69, 0x63,
-	0x61, 0x6c, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42,
-	0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1a, 0x76, 0x61, 0x6c, 0x69,
-	0x64, 0x61, 0x74, 0x6f, 0x72, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x69, 0x63, 0x61, 0x6c, 0x52,
-	0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x81, 0x01, 0x0a, 0x19, 0x76, 0x61, 0x6c, 0x69, 0x64,
-	0x61, 0x74, 0x6f, 0x72, 0x5f, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x5f, 0x72, 0x65, 0x77,
-	0x61, 0x72, 0x64, 0x73, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
-	0x6f, 0x72, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73,
-	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a,
-	0x01, 0x52, 0x17, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43, 0x75, 0x72, 0x72,
-	0x65, 0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x7d, 0x0a, 0x18, 0x64, 0x65,
-	0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67,
-	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x18, 0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x38, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67,
-	0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f,
-	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a,
-	0x01, 0x52, 0x16, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72,
-	0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x73, 0x12, 0x77, 0x0a, 0x16, 0x76, 0x61, 0x6c,
-	0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73, 0x6c, 0x61, 0x73, 0x68, 0x5f, 0x65, 0x76, 0x65,
-	0x6e, 0x74, 0x73, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x36, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
-	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
-	0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x63, 0x6f, 0x72,
-	0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x14, 0x76, 0x61,
+	0xd7, 0x01, 0x0a, 0x20, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x74, 0x4e, 0x46, 0x54, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69,
+	0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x59, 0x0a, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x34, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64,
+	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f,
+	0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x3a,
+	0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22, 0xa2, 0x02, 0x0a, 0x1b, 0x44, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49,
+	0x6e, 0x66, 0x6f, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x45, 0x0a, 0x11, 0x64, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10,
+	0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d,
+	0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10,
+	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x62, 0x0a, 0x0d, 0x73, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66,
+	0x6f, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x32, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53,
+	0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x09, 0xc8, 0xde, 0x1f,
+	0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0c, 0x73, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67,
+	0x49, 0x6e, 0x66, 0x6f, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22, 0xa8,
+	0x02, 0x0a, 0x1e, 0x4e, 0x46, 0x54, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53,
+	0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x63, 0x6f, 0x72,
+	0x64, 0x12, 0x45, 0x0a, 0x11, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4,
+	0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x65, 0x0a, 0x0d, 0x73, 0x74, 0x61, 0x72,
+	0x74, 0x69, 0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x35, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x4e, 0x46,
+	0x54, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69,
+	0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x0c, 0x73, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x3a,
+	0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22, 0x96, 0x02, 0x0a, 0x19, 0x56, 0x61,
 	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x73, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x42, 0x83, 0x02, 0x0a,
-	0x1f, 0x63, 0x6f, 0x6d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74,
-	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x40, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69,
-	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x3b, 0x64,
-	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0xa2, 0x02, 0x03, 0x43, 0x44, 0x58, 0xaa, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c,
-	0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0xe2, 0x02, 0x27, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44, 0x69,
-	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
-	0x1d, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa8, 0xe2,
-	0x1e, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64,
+	0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56,
+	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
+	0x16, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x6f, 0x0a, 0x15, 0x76, 0x61, 0x6c, 0x69, 0x64,
+	0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73, 0x6c, 0x61, 0x73, 0x68, 0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c,
+	0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7,
+	0xb0, 0x2a, 0x01, 0x52, 0x13, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c,
+	0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0,
+	0x1f, 0x00, 0x22, 0xa4, 0x0b, 0x0a, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74,
+	0x61, 0x74, 0x65, 0x12, 0x46, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7,
+	0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x4a, 0x0a, 0x08, 0x66,
+	0x65, 0x65, 0x5f, 0x70, 0x6f, 0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x50,
+	0x6f, 0x6f, 0x6c, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07,
+	0x66, 0x65, 0x65, 0x50, 0x6f, 0x6f, 0x6c, 0x12, 0x77, 0x0a, 0x18, 0x64, 0x65, 0x6c, 0x65, 0x67,
+	0x61, 0x74, 0x6f, 0x72, 0x5f, 0x77, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x5f, 0x69, 0x6e,
+	0x66, 0x6f, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x32, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
+	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f,
+	0x72, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x09, 0xc8,
+	0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x16, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x6f, 0x72, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x49, 0x6e, 0x66, 0x6f, 0x73,
+	0x12, 0x45, 0x0a, 0x11, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x5f, 0x70, 0x72, 0x6f,
+	0x70, 0x6f, 0x73, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
+	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x50,
+	0x72, 0x6f, 0x70, 0x6f, 0x73, 0x65, 0x72, 0x12, 0x7a, 0x0a, 0x13, 0x6f, 0x75, 0x74, 0x73, 0x74,
+	0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18, 0x05,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x3e, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69,
+	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x4f, 0x75, 0x74, 0x73,
+	0x74, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x12, 0x6f, 0x75, 0x74, 0x73, 0x74, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x77, 0x61,
+	0x72, 0x64, 0x73, 0x12, 0x98, 0x01, 0x0a, 0x21, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x5f, 0x61, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x63, 0x6f,
+	0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x41, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61,
+	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61, 0x74,
+	0x65, 0x64, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f,
+	0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1f, 0x76,
+	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x75, 0x6d, 0x75, 0x6c, 0x61,
+	0x74, 0x65, 0x64, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x8a,
+	0x01, 0x0a, 0x1c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x68, 0x69, 0x73,
+	0x74, 0x6f, 0x72, 0x69, 0x63, 0x61, 0x6c, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18,
+	0x07, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64,
+	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x48, 0x69, 0x73,
+	0x74, 0x6f, 0x72, 0x69, 0x63, 0x61, 0x6c, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x1a, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72,
+	0x69, 0x63, 0x61, 0x6c, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x81, 0x01, 0x0a, 0x19,
+	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e,
+	0x74, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x3a, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61,
+	0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x77, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f,
+	0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x17, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12,
+	0x8b, 0x01, 0x0a, 0x1d, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x63, 0x75,
+	0x72, 0x72, 0x65, 0x6e, 0x74, 0x5f, 0x6e, 0x66, 0x74, 0x5f, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64,
+	0x73, 0x18, 0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43,
+	0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x4e, 0x46, 0x54, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73,
+	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x1a, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x43, 0x75, 0x72, 0x72,
+	0x65, 0x6e, 0x74, 0x4e, 0x66, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x12, 0x7d, 0x0a,
+	0x18, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74,
+	0x69, 0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x38, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x44, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49,
+	0x6e, 0x66, 0x6f, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8,
+	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x16, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53,
+	0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x73, 0x12, 0x87, 0x01, 0x0a,
+	0x1c, 0x6e, 0x66, 0x74, 0x5f, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x73,
+	0x74, 0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x18, 0x0b, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x3b, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x4e, 0x46, 0x54, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74,
+	0x61, 0x72, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x19, 0x6e, 0x66, 0x74,
+	0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x69, 0x6e,
+	0x67, 0x49, 0x6e, 0x66, 0x6f, 0x73, 0x12, 0x77, 0x0a, 0x16, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
+	0x74, 0x6f, 0x72, 0x5f, 0x73, 0x6c, 0x61, 0x73, 0x68, 0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73,
+	0x18, 0x0c, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x36, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c,
+	0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x09,
+	0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x14, 0x76, 0x61, 0x6c, 0x69, 0x64,
+	0x61, 0x74, 0x6f, 0x72, 0x53, 0x6c, 0x61, 0x73, 0x68, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x3a,
+	0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x42, 0x83, 0x02, 0x0a, 0x1f, 0x63, 0x6f,
+	0x6d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0c, 0x47,
+	0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x40, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x3b, 0x64, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa2,
+	0x02, 0x03, 0x43, 0x44, 0x58, 0xaa, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44,
+	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0xca, 0x02, 0x1b, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44, 0x69, 0x73,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0xe2, 0x02, 0x27, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x44, 0x69, 0x73, 0x74, 0x72,
+	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x5c,
+	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1d, 0x43, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
+	0x6f, 0x6e, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa8, 0xe2, 0x1e, 0x01, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6026,46 +7533,53 @@ func file_cosmos_distribution_v1beta1_genesis_proto_rawDescGZIP() []byte {
 	return file_cosmos_distribution_v1beta1_genesis_proto_rawDescData
 }
 
-var file_cosmos_distribution_v1beta1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_cosmos_distribution_v1beta1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_cosmos_distribution_v1beta1_genesis_proto_goTypes = []interface{}{
 	(*DelegatorWithdrawInfo)(nil),                // 0: cosmos.distribution.v1beta1.DelegatorWithdrawInfo
 	(*ValidatorOutstandingRewardsRecord)(nil),    // 1: cosmos.distribution.v1beta1.ValidatorOutstandingRewardsRecord
 	(*ValidatorAccumulatedCommissionRecord)(nil), // 2: cosmos.distribution.v1beta1.ValidatorAccumulatedCommissionRecord
 	(*ValidatorHistoricalRewardsRecord)(nil),     // 3: cosmos.distribution.v1beta1.ValidatorHistoricalRewardsRecord
 	(*ValidatorCurrentRewardsRecord)(nil),        // 4: cosmos.distribution.v1beta1.ValidatorCurrentRewardsRecord
-	(*DelegatorStartingInfoRecord)(nil),          // 5: cosmos.distribution.v1beta1.DelegatorStartingInfoRecord
-	(*ValidatorSlashEventRecord)(nil),            // 6: cosmos.distribution.v1beta1.ValidatorSlashEventRecord
-	(*GenesisState)(nil),                         // 7: cosmos.distribution.v1beta1.GenesisState
-	(*v1beta1.DecCoin)(nil),                      // 8: cosmos.base.v1beta1.DecCoin
-	(*ValidatorAccumulatedCommission)(nil),       // 9: cosmos.distribution.v1beta1.ValidatorAccumulatedCommission
-	(*ValidatorHistoricalRewards)(nil),           // 10: cosmos.distribution.v1beta1.ValidatorHistoricalRewards
-	(*ValidatorCurrentRewards)(nil),              // 11: cosmos.distribution.v1beta1.ValidatorCurrentRewards
-	(*DelegatorStartingInfo)(nil),                // 12: cosmos.distribution.v1beta1.DelegatorStartingInfo
-	(*ValidatorSlashEvent)(nil),                  // 13: cosmos.distribution.v1beta1.ValidatorSlashEvent
-	(*Params)(nil),                               // 14: cosmos.distribution.v1beta1.Params
-	(*FeePool)(nil),                              // 15: cosmos.distribution.v1beta1.FeePool
+	(*ValidatorCurrentNFTRewardsRecord)(nil),     // 5: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord
+	(*DelegatorStartingInfoRecord)(nil),          // 6: cosmos.distribution.v1beta1.DelegatorStartingInfoRecord
+	(*NFTDelegatorStartingInfoRecord)(nil),       // 7: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord
+	(*ValidatorSlashEventRecord)(nil),            // 8: cosmos.distribution.v1beta1.ValidatorSlashEventRecord
+	(*GenesisState)(nil),                         // 9: cosmos.distribution.v1beta1.GenesisState
+	(*v1beta1.DecCoin)(nil),                      // 10: cosmos.base.v1beta1.DecCoin
+	(*ValidatorAccumulatedCommission)(nil),       // 11: cosmos.distribution.v1beta1.ValidatorAccumulatedCommission
+	(*ValidatorHistoricalRewards)(nil),           // 12: cosmos.distribution.v1beta1.ValidatorHistoricalRewards
+	(*ValidatorCurrentRewards)(nil),              // 13: cosmos.distribution.v1beta1.ValidatorCurrentRewards
+	(*DelegatorStartingInfo)(nil),                // 14: cosmos.distribution.v1beta1.DelegatorStartingInfo
+	(*NFTDelegatorStartingInfo)(nil),             // 15: cosmos.distribution.v1beta1.NFTDelegatorStartingInfo
+	(*ValidatorSlashEvent)(nil),                  // 16: cosmos.distribution.v1beta1.ValidatorSlashEvent
+	(*Params)(nil),                               // 17: cosmos.distribution.v1beta1.Params
+	(*FeePool)(nil),                              // 18: cosmos.distribution.v1beta1.FeePool
 }
 var file_cosmos_distribution_v1beta1_genesis_proto_depIdxs = []int32{
-	8,  // 0: cosmos.distribution.v1beta1.ValidatorOutstandingRewardsRecord.outstanding_rewards:type_name -> cosmos.base.v1beta1.DecCoin
-	9,  // 1: cosmos.distribution.v1beta1.ValidatorAccumulatedCommissionRecord.accumulated:type_name -> cosmos.distribution.v1beta1.ValidatorAccumulatedCommission
-	10, // 2: cosmos.distribution.v1beta1.ValidatorHistoricalRewardsRecord.rewards:type_name -> cosmos.distribution.v1beta1.ValidatorHistoricalRewards
-	11, // 3: cosmos.distribution.v1beta1.ValidatorCurrentRewardsRecord.rewards:type_name -> cosmos.distribution.v1beta1.ValidatorCurrentRewards
-	12, // 4: cosmos.distribution.v1beta1.DelegatorStartingInfoRecord.starting_info:type_name -> cosmos.distribution.v1beta1.DelegatorStartingInfo
-	13, // 5: cosmos.distribution.v1beta1.ValidatorSlashEventRecord.validator_slash_event:type_name -> cosmos.distribution.v1beta1.ValidatorSlashEvent
-	14, // 6: cosmos.distribution.v1beta1.GenesisState.params:type_name -> cosmos.distribution.v1beta1.Params
-	15, // 7: cosmos.distribution.v1beta1.GenesisState.fee_pool:type_name -> cosmos.distribution.v1beta1.FeePool
-	0,  // 8: cosmos.distribution.v1beta1.GenesisState.delegator_withdraw_infos:type_name -> cosmos.distribution.v1beta1.DelegatorWithdrawInfo
-	1,  // 9: cosmos.distribution.v1beta1.GenesisState.outstanding_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorOutstandingRewardsRecord
-	2,  // 10: cosmos.distribution.v1beta1.GenesisState.validator_accumulated_commissions:type_name -> cosmos.distribution.v1beta1.ValidatorAccumulatedCommissionRecord
-	3,  // 11: cosmos.distribution.v1beta1.GenesisState.validator_historical_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorHistoricalRewardsRecord
-	4,  // 12: cosmos.distribution.v1beta1.GenesisState.validator_current_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorCurrentRewardsRecord
-	5,  // 13: cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos:type_name -> cosmos.distribution.v1beta1.DelegatorStartingInfoRecord
-	6,  // 14: cosmos.distribution.v1beta1.GenesisState.validator_slash_events:type_name -> cosmos.distribution.v1beta1.ValidatorSlashEventRecord
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	10, // 0: cosmos.distribution.v1beta1.ValidatorOutstandingRewardsRecord.outstanding_rewards:type_name -> cosmos.base.v1beta1.DecCoin
+	11, // 1: cosmos.distribution.v1beta1.ValidatorAccumulatedCommissionRecord.accumulated:type_name -> cosmos.distribution.v1beta1.ValidatorAccumulatedCommission
+	12, // 2: cosmos.distribution.v1beta1.ValidatorHistoricalRewardsRecord.rewards:type_name -> cosmos.distribution.v1beta1.ValidatorHistoricalRewards
+	13, // 3: cosmos.distribution.v1beta1.ValidatorCurrentRewardsRecord.rewards:type_name -> cosmos.distribution.v1beta1.ValidatorCurrentRewards
+	13, // 4: cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord.rewards:type_name -> cosmos.distribution.v1beta1.ValidatorCurrentRewards
+	14, // 5: cosmos.distribution.v1beta1.DelegatorStartingInfoRecord.starting_info:type_name -> cosmos.distribution.v1beta1.DelegatorStartingInfo
+	15, // 6: cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord.starting_info:type_name -> cosmos.distribution.v1beta1.NFTDelegatorStartingInfo
+	16, // 7: cosmos.distribution.v1beta1.ValidatorSlashEventRecord.validator_slash_event:type_name -> cosmos.distribution.v1beta1.ValidatorSlashEvent
+	17, // 8: cosmos.distribution.v1beta1.GenesisState.params:type_name -> cosmos.distribution.v1beta1.Params
+	18, // 9: cosmos.distribution.v1beta1.GenesisState.fee_pool:type_name -> cosmos.distribution.v1beta1.FeePool
+	0,  // 10: cosmos.distribution.v1beta1.GenesisState.delegator_withdraw_infos:type_name -> cosmos.distribution.v1beta1.DelegatorWithdrawInfo
+	1,  // 11: cosmos.distribution.v1beta1.GenesisState.outstanding_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorOutstandingRewardsRecord
+	2,  // 12: cosmos.distribution.v1beta1.GenesisState.validator_accumulated_commissions:type_name -> cosmos.distribution.v1beta1.ValidatorAccumulatedCommissionRecord
+	3,  // 13: cosmos.distribution.v1beta1.GenesisState.validator_historical_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorHistoricalRewardsRecord
+	4,  // 14: cosmos.distribution.v1beta1.GenesisState.validator_current_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorCurrentRewardsRecord
+	5,  // 15: cosmos.distribution.v1beta1.GenesisState.validator_current_nft_rewards:type_name -> cosmos.distribution.v1beta1.ValidatorCurrentNFTRewardsRecord
+	6,  // 16: cosmos.distribution.v1beta1.GenesisState.delegator_starting_infos:type_name -> cosmos.distribution.v1beta1.DelegatorStartingInfoRecord
+	7,  // 17: cosmos.distribution.v1beta1.GenesisState.nft_delegator_starting_infos:type_name -> cosmos.distribution.v1beta1.NFTDelegatorStartingInfoRecord
+	8,  // 18: cosmos.distribution.v1beta1.GenesisState.validator_slash_events:type_name -> cosmos.distribution.v1beta1.ValidatorSlashEventRecord
+	19, // [19:19] is the sub-list for method output_type
+	19, // [19:19] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_cosmos_distribution_v1beta1_genesis_proto_init() }
@@ -6136,7 +7650,7 @@ func file_cosmos_distribution_v1beta1_genesis_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DelegatorStartingInfoRecord); i {
+			switch v := v.(*ValidatorCurrentNFTRewardsRecord); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6148,7 +7662,7 @@ func file_cosmos_distribution_v1beta1_genesis_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidatorSlashEventRecord); i {
+			switch v := v.(*DelegatorStartingInfoRecord); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6160,6 +7674,30 @@ func file_cosmos_distribution_v1beta1_genesis_proto_init() {
 			}
 		}
 		file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NFTDelegatorStartingInfoRecord); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ValidatorSlashEventRecord); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_distribution_v1beta1_genesis_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GenesisState); i {
 			case 0:
 				return &v.state
@@ -6178,7 +7716,7 @@ func file_cosmos_distribution_v1beta1_genesis_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_cosmos_distribution_v1beta1_genesis_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

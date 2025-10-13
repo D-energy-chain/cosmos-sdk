@@ -17,7 +17,6 @@ func DefaultParams() Params {
 		NativeStakingRatio:                 math.LegacyNewDecWithPrec(25, 2), // 25% of staking rewards (18.75% of total)
 		MinCommitRatio:                     math.LegacyNewDecWithPrec(50, 2), // 50% minimum commit ratio
 		EnablePerformanceBasedDistribution: true,                             // Enable performance-based distribution by default
-		MinAutoDistributionAmount:          math.LegacyNewDecWithPrec(1, 6),  // 0.000001 (1 micro-token)
 	}
 }
 
@@ -32,10 +31,6 @@ func (p Params) ValidateBasic() error {
 	if err := validateStakingRatio(p.MinCommitRatio, "min_commit_ratio"); err != nil {
 		return err
 	}
-	if err := validateMinAutoDistributionAmount(p.MinAutoDistributionAmount); err != nil {
-		return err
-	}
-
 	// Validate that the sum of staking ratios equals 100% (1.0) of the staking rewards
 	// Note: The staking rewards are the portion after community tax and separate pool are deducted
 	totalStakingRatio := p.NftStakingRatio.Add(p.NativeStakingRatio)

@@ -76,18 +76,6 @@ message Params {
   // instead of single-block voting status. When enabled, validators are rewarded based
   // on their commit ratio throughout the epoch rather than just the final block vote.
   bool enable_performance_based_distribution = 8;
-
-  // min_auto_distribution_amount defines the minimum reward amount required for automatic
-  // distribution at epoch end. Delegators with rewards below this threshold will have their
-  // rewards accumulated and distributed in a future epoch when the amount exceeds the threshold.
-  // This optimization reduces gas costs by skipping transfers of dust amounts.
-  // Default: 0.000001 (1 micro-token)
-  string min_auto_distribution_amount = 9 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (amino.dont_omitempty) = true,
-    (gogoproto.nullable)   = false
-  ];
 }
 
 // ValidatorHistoricalRewards represents historical rewards for a validator.
@@ -108,15 +96,33 @@ message ValidatorHistoricalRewards {
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true
   ];
+  uint32 reference_count = 2;
+  // height is the block height when this historical reward period was created
+  uint64 height = 3;
+}
+
+// ValidatorHistoricalNFTRewards represents historical NFT rewards for a validator.
+// Height is implicit within the store key.
+// Cumulative reward ratio is the sum from the zeroeth period
+// until this period of rewards / tokens, per the spec.
+// The reference count indicates the number of objects
+// which might need to reference this historical entry at any point.
+// ReferenceCount =
+//    number of outstanding delegations which ended the associated period (and
+//    might need to read that record)
+//  + number of slashes which ended the associated period (and might need to
+//  read that record)
+//  + one per validator for the zeroeth period, set on initialization
+message ValidatorHistoricalNFTRewards {
   // nft_cumulative_reward_ratio is the cumulative reward ratio for NFT delegations
-  repeated cosmos.base.v1beta1.DecCoin nft_cumulative_reward_ratio = 3 [
+  repeated cosmos.base.v1beta1.DecCoin nft_cumulative_reward_ratio = 1 [
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true
   ];
   uint32 reference_count = 2;
   // height is the block height when this historical reward period was created
-  uint64 height = 4;
+  uint64 height = 3;
 }
 
 // ValidatorCurrentRewards represents current rewards and current
@@ -228,6 +234,26 @@ message DelegatorStartingInfo {
       [(gogoproto.jsontag) = "creation_height", (amino.field_name) = "creation_height", (amino.dont_omitempty) = true];
   // nft_height is the block height when the first NFT delegation was created for this delegator and validator
   uint64 nft_height = 5;
+}
+
+// NFTDelegatorStartingInfo represents the starting info for a delegator reward
+// period. It tracks the previous validator period, the delegation's amount of
+// staking token, and the creation height (to check later on if any slashes have
+// occurred). NOTE: Even though validators are slashed to whole staking tokens,
+// the delegators within the validator may be left with less than a full token,
+// thus sdk.Dec is used.
+message NFTDelegatorStartingInfo {
+  uint64 previous_period = 1;
+  // nft_stake tracks the amount of NFT delegation stake for this delegator
+  string nft_stake = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // height is the block height when the first NFT delegation was created for this delegator and validator
+  uint64 height = 3
+      [(gogoproto.jsontag) = "creation_height", (amino.field_name) = "creation_height", (amino.dont_omitempty) = true];
 }
 
 // DelegationDelegatorReward represents the properties

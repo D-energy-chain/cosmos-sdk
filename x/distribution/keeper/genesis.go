@@ -206,10 +206,33 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		},
 	)
 
+	curNFT := make([]types.ValidatorCurrentNFTRewardsRecord, 0)
+	k.IterateValidatorCurrentNFTRewards(ctx,
+		func(val sdk.ValAddress, rewards types.ValidatorCurrentRewards) (stop bool) {
+			curNFT = append(curNFT, types.ValidatorCurrentNFTRewardsRecord{
+				ValidatorAddress: val.String(),
+				Rewards:          rewards,
+			})
+			return false
+		},
+	)
+
 	dels := make([]types.DelegatorStartingInfoRecord, 0)
 	k.IterateDelegatorStartingInfos(ctx,
 		func(val sdk.ValAddress, del sdk.AccAddress, info types.DelegatorStartingInfo) (stop bool) {
 			dels = append(dels, types.DelegatorStartingInfoRecord{
+				ValidatorAddress: val.String(),
+				DelegatorAddress: del.String(),
+				StartingInfo:     info,
+			})
+			return false
+		},
+	)
+
+	nftDels := make([]types.NFTDelegatorStartingInfoRecord, 0)
+	k.IterateNFTDelegatorStartingInfos(ctx,
+		func(val sdk.ValAddress, del sdk.AccAddress, info types.NFTDelegatorStartingInfo) (stop bool) {
+			nftDels = append(nftDels, types.NFTDelegatorStartingInfoRecord{
 				ValidatorAddress: val.String(),
 				DelegatorAddress: del.String(),
 				StartingInfo:     info,
@@ -231,5 +254,5 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		},
 	)
 
-	return types.NewGenesisState(params, feePool, dwi, pp, outstanding, acc, his, cur, dels, slashes)
+	return types.NewGenesisState(params, feePool, dwi, pp, outstanding, acc, his, cur, curNFT, dels, nftDels, slashes)
 }
