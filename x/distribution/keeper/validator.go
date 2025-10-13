@@ -76,7 +76,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	nativeShares := val.GetDelegatorShares()
 	totalShares := nftShares.Add(nativeShares)
 
-	if val.GetTokens().IsZero() || totalShares.IsZero() {
+    if val.GetTokens().IsZero() || totalShares.IsZero() {
 		// can't calculate ratio for zero-token validators
 		// ergo we instead add to the community pool
 		feePool, err := k.FeePool.Get(ctx)
@@ -103,7 +103,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 
 		current = sdk.DecCoins{}
 		nftCurrent = sdk.DecCoins{}
-	} else {
+    } else {
 		// Get the current reward allocation ratios
 		nftStakingRatio, err := k.GetNftStakingRatio(ctx)
 		if err != nil {
@@ -114,9 +114,9 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 			return 0, err
 		}
 
-		// Split the current rewards according to staking ratios
-		nftRewards := rewards.Rewards.MulDecTruncate(nftStakingRatio)
-		nativeRewards := rewards.Rewards.MulDecTruncate(nativeStakingRatio)
+        // Split the current rewards according to staking ratios
+        nftRewards := rewards.Rewards.MulDecTruncate(nftStakingRatio)
+        nativeRewards := rewards.Rewards.MulDecTruncate(nativeStakingRatio)
 
 		// Calculate reward ratios per unit of delegation
 		// Native ratio: native rewards / native shares
@@ -126,12 +126,32 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 			current = sdk.DecCoins{}
 		}
 
-		// NFT ratio: NFT rewards / NFT shares
-		if !nftShares.IsZero() {
-			nftCurrent = nftRewards.QuoDecTruncate(nftShares)
-		} else {
-			nftCurrent = sdk.DecCoins{}
-		}
+        // NFT ratio: NFT rewards / NFT shares
+        if !nftShares.IsZero() {
+            nftCurrent = nftRewards.QuoDecTruncate(nftShares)
+        } else {
+            // No NFT shares present: redirect NFT portion to community pool
+            feePool, err := k.FeePool.Get(ctx)
+            if err != nil {
+                return 0, err
+            }
+            feePool.CommunityPool = feePool.CommunityPool.Add(nftRewards...)
+            if err := k.FeePool.Set(ctx, feePool); err != nil {
+                return 0, err
+            }
+
+            // Deduct the redirected NFT rewards from outstanding
+            outstanding, err := k.GetValidatorOutstandingRewards(ctx, valBz)
+            if err != nil {
+                return 0, err
+            }
+            outstanding.Rewards = outstanding.GetRewards().Sub(nftRewards)
+            if err := k.SetValidatorOutstandingRewards(ctx, valBz, outstanding); err != nil {
+                return 0, err
+            }
+
+            nftCurrent = sdk.DecCoins{}
+        }
 	}
 
 	// fetch historical rewards for last period
