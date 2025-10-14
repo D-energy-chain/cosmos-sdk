@@ -779,6 +779,38 @@ Example:
 simd tx distribution withdraw-rewards cosmosvaloper1... --from cosmos1... --commission
 ```
 
+##### rewards-nft
+
+The `rewards-nft` command allows users to query NFT delegator rewards for a specific validator.
+
+```shell
+simd query distribution rewards-nft [delegator-addr] [validator-addr] [flags]
+```
+
+##### rewards-nft-total
+
+The `rewards-nft-total` command allows users to query total NFT rewards across validators for a delegator.
+
+```shell
+simd query distribution rewards-nft-total [delegator-addr] [flags]
+```
+
+##### withdraw-nft-rewards
+
+Withdraw NFT rewards from a given validator.
+
+```shell
+simd tx distribution withdraw-nft-rewards [validator-addr] --from [delegator]
+```
+
+##### withdraw-all-nft-rewards
+
+Withdraw all NFT rewards for the signer across all validators.
+
+```shell
+simd tx distribution withdraw-all-nft-rewards --from [delegator]
+```
+
 ### gRPC
 
 A user can query the `distribution` module using gRPC endpoints.

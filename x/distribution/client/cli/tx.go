@@ -40,6 +40,8 @@ func NewTxCmd(valAc, ac address.Codec) *cobra.Command {
 	distTxCmd.AddCommand(
 		NewWithdrawRewardsCmd(valAc, ac),
 		NewWithdrawAllRewardsCmd(valAc, ac),
+		NewWithdrawNFTRewardsCmd(valAc, ac),
+		NewWithdrawAllNFTRewardsCmd(valAc, ac),
 		NewSetWithdrawAddrCmd(ac),
 		NewFundCommunityPoolCmd(ac),
 		NewDepositValidatorRewardsPoolCmd(valAc, ac),
@@ -186,6 +188,102 @@ $ %[1]s tx distribution withdraw-all-rewards --from mykey
 	cmd.Flags().Int(FlagMaxMessagesPerTx, MaxMessagesPerTxDefault, "Limit the number of messages per tx (0 for unlimited)")
 	flags.AddTxFlagsToCmd(cmd)
 
+	return cmd
+}
+
+// NewWithdrawNFTRewardsCmd returns a CLI command handler for creating a MsgWithdrawNFTDelegatorReward transaction.
+func NewWithdrawNFTRewardsCmd(valCodec, ac address.Codec) *cobra.Command {
+	bech32PrefixValAddr := sdk.GetConfig().GetBech32ValidatorAddrPrefix()
+
+	cmd := &cobra.Command{
+		Use:   "withdraw-nft-rewards [validator-addr]",
+		Short: "Withdraw NFT rewards from a given delegation address",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Withdraw NFT rewards from a given delegation address.
+
+Example:
+$ %s tx distribution withdraw-nft-rewards %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey
+`,
+				version.AppName, bech32PrefixValAddr,
+			),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			delAddr, err := ac.BytesToString(clientCtx.GetFromAddress())
+			if err != nil {
+				return err
+			}
+
+			if _, err = valCodec.StringToBytes(args[0]); err != nil {
+				return err
+			}
+
+			msg := types.NewMsgWithdrawNFTDelegatorReward(delAddr, args[0])
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// NewWithdrawAllNFTRewardsCmd returns a CLI command handler for withdrawing all NFT rewards for a delegator.
+func NewWithdrawAllNFTRewardsCmd(valCodec, ac address.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdraw-all-nft-rewards",
+		Short: "withdraw all NFT delegation rewards for a delegator",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Withdraw all NFT rewards for a single delegator.
+Note that if you use this command with --%[2]s=%[3]s or --%[2]s=%[4]s, the %[5]s flag will automatically be set to 0.
+
+Example:
+$ %[1]s tx distribution withdraw-all-nft-rewards --from mykey
+`,
+				version.AppName, flags.FlagBroadcastMode, flags.BroadcastSync, flags.BroadcastAsync, FlagMaxMessagesPerTx,
+			),
+		),
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			delAddr, err := ac.BytesToString(clientCtx.GetFromAddress())
+			if err != nil {
+				return err
+			}
+
+			if clientCtx.Offline {
+				return fmt.Errorf("cannot generate tx in offline mode")
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			delValsRes, err := queryClient.DelegatorValidators(cmd.Context(), &types.QueryDelegatorValidatorsRequest{DelegatorAddress: delAddr})
+			if err != nil {
+				return err
+			}
+
+			validators := delValsRes.Validators
+			msgs := make([]sdk.Msg, 0, len(validators))
+			for _, valAddr := range validators {
+				if _, err := valCodec.StringToBytes(valAddr); err != nil {
+					return err
+				}
+				msg := types.NewMsgWithdrawNFTDelegatorReward(delAddr, valAddr)
+				msgs = append(msgs, msg)
+			}
+
+			chunkSize, _ := cmd.Flags().GetInt(FlagMaxMessagesPerTx)
+			return newSplitAndApply(tx.GenerateOrBroadcastTxCLI, clientCtx, cmd.Flags(), msgs, chunkSize)
+		},
+	}
+
+	cmd.Flags().Int(FlagMaxMessagesPerTx, MaxMessagesPerTxDefault, "Limit the number of messages per tx (0 for unlimited)")
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 

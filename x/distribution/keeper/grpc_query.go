@@ -255,6 +255,55 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 	return &types.QueryDelegationRewardsResponse{Rewards: rewards}, nil
 }
 
+// NFTDelegationRewards the total NFT rewards accrued by a delegation (delegator/validator)
+func (k Querier) NFTDelegationRewards(ctx context.Context, req *types.QueryNFTDelegationRewardsRequest) (*types.QueryNFTDelegationRewardsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.DelegatorAddress == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty delegator address")
+	}
+
+	if req.ValidatorAddress == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty validator address")
+	}
+
+	valAdr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(req.ValidatorAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	val, err := k.stakingKeeper.Validator(ctx, valAdr)
+	if err != nil {
+		return nil, err
+	}
+	if val == nil {
+		return nil, errors.Wrap(types.ErrNoValidatorExists, req.ValidatorAddress)
+	}
+
+	delAdr, err := k.authKeeper.AddressCodec().StringToBytes(req.DelegatorAddress)
+	if err != nil {
+		return nil, err
+	}
+	nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAdr)
+	if err != nil {
+		return nil, err
+	}
+
+	endingPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+	if err != nil {
+		return nil, err
+	}
+
+	rewards, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingPeriod)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryNFTDelegationRewardsResponse{Rewards: rewards}, nil
+}
+
 // DelegationTotalRewards the total rewards accrued by a each validator
 func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDelegationTotalRewardsRequest) (*types.QueryDelegationTotalRewardsResponse, error) {
 	if req == nil {
@@ -308,6 +357,66 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 	// TODO: Add NFT delegation rewards to the total rewards
 
 	return &types.QueryDelegationTotalRewardsResponse{Rewards: delRewards, Total: total}, nil
+}
+
+// NFTDelegationTotalRewards the total NFT rewards accrued across validators for a delegator
+func (k Querier) NFTDelegationTotalRewards(ctx context.Context, req *types.QueryNFTDelegationTotalRewardsRequest) (*types.QueryNFTDelegationTotalRewardsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.DelegatorAddress == "" {
+		return nil, status.Error(codes.InvalidArgument, "empty delegator address")
+	}
+
+	total := sdk.DecCoins{}
+	var delRewards []types.DelegationDelegatorReward
+
+	delAdr, err := k.authKeeper.AddressCodec().StringToBytes(req.DelegatorAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	// Iterate over all native delegations; NFT delegations are modeled per delegator/validator via shares
+	err = k.stakingKeeper.IterateDelegations(
+		ctx, delAdr,
+		func(_ int64, del stakingtypes.DelegationI) (stop bool) {
+			valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(del.GetValidatorAddr())
+			if err != nil {
+				panic(err)
+			}
+
+			val, err := k.stakingKeeper.Validator(ctx, valAddr)
+			if err != nil {
+				panic(err)
+			}
+
+			endingPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+			if err != nil {
+				panic(err)
+			}
+
+			nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAddr)
+			if err != nil {
+				// If no NFT delegation exists for this validator, skip
+				return false
+			}
+
+			delReward, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingPeriod)
+			if err != nil {
+				panic(err)
+			}
+
+			delRewards = append(delRewards, types.NewDelegationDelegatorReward(del.GetValidatorAddr(), delReward))
+			total = total.Add(delReward...)
+			return false
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryNFTDelegationTotalRewardsResponse{Rewards: delRewards, Total: total}, nil
 }
 
 // DelegatorValidators queries the validators list of a delegator

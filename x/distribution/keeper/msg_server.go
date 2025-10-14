@@ -102,6 +102,39 @@ func (k msgServer) WithdrawDelegatorReward(ctx context.Context, msg *types.MsgWi
 	return &types.MsgWithdrawDelegatorRewardResponse{Amount: amount}, nil
 }
 
+func (k msgServer) WithdrawNFTDelegatorReward(ctx context.Context, msg *types.MsgWithdrawNFTDelegatorReward) (*types.MsgWithdrawNFTDelegatorRewardResponse, error) {
+	valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorAddress)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
+	}
+
+	delegatorAddress, err := k.authKeeper.AddressCodec().StringToBytes(msg.DelegatorAddress)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
+	}
+
+	// fetch validator and NFT delegation shares
+	val, err := k.stakingKeeper.Validator(ctx, valAddr)
+	if err != nil {
+		return nil, err
+	}
+	if val == nil {
+		return nil, errors.Wrapf(types.ErrNoValidatorExists, msg.ValidatorAddress)
+	}
+
+	nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delegatorAddress, valAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	amount, err := k.withdrawNFTDelegationRewards(ctx, val, nftDel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgWithdrawNFTDelegatorRewardResponse{Amount: amount}, nil
+}
+
 func (k msgServer) FundCommunityPool(ctx context.Context, msg *types.MsgFundCommunityPool) (*types.MsgFundCommunityPoolResponse, error) {
 	depositor, err := k.authKeeper.AddressCodec().StringToBytes(msg.Depositor)
 	if err != nil {

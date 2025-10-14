@@ -25,7 +25,9 @@ const (
 	Query_ValidatorCommission_FullMethodName         = "/cosmos.distribution.v1beta1.Query/ValidatorCommission"
 	Query_ValidatorSlashes_FullMethodName            = "/cosmos.distribution.v1beta1.Query/ValidatorSlashes"
 	Query_DelegationRewards_FullMethodName           = "/cosmos.distribution.v1beta1.Query/DelegationRewards"
+	Query_NFTDelegationRewards_FullMethodName        = "/cosmos.distribution.v1beta1.Query/NFTDelegationRewards"
 	Query_DelegationTotalRewards_FullMethodName      = "/cosmos.distribution.v1beta1.Query/DelegationTotalRewards"
+	Query_NFTDelegationTotalRewards_FullMethodName   = "/cosmos.distribution.v1beta1.Query/NFTDelegationTotalRewards"
 	Query_DelegatorValidators_FullMethodName         = "/cosmos.distribution.v1beta1.Query/DelegatorValidators"
 	Query_DelegatorWithdrawAddress_FullMethodName    = "/cosmos.distribution.v1beta1.Query/DelegatorWithdrawAddress"
 	Query_CommunityPool_FullMethodName               = "/cosmos.distribution.v1beta1.Query/CommunityPool"
@@ -50,9 +52,13 @@ type QueryClient interface {
 	ValidatorSlashes(ctx context.Context, in *QueryValidatorSlashesRequest, opts ...grpc.CallOption) (*QueryValidatorSlashesResponse, error)
 	// DelegationRewards queries the total rewards accrued by a delegation.
 	DelegationRewards(ctx context.Context, in *QueryDelegationRewardsRequest, opts ...grpc.CallOption) (*QueryDelegationRewardsResponse, error)
+	// NFTDelegationRewards queries the total NFT rewards accrued by a delegation (delegator/validator pair).
+	NFTDelegationRewards(ctx context.Context, in *QueryNFTDelegationRewardsRequest, opts ...grpc.CallOption) (*QueryNFTDelegationRewardsResponse, error)
 	// DelegationTotalRewards queries the total rewards accrued by each
 	// validator.
 	DelegationTotalRewards(ctx context.Context, in *QueryDelegationTotalRewardsRequest, opts ...grpc.CallOption) (*QueryDelegationTotalRewardsResponse, error)
+	// NFTDelegationTotalRewards queries the total NFT rewards accrued across validators for a delegator.
+	NFTDelegationTotalRewards(ctx context.Context, in *QueryNFTDelegationTotalRewardsRequest, opts ...grpc.CallOption) (*QueryNFTDelegationTotalRewardsResponse, error)
 	// DelegatorValidators queries the validators of a delegator.
 	DelegatorValidators(ctx context.Context, in *QueryDelegatorValidatorsRequest, opts ...grpc.CallOption) (*QueryDelegatorValidatorsResponse, error)
 	// DelegatorWithdrawAddress queries withdraw address of a delegator.
@@ -129,9 +135,27 @@ func (c *queryClient) DelegationRewards(ctx context.Context, in *QueryDelegation
 	return out, nil
 }
 
+func (c *queryClient) NFTDelegationRewards(ctx context.Context, in *QueryNFTDelegationRewardsRequest, opts ...grpc.CallOption) (*QueryNFTDelegationRewardsResponse, error) {
+	out := new(QueryNFTDelegationRewardsResponse)
+	err := c.cc.Invoke(ctx, Query_NFTDelegationRewards_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) DelegationTotalRewards(ctx context.Context, in *QueryDelegationTotalRewardsRequest, opts ...grpc.CallOption) (*QueryDelegationTotalRewardsResponse, error) {
 	out := new(QueryDelegationTotalRewardsResponse)
 	err := c.cc.Invoke(ctx, Query_DelegationTotalRewards_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) NFTDelegationTotalRewards(ctx context.Context, in *QueryNFTDelegationTotalRewardsRequest, opts ...grpc.CallOption) (*QueryNFTDelegationTotalRewardsResponse, error) {
+	out := new(QueryNFTDelegationTotalRewardsResponse)
+	err := c.cc.Invoke(ctx, Query_NFTDelegationTotalRewards_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -208,9 +232,13 @@ type QueryServer interface {
 	ValidatorSlashes(context.Context, *QueryValidatorSlashesRequest) (*QueryValidatorSlashesResponse, error)
 	// DelegationRewards queries the total rewards accrued by a delegation.
 	DelegationRewards(context.Context, *QueryDelegationRewardsRequest) (*QueryDelegationRewardsResponse, error)
+	// NFTDelegationRewards queries the total NFT rewards accrued by a delegation (delegator/validator pair).
+	NFTDelegationRewards(context.Context, *QueryNFTDelegationRewardsRequest) (*QueryNFTDelegationRewardsResponse, error)
 	// DelegationTotalRewards queries the total rewards accrued by each
 	// validator.
 	DelegationTotalRewards(context.Context, *QueryDelegationTotalRewardsRequest) (*QueryDelegationTotalRewardsResponse, error)
+	// NFTDelegationTotalRewards queries the total NFT rewards accrued across validators for a delegator.
+	NFTDelegationTotalRewards(context.Context, *QueryNFTDelegationTotalRewardsRequest) (*QueryNFTDelegationTotalRewardsResponse, error)
 	// DelegatorValidators queries the validators of a delegator.
 	DelegatorValidators(context.Context, *QueryDelegatorValidatorsRequest) (*QueryDelegatorValidatorsResponse, error)
 	// DelegatorWithdrawAddress queries withdraw address of a delegator.
@@ -248,8 +276,14 @@ func (UnimplementedQueryServer) ValidatorSlashes(context.Context, *QueryValidato
 func (UnimplementedQueryServer) DelegationRewards(context.Context, *QueryDelegationRewardsRequest) (*QueryDelegationRewardsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegationRewards not implemented")
 }
+func (UnimplementedQueryServer) NFTDelegationRewards(context.Context, *QueryNFTDelegationRewardsRequest) (*QueryNFTDelegationRewardsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NFTDelegationRewards not implemented")
+}
 func (UnimplementedQueryServer) DelegationTotalRewards(context.Context, *QueryDelegationTotalRewardsRequest) (*QueryDelegationTotalRewardsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegationTotalRewards not implemented")
+}
+func (UnimplementedQueryServer) NFTDelegationTotalRewards(context.Context, *QueryNFTDelegationTotalRewardsRequest) (*QueryNFTDelegationTotalRewardsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NFTDelegationTotalRewards not implemented")
 }
 func (UnimplementedQueryServer) DelegatorValidators(context.Context, *QueryDelegatorValidatorsRequest) (*QueryDelegatorValidatorsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegatorValidators not implemented")
@@ -390,6 +424,24 @@ func _Query_DelegationRewards_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_NFTDelegationRewards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryNFTDelegationRewardsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).NFTDelegationRewards(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_NFTDelegationRewards_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).NFTDelegationRewards(ctx, req.(*QueryNFTDelegationRewardsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_DelegationTotalRewards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryDelegationTotalRewardsRequest)
 	if err := dec(in); err != nil {
@@ -404,6 +456,24 @@ func _Query_DelegationTotalRewards_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).DelegationTotalRewards(ctx, req.(*QueryDelegationTotalRewardsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_NFTDelegationTotalRewards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryNFTDelegationTotalRewardsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).NFTDelegationTotalRewards(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_NFTDelegationTotalRewards_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).NFTDelegationTotalRewards(ctx, req.(*QueryNFTDelegationTotalRewardsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -548,8 +618,16 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_DelegationRewards_Handler,
 		},
 		{
+			MethodName: "NFTDelegationRewards",
+			Handler:    _Query_NFTDelegationRewards_Handler,
+		},
+		{
 			MethodName: "DelegationTotalRewards",
 			Handler:    _Query_DelegationTotalRewards_Handler,
+		},
+		{
+			MethodName: "NFTDelegationTotalRewards",
+			Handler:    _Query_NFTDelegationTotalRewards_Handler,
 		},
 		{
 			MethodName: "DelegatorValidators",

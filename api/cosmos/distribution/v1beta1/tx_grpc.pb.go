@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Msg_SetWithdrawAddress_FullMethodName          = "/cosmos.distribution.v1beta1.Msg/SetWithdrawAddress"
 	Msg_WithdrawDelegatorReward_FullMethodName     = "/cosmos.distribution.v1beta1.Msg/WithdrawDelegatorReward"
+	Msg_WithdrawNFTDelegatorReward_FullMethodName  = "/cosmos.distribution.v1beta1.Msg/WithdrawNFTDelegatorReward"
 	Msg_WithdrawValidatorCommission_FullMethodName = "/cosmos.distribution.v1beta1.Msg/WithdrawValidatorCommission"
 	Msg_FundCommunityPool_FullMethodName           = "/cosmos.distribution.v1beta1.Msg/FundCommunityPool"
 	Msg_UpdateParams_FullMethodName                = "/cosmos.distribution.v1beta1.Msg/UpdateParams"
@@ -38,6 +39,9 @@ type MsgClient interface {
 	// WithdrawDelegatorReward defines a method to withdraw rewards of delegator
 	// from a single validator.
 	WithdrawDelegatorReward(ctx context.Context, in *MsgWithdrawDelegatorReward, opts ...grpc.CallOption) (*MsgWithdrawDelegatorRewardResponse, error)
+	// WithdrawNFTDelegatorReward defines a method to withdraw NFT rewards of delegator
+	// from a single validator.
+	WithdrawNFTDelegatorReward(ctx context.Context, in *MsgWithdrawNFTDelegatorReward, opts ...grpc.CallOption) (*MsgWithdrawNFTDelegatorRewardResponse, error)
 	// WithdrawValidatorCommission defines a method to withdraw the
 	// full commission to the validator address.
 	WithdrawValidatorCommission(ctx context.Context, in *MsgWithdrawValidatorCommission, opts ...grpc.CallOption) (*MsgWithdrawValidatorCommissionResponse, error)
@@ -83,6 +87,15 @@ func (c *msgClient) SetWithdrawAddress(ctx context.Context, in *MsgSetWithdrawAd
 func (c *msgClient) WithdrawDelegatorReward(ctx context.Context, in *MsgWithdrawDelegatorReward, opts ...grpc.CallOption) (*MsgWithdrawDelegatorRewardResponse, error) {
 	out := new(MsgWithdrawDelegatorRewardResponse)
 	err := c.cc.Invoke(ctx, Msg_WithdrawDelegatorReward_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) WithdrawNFTDelegatorReward(ctx context.Context, in *MsgWithdrawNFTDelegatorReward, opts ...grpc.CallOption) (*MsgWithdrawNFTDelegatorRewardResponse, error) {
+	out := new(MsgWithdrawNFTDelegatorRewardResponse)
+	err := c.cc.Invoke(ctx, Msg_WithdrawNFTDelegatorReward_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,6 +157,9 @@ type MsgServer interface {
 	// WithdrawDelegatorReward defines a method to withdraw rewards of delegator
 	// from a single validator.
 	WithdrawDelegatorReward(context.Context, *MsgWithdrawDelegatorReward) (*MsgWithdrawDelegatorRewardResponse, error)
+	// WithdrawNFTDelegatorReward defines a method to withdraw NFT rewards of delegator
+	// from a single validator.
+	WithdrawNFTDelegatorReward(context.Context, *MsgWithdrawNFTDelegatorReward) (*MsgWithdrawNFTDelegatorRewardResponse, error)
 	// WithdrawValidatorCommission defines a method to withdraw the
 	// full commission to the validator address.
 	WithdrawValidatorCommission(context.Context, *MsgWithdrawValidatorCommission) (*MsgWithdrawValidatorCommissionResponse, error)
@@ -179,6 +195,9 @@ func (UnimplementedMsgServer) SetWithdrawAddress(context.Context, *MsgSetWithdra
 }
 func (UnimplementedMsgServer) WithdrawDelegatorReward(context.Context, *MsgWithdrawDelegatorReward) (*MsgWithdrawDelegatorRewardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WithdrawDelegatorReward not implemented")
+}
+func (UnimplementedMsgServer) WithdrawNFTDelegatorReward(context.Context, *MsgWithdrawNFTDelegatorReward) (*MsgWithdrawNFTDelegatorRewardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WithdrawNFTDelegatorReward not implemented")
 }
 func (UnimplementedMsgServer) WithdrawValidatorCommission(context.Context, *MsgWithdrawValidatorCommission) (*MsgWithdrawValidatorCommissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WithdrawValidatorCommission not implemented")
@@ -240,6 +259,24 @@ func _Msg_WithdrawDelegatorReward_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).WithdrawDelegatorReward(ctx, req.(*MsgWithdrawDelegatorReward))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_WithdrawNFTDelegatorReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgWithdrawNFTDelegatorReward)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).WithdrawNFTDelegatorReward(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_WithdrawNFTDelegatorReward_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).WithdrawNFTDelegatorReward(ctx, req.(*MsgWithdrawNFTDelegatorReward))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -348,6 +385,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "WithdrawDelegatorReward",
 			Handler:    _Msg_WithdrawDelegatorReward_Handler,
+		},
+		{
+			MethodName: "WithdrawNFTDelegatorReward",
+			Handler:    _Msg_WithdrawNFTDelegatorReward_Handler,
 		},
 		{
 			MethodName: "WithdrawValidatorCommission",

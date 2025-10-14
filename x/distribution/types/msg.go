@@ -12,6 +12,7 @@ var (
 	_ sdk.Msg = (*MsgUpdateParams)(nil)
 	_ sdk.Msg = (*MsgCommunityPoolSpend)(nil)
 	_ sdk.Msg = (*MsgDepositValidatorRewardsPool)(nil)
+	_ sdk.Msg = (*MsgWithdrawNFTDelegatorReward)(nil)
 )
 
 func NewMsgSetWithdrawAddress(delAddr, withdrawAddr sdk.AccAddress) *MsgSetWithdrawAddress {
@@ -23,6 +24,13 @@ func NewMsgSetWithdrawAddress(delAddr, withdrawAddr sdk.AccAddress) *MsgSetWithd
 
 func NewMsgWithdrawDelegatorReward(delAddr, valAddr string) *MsgWithdrawDelegatorReward {
 	return &MsgWithdrawDelegatorReward{
+		DelegatorAddress: delAddr,
+		ValidatorAddress: valAddr,
+	}
+}
+
+func NewMsgWithdrawNFTDelegatorReward(delAddr, valAddr string) *MsgWithdrawNFTDelegatorReward {
+	return &MsgWithdrawNFTDelegatorReward{
 		DelegatorAddress: delAddr,
 		ValidatorAddress: valAddr,
 	}
