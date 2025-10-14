@@ -15,6 +15,13 @@ type DelegationI interface {
 	GetShares() math.LegacyDec // amount of validator's shares held in this delegation
 }
 
+// DelegationI delegation bond for a delegated proof of stake system
+type NFTDelegationI interface {
+	GetDelegatorAddr() string  // delegator string for the bond
+	GetValidatorAddr() string  // validator operator address
+	GetNFTShares() math.LegacyDec // amount of validator's shares held in this delegation
+}
+
 // ValidatorI expected validator functions
 type ValidatorI interface {
 	IsJailed() bool                                                 // whether the validator is jailed
@@ -37,6 +44,11 @@ type ValidatorI interface {
 	TokensFromShares(math.LegacyDec) math.LegacyDec                 // token worth of provided delegator shares
 	TokensFromSharesTruncated(math.LegacyDec) math.LegacyDec        // token worth of provided delegator shares, truncated
 	TokensFromSharesRoundUp(math.LegacyDec) math.LegacyDec          // token worth of provided delegator shares, rounded up
+	NFTFromShares(shares math.LegacyDec) math.LegacyDec             // NFT worth of provided delegator shares
+	NFTFromSharesTruncated(shares math.LegacyDec) math.LegacyDec    // NFT worth of provided delegator shares, truncated
+	NFTFromSharesRoundUp(shares math.LegacyDec) math.LegacyDec      // NFT worth of provided delegator shares, rounded up
+	SharesFromNFTs(amt math.Int) (math.LegacyDec, error)            // shares worth of delegator's NFT bond
+	SharesFromNFTsTruncated(amt math.Int) (math.LegacyDec, error)   // truncated shares worth of delegator's NFT bond
 	SharesFromTokens(amt math.Int) (math.LegacyDec, error)          // shares worth of delegator's bond
 	SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error) // truncated shares worth of delegator's bond
 }

@@ -6,6 +6,7 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+	"cosmossdk.io/collections"
 	addresscodec "cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/core/store"
 	"cosmossdk.io/log"
@@ -32,6 +33,8 @@ type Keeper struct {
 	authority             string
 	validatorAddressCodec addresscodec.Codec
 	consensusAddressCodec addresscodec.Codec
+	// NFTDel key: delAddr+valAddr | value: UnbondingDelegation
+	NFTDelShares collections.Map[collections.Pair[[]byte, []byte], types.NFTDelegationShares]
 }
 
 // NewKeeper creates a new staking Keeper instance

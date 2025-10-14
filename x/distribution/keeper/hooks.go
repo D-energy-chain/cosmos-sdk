@@ -167,39 +167,11 @@ func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddre
 func (h Hooks) BeforeNFTDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
-		h.k.Logger(ctx).Error("Failed to get validator for NFT delegation", "error", err)
 		return err
 	}
 
-	// Only increment period if there are accumulated rewards that need to be locked in
-	// This handles the case where someone delegates mid-epoch
-	currentNFTRewards, err := h.k.GetValidatorCurrentNFTRewards(ctx, valAddr)
-	if err != nil {
-		h.k.Logger(ctx).Error("Failed to get current rewards for NFT delegation", "error", err)
-		return err
-	}
-
-	// If there are accumulated rewards, increment period to lock them in
-	// before the new NFT delegation affects the reward calculation
-	// This ensures pro-rated rewards for mid-epoch NFT delegators
-	if !currentNFTRewards.Rewards.IsZero() {
-		oldPeriod := currentNFTRewards.Period
-		newPeriod, err := h.k.IncrementValidatorNFTPeriod(ctx, val)
-		if err != nil {
-			h.k.Logger(ctx).Error("Failed to increment period for NFT delegation", "error", err)
-			return err
-		}
-		h.k.Logger(ctx).Info("🔄 Period incremented for mid-epoch NFT delegation",
-			"delegator", delAddr.String(),
-			"validator", valAddr.String(),
-			"old_period", oldPeriod,
-			"new_period", newPeriod+1,
-			"reason", "locking rewards before new NFT delegation",
-			"accumulated_rewards", currentNFTRewards.Rewards.String(),
-		)
-	}
-
-	return nil
+	_, err = h.k.IncrementValidatorNFTPeriod(ctx, val)
+	return err
 }
 
 // BeforeNFTDelegationSharesModified is called before NFT delegation shares are modified.
@@ -209,26 +181,17 @@ func (h Hooks) BeforeNFTDelegationSharesModified(ctx context.Context, delAddr sd
 	// TODO: Withdraw rewards here
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
-		h.k.Logger(ctx).Error("Failed to get validator for NFT delegation shares modification", "error", err)
 		return err
 	}
 
-	// Increment period if there are accumulated rewards
-	// This locks in rewards before the share change affects calculations
-	currentNFTRewards, err := h.k.GetValidatorCurrentNFTRewards(ctx, valAddr)
+	del, err := h.k.stakingKeeper.NFTDelegationShares(ctx, delAddr, valAddr)
 	if err != nil {
-		h.k.Logger(ctx).Error("Failed to get current rewards for NFT delegation", "error", err)
 		return err
 	}
 
-	if !currentNFTRewards.Rewards.IsZero() {
-		_, err = h.k.IncrementValidatorNFTPeriod(ctx, val)
-		if err != nil {
-			h.k.Logger(ctx).Error("Failed to increment period for NFT delegation", "error", err)
-			return err
-		}
+	if _, err := h.k.withdrawNFTDelegationRewards(ctx, val, del); err != nil {
+		return err
 	}
-
 	return nil
 }
 

@@ -123,6 +123,16 @@ func (k Keeper) Delegation(ctx context.Context, addrDel sdk.AccAddress, addrVal 
 	return bond, nil
 }
 
+// Delegation gets the delegation interface for a particular set of delegator and validator addresses
+func (k Keeper) NFTDelegationShares(ctx context.Context, addrDel sdk.AccAddress, addrVal sdk.ValAddress) (types.NFTDelegationI, error) {
+	bond, err := k.GetNFTDelegationShares(ctx, addrDel, addrVal)
+	if err != nil {
+		return nil, err
+	}
+
+	return bond, nil
+}
+
 // IterateDelegations iterates through all of the delegations from a delegator
 func (k Keeper) IterateDelegations(ctx context.Context, delAddr sdk.AccAddress,
 	fn func(index int64, del types.DelegationI) (stop bool),

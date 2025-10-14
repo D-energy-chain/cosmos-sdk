@@ -47,6 +47,7 @@ type StakingKeeper interface {
 	// Delegation allows for getting a particular delegation for a given validator
 	// and delegator outside the scope of the staking module.
 	Delegation(context.Context, sdk.AccAddress, sdk.ValAddress) (stakingtypes.DelegationI, error)
+	NFTDelegationShares(context.Context, sdk.AccAddress, sdk.ValAddress) (stakingtypes.NFTDelegationI, error)
 
 	IterateDelegations(ctx context.Context, delegator sdk.AccAddress,
 		fn func(index int64, delegation stakingtypes.DelegationI) (stop bool)) error
