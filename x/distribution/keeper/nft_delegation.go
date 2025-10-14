@@ -127,14 +127,14 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 		return nil, err
 	}
 
-	// decrement reference count of starting period
+	// decrement NFT reference count of starting period
 	startingInfo, err := k.GetDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
 	if err != nil {
 		return nil, err
 	}
 
 	startingPeriod := startingInfo.PreviousPeriod
-	err = k.decrementReferenceCount(ctx, sdk.ValAddress(valAddr), startingPeriod)
+	err = k.decrementNFTReferenceCount(ctx, sdk.ValAddress(valAddr), startingPeriod)
 	if err != nil {
 		return nil, err
 	}

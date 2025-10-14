@@ -33,6 +33,11 @@ func (k Keeper) initializeValidator(ctx context.Context, val stakingtypes.Valida
 		return err
 	}
 
+	err = k.SetValidatorCurrentNFTRewards(ctx, valBz, types.NewValidatorCurrentNFTRewards(sdk.DecCoins{}, 1))
+	if err != nil {
+		return err
+	}
+
 	// set accumulated commission
 	err = k.SetValidatorAccumulatedCommission(ctx, valBz, types.InitialValidatorAccumulatedCommission())
 	if err != nil {
@@ -207,7 +212,7 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 	cumRewardRatio := historical.NftCumulativeRewardRatio
 
 	// decrement reference count
-	err = k.decrementReferenceCount(ctx, valBz, rewards.Period-1)
+	err = k.decrementNFTReferenceCount(ctx, valBz, rewards.Period-1)
 	if err != nil {
 		return 0, err
 	}
