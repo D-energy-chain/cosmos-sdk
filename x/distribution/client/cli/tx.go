@@ -21,6 +21,8 @@ import (
 var (
 	FlagCommission       = "commission"
 	FlagMaxMessagesPerTx = "max-msgs"
+	FlagNFT              = "nft"
+	FlagNFTOnly          = "nft-only"
 )
 
 const (
@@ -112,17 +114,35 @@ $ %s tx distribution withdraw-rewards %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 
 				return err
 			}
 
-			msgs := []sdk.Msg{types.NewMsgWithdrawDelegatorReward(delAddr, args[0])}
+			nftOnly, _ := cmd.Flags().GetBool(FlagNFTOnly)
+			nft, _ := cmd.Flags().GetBool(FlagNFT)
 
-			if commission, _ := cmd.Flags().GetBool(FlagCommission); commission {
-				msgs = append(msgs, types.NewMsgWithdrawValidatorCommission(args[0]))
+			msgs := []sdk.Msg{}
+
+			if !nftOnly {
+				// include native delegation rewards
+				msgs = append(msgs, types.NewMsgWithdrawDelegatorReward(delAddr, args[0]))
+				if commission, _ := cmd.Flags().GetBool(FlagCommission); commission {
+					msgs = append(msgs, types.NewMsgWithdrawValidatorCommission(args[0]))
+				}
+			}
+			if nft || nftOnly {
+				// include NFT delegation rewards
+				msgs = append(msgs, types.NewMsgWithdrawNFTDelegatorReward(delAddr, args[0]))
+			}
+
+			if len(msgs) == 0 {
+				// default to native if neither flag is provided
+				msgs = append(msgs, types.NewMsgWithdrawDelegatorReward(delAddr, args[0]))
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msgs...)
 		},
 	}
 
-	cmd.Flags().Bool(FlagCommission, false, "Withdraw the validator's commission in addition to the rewards")
+	cmd.Flags().Bool(FlagCommission, false, "Withdraw the validator's commission in addition to native rewards")
+	cmd.Flags().Bool(FlagNFT, false, "Also withdraw NFT rewards")
+	cmd.Flags().Bool(FlagNFTOnly, false, "Withdraw only NFT rewards (ignore native and commission)")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -169,14 +189,23 @@ $ %[1]s tx distribution withdraw-all-rewards --from mykey
 			validators := delValsRes.Validators
 			// build multi-message transaction
 			msgs := make([]sdk.Msg, 0, len(validators))
+
+			nftOnly, _ := cmd.Flags().GetBool(FlagNFTOnly)
+			nft, _ := cmd.Flags().GetBool(FlagNFT)
+
 			for _, valAddr := range validators {
 				_, err := valCodec.StringToBytes(valAddr)
 				if err != nil {
 					return err
 				}
 
-				msg := types.NewMsgWithdrawDelegatorReward(delAddr, valAddr)
-				msgs = append(msgs, msg)
+				if !nftOnly {
+					msg := types.NewMsgWithdrawDelegatorReward(delAddr, valAddr)
+					msgs = append(msgs, msg)
+				}
+				if nft || nftOnly {
+					msgs = append(msgs, types.NewMsgWithdrawNFTDelegatorReward(delAddr, valAddr))
+				}
 			}
 
 			chunkSize, _ := cmd.Flags().GetInt(FlagMaxMessagesPerTx)
@@ -186,6 +215,8 @@ $ %[1]s tx distribution withdraw-all-rewards --from mykey
 	}
 
 	cmd.Flags().Int(FlagMaxMessagesPerTx, MaxMessagesPerTxDefault, "Limit the number of messages per tx (0 for unlimited)")
+	cmd.Flags().Bool(FlagNFT, false, "Also withdraw NFT rewards")
+	cmd.Flags().Bool(FlagNFTOnly, false, "Withdraw only NFT rewards (ignore native)")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

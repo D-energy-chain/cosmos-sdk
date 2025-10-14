@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/store/prefix"
 
@@ -252,6 +253,22 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 		return nil, err
 	}
 
+	// Also include NFT delegation rewards (when present), to keep a single query surface for AutoCLI
+	if nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAdr); err == nil {
+		endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+		if err != nil {
+			return nil, err
+		}
+		nftRewards, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
+		if err != nil {
+			return nil, err
+		}
+		rewards = rewards.Add(nftRewards...)
+	} else if !errors.IsOf(err, collections.ErrNotFound) {
+		// return non-NotFound errors
+		return nil, err
+	}
+
 	return &types.QueryDelegationRewardsResponse{Rewards: rewards}, nil
 }
 
@@ -315,7 +332,8 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 	}
 
 	total := sdk.DecCoins{}
-	var delRewards []types.DelegationDelegatorReward
+	// accumulate rewards per validator address
+	delRewardsByVal := make(map[string]sdk.DecCoins)
 
 	delAdr, err := k.authKeeper.AddressCodec().StringToBytes(req.DelegatorAddress)
 	if err != nil {
@@ -344,9 +362,10 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 			if err != nil {
 				panic(err)
 			}
-
-			delRewards = append(delRewards, types.NewDelegationDelegatorReward(del.GetValidatorAddr(), delReward))
-			total = total.Add(delReward...)
+			// accumulate native rewards
+			valOper := del.GetValidatorAddr()
+			existing := delRewardsByVal[valOper]
+			delRewardsByVal[valOper] = existing.Add(delReward...)
 			return false
 		},
 	)
@@ -354,7 +373,40 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 		return nil, err
 	}
 
-	// TODO: Add NFT delegation rewards to the total rewards
+	// Iterate all validators to include NFT-only delegations (or add on top of native)
+	err = k.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+		valAddrBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
+		if err != nil {
+			panic(err)
+		}
+		if nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAddrBz); err == nil {
+			endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+			if err != nil {
+				panic(err)
+			}
+			nftReward, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
+			if err != nil {
+				panic(err)
+			}
+			existing := delRewardsByVal[val.GetOperator()]
+			delRewardsByVal[val.GetOperator()] = existing.Add(nftReward...)
+		} else if !errors.IsOf(err, collections.ErrNotFound) {
+			panic(err)
+		}
+		return false
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Build response slice and total
+	delRewards := make([]types.DelegationDelegatorReward, 0, len(delRewardsByVal))
+	for valAddrStr, coins := range delRewardsByVal {
+		if !coins.IsZero() {
+			delRewards = append(delRewards, types.NewDelegationDelegatorReward(valAddrStr, coins))
+			total = total.Add(coins...)
+		}
+	}
 
 	return &types.QueryDelegationTotalRewardsResponse{Rewards: delRewards, Total: total}, nil
 }

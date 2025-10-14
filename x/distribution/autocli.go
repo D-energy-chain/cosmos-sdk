@@ -80,25 +80,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
-					RpcMethod: "NFTDelegationRewards",
-					Use:       "rewards-nft [delegator-addr] [validator-addr]",
-					Short:     "Query NFT delegator rewards for a specific validator",
-					Example:   fmt.Sprintf(`$ %s query distribution rewards-nft [delegator-address] [validator-address]`, version.AppName),
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "delegator_address"},
-						{ProtoField: "validator_address"},
-					},
-				},
-				{
-					RpcMethod: "NFTDelegationTotalRewards",
-					Use:       "rewards-nft-total [delegator-addr]",
-					Short:     "Query total NFT delegator rewards across all validators",
-					Example:   fmt.Sprintf(`$ %s query distribution rewards-nft-total [delegator-address]`, version.AppName),
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "delegator_address"},
-					},
-				},
-				{
 					RpcMethod: "CommunityPool",
 					Use:       "community-pool",
 					Short:     "Query the amount of coins in the community pool",
