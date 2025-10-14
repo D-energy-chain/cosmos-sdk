@@ -17,20 +17,21 @@ func (k Keeper) initializeValidator(ctx context.Context, val stakingtypes.Valida
 	if err != nil {
 		return err
 	}
-
-	// Period 0 is a logical baseline (zero cumulative rewards) and doesn't need to be stored
-	// We start tracking actual rewards from period 1 onwards
+	// set initial historical rewards (period 0) with reference count of 1
+	err = k.SetValidatorHistoricalRewards(ctx, valBz, 0, types.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	if err != nil {
+		return err
+	}
+	err = k.SetValidatorHistoricalNFTRewards(ctx, valBz, 0, types.NewValidatorHistoricalNFTRewards(sdk.DecCoins{}, 1))
+	if err != nil {
+		return err
+	}
 
 	// set current rewards (starting at period 1)
 	err = k.SetValidatorCurrentRewards(ctx, valBz, types.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
 	if err != nil {
 		return err
 	}
-
-	k.Logger(ctx).Info("Initialized validator rewards",
-		"validator", val.GetOperator(),
-		"starting_period", 1,
-	)
 
 	// set accumulated commission
 	err = k.SetValidatorAccumulatedCommission(ctx, valBz, types.InitialValidatorAccumulatedCommission())
