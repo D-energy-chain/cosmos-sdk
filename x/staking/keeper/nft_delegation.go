@@ -12,7 +12,7 @@ import (
 
 // SetDelegation sets a delegation.
 func (k Keeper) GetNFTDelegationShares(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (types.NFTDelegationShares, error) {
-	return k.NFTDelShares.Get(ctx, collections.Join(delAddr.Bytes(), valAddr.Bytes()))
+	return k.NFTDelShares.Get(ctx, collections.Join(delAddr, valAddr))
 }
 
 // SetDelegation sets a delegation.
@@ -27,7 +27,7 @@ func (k Keeper) SetNFTDelegationShares(ctx context.Context, delegation types.NFT
 		return err
 	}
 
-	err = k.NFTDelShares.Set(ctx, collections.Join(delegatorAddress, valBz), delegation)
+	err = k.NFTDelShares.Set(ctx, collections.Join(sdk.AccAddress(delegatorAddress), sdk.ValAddress(valBz)), delegation)
 	return err
 }
 

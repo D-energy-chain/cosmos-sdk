@@ -33,8 +33,9 @@ type Keeper struct {
 	authority             string
 	validatorAddressCodec addresscodec.Codec
 	consensusAddressCodec addresscodec.Codec
-	// NFTDel key: delAddr+valAddr | value: UnbondingDelegation
-	NFTDelShares collections.Map[collections.Pair[[]byte, []byte], types.NFTDelegationShares]
+	// Collections schema and NFT delegation shares map
+	Schema       collections.Schema
+	NFTDelShares collections.Map[collections.Pair[sdk.AccAddress, sdk.ValAddress], types.NFTDelegationShares]
 }
 
 // NewKeeper creates a new staking Keeper instance
@@ -65,7 +66,8 @@ func NewKeeper(
 		panic("validator and/or consensus address codec are nil")
 	}
 
-	return &Keeper{
+	sb := collections.NewSchemaBuilder(storeService)
+	k := &Keeper{
 		storeService:          storeService,
 		cdc:                   cdc,
 		authKeeper:            ak,
@@ -74,7 +76,14 @@ func NewKeeper(
 		authority:             authority,
 		validatorAddressCodec: validatorAddressCodec,
 		consensusAddressCodec: consensusAddressCodec,
+		NFTDelShares:          collections.NewMap(sb, collections.NewPrefix(0xE1), "nft_delegation_shares", collections.PairKeyCodec(sdk.AccAddressKey, sdk.ValAddressKey), codec.CollValue[types.NFTDelegationShares](cdc)),
 	}
+	schema, err := sb.Build()
+	if err != nil {
+		panic(err)
+	}
+	k.Schema = schema
+	return k
 }
 
 // Logger returns a module-specific logger.
