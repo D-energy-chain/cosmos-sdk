@@ -38,7 +38,7 @@ func (k Keeper) initializeNFTDelegation(ctx context.Context, val sdk.ValAddress,
 	stake := validator.NFTFromSharesTruncated(delegation.GetNFTShares())
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	return k.SetDelegatorStartingInfo(ctx, val, del, types.NewDelegatorStartingInfo(previousPeriod, stake, uint64(sdkCtx.BlockHeight())))
+	return k.SetNFTDelegatorStartingInfo(ctx, val, del, types.NewNFTDelegatorStartingInfo(previousPeriod, stake, uint64(sdkCtx.BlockHeight())))
 }
 
 func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtypes.ValidatorI, nftDel stakingtypes.NFTDelegationI) (sdk.Coins, error) {
@@ -60,7 +60,7 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 	}
 
 	if !hasInfo {
-		return nil, types.ErrEmptyDelegationDistInfo
+		return nil, types.ErrEmptyNFTDelegationDistInfo
 	}
 
 	// end current period and calculate rewards

@@ -223,17 +223,8 @@ message DelegatorStartingInfo {
     (gogoproto.nullable)   = false,
     (amino.dont_omitempty) = true
   ];
-  // nft_stake tracks the amount of NFT delegation stake for this delegator
-  string nft_stake = 4 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable)   = false,
-    (amino.dont_omitempty) = true
-  ];
   uint64 height = 3
       [(gogoproto.jsontag) = "creation_height", (amino.field_name) = "creation_height", (amino.dont_omitempty) = true];
-  // nft_height is the block height when the first NFT delegation was created for this delegator and validator
-  uint64 nft_height = 5;
 }
 
 // NFTDelegatorStartingInfo represents the starting info for a delegator reward
