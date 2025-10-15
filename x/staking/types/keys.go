@@ -56,6 +56,8 @@ var (
 	ParamsKey = []byte{0x51} // prefix for parameters for module x/staking
 
 	DelegationByValIndexKey = []byte{0x71} // key for delegations by a validator
+
+	NFTDelegationSharesKey = []byte{0x72} // key for a nft delegation
 )
 
 // UnbondingType defines the type of unbonding operation
@@ -259,6 +261,11 @@ func ParseDelegationsByValKey(bz []byte) (sdk.ValAddress, sdk.AccAddress, error)
 // GetDelegationsKey creates the prefix for a delegator for all validators
 func GetDelegationsKey(delAddr sdk.AccAddress) []byte {
 	return append(DelegationKey, address.MustLengthPrefix(delAddr)...)
+}
+
+// GetNFTDelegationsKey creates the prefix for a delegator for all validators
+func GetNFTDelegationsKey(delAddr sdk.AccAddress) []byte {
+	return append(NFTDelegationSharesKey, address.MustLengthPrefix(delAddr)...)
 }
 
 // GetUBDKey creates the key for an unbonding delegation by delegator and validator addr

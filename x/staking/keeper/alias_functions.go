@@ -161,6 +161,34 @@ func (k Keeper) IterateDelegations(ctx context.Context, delAddr sdk.AccAddress,
 	return nil
 }
 
+// IterateDelegations iterates through all of the delegations from a delegator
+func (k Keeper) IterateNFTDelegationsShares(ctx context.Context, delAddr sdk.AccAddress,
+	fn func(index int64, del types.NFTDelegationI) (stop bool),
+) error {
+	store := k.storeService.OpenKVStore(ctx)
+	delegatorPrefixKey := types.GetNFTDelegationsKey(delAddr)
+	iterator, err := store.Iterator(delegatorPrefixKey, storetypes.PrefixEndBytes(delegatorPrefixKey))
+	if err != nil {
+		return err
+	}
+	defer iterator.Close()
+
+	for i := int64(0); iterator.Valid(); iterator.Next() {
+		del, err := types.UnmarshalNFTDelegationShares(k.cdc, iterator.Value())
+		if err != nil {
+			return err
+		}
+
+		stop := fn(i, del)
+		if stop {
+			break
+		}
+		i++
+	}
+
+	return nil
+}
+
 // GetAllSDKDelegations returns all delegations used during genesis dump
 // TODO: remove this func, change all usage for iterate functionality
 func (k Keeper) GetAllSDKDelegations(ctx context.Context) (delegations []types.Delegation, err error) {

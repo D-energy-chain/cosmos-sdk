@@ -374,25 +374,30 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 	}
 
 	// Iterate all validators to include NFT-only delegations (or add on top of native)
-	err = k.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		valAddrBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
+	err = k.stakingKeeper.IterateNFTDelegationsShares(ctx, delAdr, func(_ int64, del stakingtypes.NFTDelegationI) (stop bool) {
+		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(del.GetValidatorAddr())
 		if err != nil {
 			panic(err)
 		}
-		if nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAddrBz); err == nil {
-			endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
-			if err != nil {
-				panic(err)
-			}
-			nftReward, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
-			if err != nil {
-				panic(err)
-			}
-			existing := delRewardsByVal[val.GetOperator()]
-			delRewardsByVal[val.GetOperator()] = existing.Add(nftReward...)
-		} else if !errors.IsOf(err, collections.ErrNotFound) {
+
+		val, err := k.stakingKeeper.Validator(ctx, valAddr)
+		if err != nil {
 			panic(err)
 		}
+
+		endingPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+		if err != nil {
+			panic(err)
+		}
+
+		delReward, err := k.CalculateNFTDelegationRewards(ctx, val, del, endingPeriod)
+		if err != nil {
+			panic(err)
+		}
+		// accumulate native rewards
+		valOper := del.GetValidatorAddr()
+		existing := delRewardsByVal[valOper]
+		delRewardsByVal[valOper] = existing.Add(delReward...)
 		return false
 	})
 	if err != nil {

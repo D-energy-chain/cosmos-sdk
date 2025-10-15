@@ -52,6 +52,10 @@ type StakingKeeper interface {
 	IterateDelegations(ctx context.Context, delegator sdk.AccAddress,
 		fn func(index int64, delegation stakingtypes.DelegationI) (stop bool)) error
 
+	IterateNFTDelegationsShares(ctx context.Context, delAddr sdk.AccAddress,
+		fn func(index int64, del stakingtypes.NFTDelegationI) (stop bool),
+	) error
+
 	GetAllSDKDelegations(ctx context.Context) ([]stakingtypes.Delegation, error)
 	GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error)
 	GetAllDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress) ([]stakingtypes.Delegation, error)
