@@ -255,15 +255,18 @@ func (k Querier) DelegationRewards(ctx context.Context, req *types.QueryDelegati
 
 	// Also include NFT delegation rewards (when present), to keep a single query surface for AutoCLI
 	if nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAdr); err == nil {
-		endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
-		if err != nil {
-			return nil, err
+		// If the record exists but holds zero shares, treat it as no rewards.
+		if nftDel != nil && !nftDel.GetNFTShares().IsZero() {
+			endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+			if err != nil {
+				return nil, err
+			}
+			nftRewards, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
+			if err != nil {
+				return nil, err
+			}
+			rewards = rewards.Add(nftRewards...)
 		}
-		nftRewards, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
-		if err != nil {
-			return nil, err
-		}
-		rewards = rewards.Add(nftRewards...)
 	} else if !errors.IsOf(err, collections.ErrNotFound) {
 		// return non-NotFound errors
 		return nil, err
@@ -380,16 +383,18 @@ func (k Querier) DelegationTotalRewards(ctx context.Context, req *types.QueryDel
 			panic(err)
 		}
 		if nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAddrBz); err == nil {
-			endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
-			if err != nil {
-				panic(err)
+			if nftDel != nil && !nftDel.GetNFTShares().IsZero() {
+				endingNFTPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+				if err != nil {
+					panic(err)
+				}
+				nftReward, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
+				if err != nil {
+					panic(err)
+				}
+				existing := delRewardsByVal[val.GetOperator()]
+				delRewardsByVal[val.GetOperator()] = existing.Add(nftReward...)
 			}
-			nftReward, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingNFTPeriod)
-			if err != nil {
-				panic(err)
-			}
-			existing := delRewardsByVal[val.GetOperator()]
-			delRewardsByVal[val.GetOperator()] = existing.Add(nftReward...)
 		} else if !errors.IsOf(err, collections.ErrNotFound) {
 			panic(err)
 		}
