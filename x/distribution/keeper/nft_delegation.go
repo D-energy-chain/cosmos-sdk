@@ -128,7 +128,7 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 	}
 
 	// decrement NFT reference count of starting period
-	startingInfo, err := k.GetDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
+	startingInfo, err := k.GetNFTDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +140,7 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 	}
 
 	// remove delegator starting info
-	err = k.DeleteDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
+	err = k.DeleteNFTDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
 	if err != nil {
 		return nil, err
 	}
