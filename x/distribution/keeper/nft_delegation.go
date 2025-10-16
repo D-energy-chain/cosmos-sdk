@@ -42,6 +42,7 @@ func (k Keeper) initializeNFTDelegation(ctx context.Context, val sdk.ValAddress,
 }
 
 func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtypes.ValidatorI, nftDel stakingtypes.NFTDelegationI) (sdk.Coins, error) {
+	logger := k.Logger(ctx)
 	addrCodec := k.authKeeper.AddressCodec()
 	delAddr, err := addrCodec.StringToBytes(nftDel.GetDelegatorAddr())
 	if err != nil {
@@ -83,7 +84,6 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 	// of the decCoins due to operation order of the distribution mechanism.
 	rewards := rewardsRaw.Intersect(outstanding)
 	if !rewards.Equal(rewardsRaw) {
-		logger := k.Logger(ctx)
 		logger.Info(
 			"rounding error withdrawing rewards from validator",
 			"delegator", nftDel.GetDelegatorAddr(),
@@ -96,6 +96,17 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 	// truncate reward dec coins, return remainder to community pool
 	finalRewards, remainder := rewards.TruncateDecimal()
 
+	logger.Info(
+		"withdraw nft delegation rewards: prepared amounts",
+		"delegator", nftDel.GetDelegatorAddr(),
+		"validator", val.GetOperator(),
+		"ending_period", endingPeriod,
+		"requested_rewards", rewardsRaw.String(),
+		"adjusted_rewards", rewards.String(),
+		"final_rewards", finalRewards.String(),
+		"remainder", remainder.String(),
+	)
+
 	// add coins to user account
 	if !finalRewards.IsZero() {
 		withdrawAddr, err := k.GetDelegatorWithdrawAddr(ctx, delAddr)
@@ -107,6 +118,13 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 		if err != nil {
 			return nil, err
 		}
+		logger.Info(
+			"withdraw nft delegation rewards: sent to delegator",
+			"delegator", nftDel.GetDelegatorAddr(),
+			"validator", val.GetOperator(),
+			"withdraw_address", withdrawAddr.String(),
+			"final_rewards", finalRewards.String(),
+		)
 	}
 
 	// update the outstanding rewards and the community pool only if the
@@ -154,6 +172,12 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 		// Note, we do not call the NewCoins constructor as we do not want the zero
 		// coin removed.
 		finalRewards = sdk.Coins{sdk.NewCoin(baseDenom, math.ZeroInt())}
+		logger.Info(
+			"withdraw nft delegation rewards: zero payout adjusted to base denom",
+			"delegator", nftDel.GetDelegatorAddr(),
+			"validator", val.GetOperator(),
+			"base_denom", baseDenom,
+		)
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -166,11 +190,19 @@ func (k Keeper) withdrawNFTDelegationRewards(ctx context.Context, val stakingtyp
 		),
 	)
 
+	logger.Info(
+		"withdraw nft delegation rewards: completed",
+		"delegator", nftDel.GetDelegatorAddr(),
+		"validator", val.GetOperator(),
+		"final_rewards", finalRewards.String(),
+	)
+
 	return finalRewards, nil
 }
 
 // calculate the total rewards accrued by a delegation
 func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingtypes.ValidatorI, nftDel stakingtypes.NFTDelegationI, endingPeriod uint64) (rewards sdk.DecCoins, err error) {
+	logger := k.Logger(ctx)
 	addrCodec := k.authKeeper.AddressCodec()
 	delAddr, err := addrCodec.StringToBytes(nftDel.GetDelegatorAddr())
 	if err != nil {
@@ -198,9 +230,26 @@ func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingty
 		return
 	}
 
+	logger.Info(
+		"calculate nft delegation rewards: starting",
+		"delegator", nftDel.GetDelegatorAddr(),
+		"validator", val.GetOperator(),
+		"ending_period", endingPeriod,
+		"starting_period", startingInfo.PreviousPeriod,
+		"starting_height", startingInfo.Height,
+		"starting_nft_stake", startingInfo.NftStake.String(),
+		"current_nft_shares", nftDel.GetNFTShares().String(),
+	)
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	if startingInfo.Height == uint64(sdkCtx.BlockHeight()) {
 		// started this height, no rewards yet
+		logger.Info(
+			"calculate nft delegation rewards: same block detected, no rewards",
+			"delegator", nftDel.GetDelegatorAddr(),
+			"validator", val.GetOperator(),
+			"block_height", sdkCtx.BlockHeight(),
+		)
 		return
 	}
 
@@ -223,6 +272,15 @@ func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingty
 			func(height uint64, event types.ValidatorSlashEvent) (stop bool) {
 				endingPeriod := event.ValidatorPeriod
 				if endingPeriod > startingPeriod {
+					logger.Info(
+						"calculate nft delegation rewards: processing slash event",
+						"delegator", nftDel.GetDelegatorAddr(),
+						"validator", val.GetOperator(),
+						"slash_height", height,
+						"slash_fraction", event.Fraction.String(),
+						"event_ending_period", endingPeriod,
+						"current_nft_stake_before_slash", stake.String(),
+					)
 					// Calculate native delegation rewards
 					delRewards, err := k.calculateNFTDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, stake)
 					if err != nil {
@@ -233,6 +291,13 @@ func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingty
 					// Note: It is necessary to truncate so we don't allow withdrawing
 					// more rewards than owed.
 					stake = stake.MulTruncate(math.LegacyOneDec().Sub(event.Fraction))
+					logger.Info(
+						"calculate nft delegation rewards: post-slash stake updated",
+						"delegator", nftDel.GetDelegatorAddr(),
+						"validator", val.GetOperator(),
+						"event_ending_period", endingPeriod,
+						"post_slash_nft_stake", stake.String(),
+					)
 					startingPeriod = endingPeriod
 				}
 				return false
@@ -286,6 +351,15 @@ func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingty
 
 	rewards = rewards.Add(nftDelRewards...)
 
+	logger.Info(
+		"calculate nft delegation rewards: completed",
+		"delegator", nftDel.GetDelegatorAddr(),
+		"validator", val.GetOperator(),
+		"ending_period", endingPeriod,
+		"final_nft_stake", stake.String(),
+		"calculated_rewards", rewards.String(),
+	)
+
 	return rewards, nil
 }
 
@@ -293,6 +367,7 @@ func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingty
 func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val stakingtypes.ValidatorI,
 	startingPeriod, endingPeriod uint64, nftStake math.LegacyDec,
 ) (sdk.DecCoins, error) {
+	logger := k.Logger(ctx)
 	// sanity check
 	if startingPeriod > endingPeriod {
 		panic("startingPeriod cannot be greater than endingPeriod")
@@ -325,5 +400,16 @@ func (k Keeper) calculateNFTDelegationRewardsBetween(ctx context.Context, val st
 	}
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
 	rewards := difference.MulDecTruncate(nftStake)
+	logger.Info(
+		"calculate nft delegation rewards between periods",
+		"validator", val.GetOperator(),
+		"starting_period", startingPeriod,
+		"ending_period", endingPeriod,
+		"nft_stake", nftStake.String(),
+		"starting_ratio", starting.NftCumulativeRewardRatio.String(),
+		"ending_ratio", ending.NftCumulativeRewardRatio.String(),
+		"ratio_difference", difference.String(),
+		"period_rewards", rewards.String(),
+	)
 	return rewards, nil
 }
