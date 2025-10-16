@@ -183,6 +183,16 @@ func (k Keeper) CalculateNFTDelegationRewards(ctx context.Context, val stakingty
 	}
 
 	// fetch starting info for delegation
+	hasInfo, hasErr := k.HasNFTDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
+	if hasErr != nil {
+		return sdk.DecCoins{}, hasErr
+	}
+	if !hasInfo {
+		// no recorded starting info means the delegation has already been withdrawn
+		// or never existed; treat as zero rewards instead of panic
+		return sdk.DecCoins{}, nil
+	}
+
 	startingInfo, err := k.GetNFTDelegatorStartingInfo(ctx, sdk.ValAddress(valAddr), sdk.AccAddress(delAddr))
 	if err != nil {
 		return

@@ -448,15 +448,24 @@ func (k Querier) NFTDelegationTotalRewards(ctx context.Context, req *types.Query
 				panic(err)
 			}
 
-			endingPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
-			if err != nil {
+			nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAddr)
+			switch {
+			case err == nil:
+				// proceed below
+			case errors.IsOf(err, collections.ErrNotFound):
+				// If no NFT delegation exists for this validator, skip
+				return false
+			default:
 				panic(err)
 			}
 
-			nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAdr, valAddr)
-			if err != nil {
-				// If no NFT delegation exists for this validator, skip
+			if nftDel == nil || nftDel.GetNFTShares().IsZero() {
 				return false
+			}
+
+			endingPeriod, err := k.IncrementValidatorNFTPeriod(ctx, val)
+			if err != nil {
+				panic(err)
 			}
 
 			delReward, err := k.CalculateNFTDelegationRewards(ctx, val, nftDel, endingPeriod)
