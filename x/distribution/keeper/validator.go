@@ -51,6 +51,7 @@ func (k Keeper) initializeValidator(ctx context.Context, val stakingtypes.Valida
 
 // increment validator period, returning the period just ended
 func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.ValidatorI) (uint64, error) {
+	logger := k.Logger(ctx)
 	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 	if err != nil {
 		return 0, err
@@ -94,6 +95,14 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	} else {
 		// note: necessary to truncate so we don't allow withdrawing more rewards than owed
 		current = rewards.Rewards.QuoDecTruncate(math.LegacyNewDecFromInt(val.GetTokens()))
+		logger.Info(
+			"validator native reward ratio computation",
+			"validator", val.GetOperator(),
+			"period", rewards.Period,
+			"pending_rewards", rewards.Rewards.String(),
+			"validator_tokens", val.GetTokens().String(),
+			"computed_ratio_increment", current.String(),
+		)
 	}
 
 	// fetch historical rewards for last period
@@ -115,6 +124,15 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 	if err != nil {
 		return 0, err
 	}
+	logger.Info(
+		"validator native cumulative reward ratio updated",
+		"validator", val.GetOperator(),
+		"previous_period", rewards.Period-1,
+		"new_period", rewards.Period,
+		"previous_cumulative_ratio", cumRewardRatio.String(),
+		"current_increment", current.String(),
+		"updated_cumulative_ratio", cumRewardRatio.Add(current...).String(),
+	)
 
 	// set current rewards, incrementing period by 1
 	err = k.SetValidatorCurrentRewards(ctx, valBz, types.NewValidatorCurrentRewards(sdk.DecCoins{}, rewards.Period+1))
@@ -158,6 +176,7 @@ func (k Keeper) decrementReferenceCount(ctx context.Context, valAddr sdk.ValAddr
 
 // increment validator period, returning the period just ended
 func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtypes.ValidatorI) (uint64, error) {
+	logger := k.Logger(ctx)
 	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 	if err != nil {
 		return 0, err
@@ -201,6 +220,14 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 	} else {
 		// note: necessary to truncate so we don't allow withdrawing more rewards than owed
 		current = rewards.Rewards.QuoDecTruncate(math.LegacyNewDecFromInt(val.GetTokens()))
+		logger.Info(
+			"validator nft reward ratio computation",
+			"validator", val.GetOperator(),
+			"period", rewards.Period,
+			"pending_nft_rewards", rewards.Rewards.String(),
+			"validator_tokens", val.GetTokens().String(),
+			"computed_nft_ratio_increment", current.String(),
+		)
 	}
 
 	// fetch historical rewards for last period
@@ -222,6 +249,15 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 	if err != nil {
 		return 0, err
 	}
+	logger.Info(
+		"validator nft cumulative reward ratio updated",
+		"validator", val.GetOperator(),
+		"previous_period", rewards.Period-1,
+		"new_period", rewards.Period,
+		"previous_nft_cumulative_ratio", cumRewardRatio.String(),
+		"nft_ratio_increment", current.String(),
+		"updated_nft_cumulative_ratio", cumRewardRatio.Add(current...).String(),
+	)
 
 	// set current rewards, incrementing period by 1
 	err = k.SetValidatorCurrentNFTRewards(ctx, valBz, types.NewValidatorCurrentNFTRewards(sdk.DecCoins{}, rewards.Period+1))
