@@ -557,19 +557,26 @@ func (v Validator) GetConsAddr() ([]byte, error) {
 	return pk.Address().Bytes(), nil
 }
 
-func (v Validator) GetTokens() math.Int       { return v.Tokens }
+func (v Validator) GetTokens() math.Int { return v.Tokens }
+func (v Validator) GetTotalNFTs() math.Int {
+	if !v.TotalNftDelegation.IsNil() {
+		return v.TotalNftDelegation
+	}
+	return math.ZeroInt()
+}
+
 func (v Validator) GetBondedTokens() math.Int { return v.BondedTokens() }
 func (v Validator) GetConsensusPower(r math.Int) int64 {
 	return v.ConsensusPower(r)
 }
-func (v Validator) GetCommission() math.LegacyDec         { return v.Commission.Rate }
-func (v Validator) GetMinSelfDelegation() math.Int        { return v.MinSelfDelegation }
-func (v Validator) GetDelegatorShares() math.LegacyDec    { return v.DelegatorShares }
-func (v Validator) GetDelegatorNftShares() math.LegacyDec { 
+func (v Validator) GetCommission() math.LegacyDec      { return v.Commission.Rate }
+func (v Validator) GetMinSelfDelegation() math.Int     { return v.MinSelfDelegation }
+func (v Validator) GetDelegatorShares() math.LegacyDec { return v.DelegatorShares }
+func (v Validator) GetDelegatorNftShares() math.LegacyDec {
 	if v.DelegatorNftShares.IsNil() {
 		return math.LegacyZeroDec()
 	}
-	return v.DelegatorNftShares 
+	return v.DelegatorNftShares
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces

@@ -190,7 +190,7 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 
 	// calculate current ratio
 	var current sdk.DecCoins
-	if val.GetTokens().IsZero() {
+	if val.GetTotalNFTs().IsZero() {
 
 		// can't calculate ratio for zero-token validators
 		// ergo we instead add to the community pool
@@ -219,13 +219,13 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 		current = sdk.DecCoins{}
 	} else {
 		// note: necessary to truncate so we don't allow withdrawing more rewards than owed
-		current = rewards.Rewards.QuoDecTruncate(math.LegacyNewDecFromInt(val.GetTokens()))
+		current = rewards.Rewards.QuoDecTruncate(math.LegacyNewDecFromInt(val.GetTotalNFTs()))
 		logger.Info(
 			"validator nft reward ratio computation",
 			"validator", val.GetOperator(),
 			"period", rewards.Period,
 			"pending_nft_rewards", rewards.Rewards.String(),
-			"validator_tokens", val.GetTokens().String(),
+			"validator_tokens", val.GetTotalNFTs().String(),
 			"computed_nft_ratio_increment", current.String(),
 		)
 	}

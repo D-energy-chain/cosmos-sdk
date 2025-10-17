@@ -35,6 +35,7 @@ type ValidatorI interface {
 	TmConsPublicKey() (cmtprotocrypto.PublicKey, error)             // validation consensus pubkey (CometBFT)
 	GetConsAddr() ([]byte, error)                                   // validation consensus address
 	GetTokens() math.Int                                            // validation tokens
+	GetTotalNFTs() math.Int                                         // validator total NFTs
 	GetBondedTokens() math.Int                                      // validator bonded tokens
 	GetConsensusPower(math.Int) int64                               // validation power in CometBFT
 	GetCommission() math.LegacyDec                                  // validator commission rate

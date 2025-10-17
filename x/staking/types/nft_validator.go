@@ -133,9 +133,4 @@ func (v Validator) RemoveDelNFTShares(delShares math.LegacyDec) (Validator, math
 	return v, issuedTokens
 }
 
-func (x *Validator) GetTotalNFTs() math.Int {
-	if x != nil && !x.TotalNftDelegation.IsNil() {
-		return x.TotalNftDelegation
-	}
-	return math.ZeroInt()
-}
+
