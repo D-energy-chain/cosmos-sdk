@@ -216,6 +216,14 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 			return 0, err
 		}
 
+		logger.Info(
+			"validator nft reward ratio skipped due to zero total NFTs",
+			"validator", val.GetOperator(),
+			"period", rewards.Period,
+			"pending_nft_rewards", rewards.Rewards.String(),
+			"total_nfts", val.GetTotalNFTs().String(),
+		)
+
 		current = sdk.DecCoins{}
 	} else {
 		// note: necessary to truncate so we don't allow withdrawing more rewards than owed
