@@ -318,10 +318,26 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 	// Determine how to split the rewards
 	var nftRewards, nativeRewards sdk.DecCoins
 
+	k.Logger(ctx).Info(
+		"validator reward share snapshot",
+		"validator", val.GetOperator(),
+		"nft_shares", nftShares.String(),
+		"native_shares", nativeShares.String(),
+		"total_shares", totalShares.String(),
+		"assigned_tokens", tokens.String(),
+	)
+
 	// If there are no NFT shares, all rewards go to native token stakers
 	if nftShares.IsZero() {
 		// All rewards go to native token stakers
 		nativeRewards = tokens
+		if !tokens.IsZero() {
+			k.Logger(ctx).Info(
+				"skipping nft reward allocation due to zero nft shares",
+				"validator", val.GetOperator(),
+				"assigned_tokens", tokens.String(),
+			)
+		}
 	} else if nativeShares.IsZero() {
 		// All rewards go to NFT stakers
 		nftRewards = tokens
