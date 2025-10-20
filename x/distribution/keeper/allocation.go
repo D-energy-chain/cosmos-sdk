@@ -180,6 +180,14 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 			weightedPower := performance.AveragePower.Mul(performanceFactor)
 			totalWeightedPower = totalWeightedPower.Add(weightedPower)
 			eligibleValidators = append(eligibleValidators, performance)
+		} else {
+			k.Logger(ctx).Warn("skipping validator with insufficient commit ratio",
+				"validator", performance.ValidatorAddress,
+				"commit_ratio", performance.CommitRatio.String(),
+				"min_commit_ratio", params.MinCommitRatio.String(),
+				"epoch_identifier", performance.EpochIdentifier,
+				"epoch_number", performance.EpochNumber,
+			)
 		}
 	}
 
@@ -282,8 +290,8 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 	var nftShares math.LegacyDec
 
 	// First try GetDelegatorNftShares (as per documentation)
-	if v, ok := val.(interface{ GetDelegatorNftShares() math.LegacyDec }); ok {
-		nftShares = v.GetDelegatorNftShares()
+	if v, ok := val.(interface{ GetTotalNFTs() math.LegacyDec }); ok {
+		nftShares = v.GetTotalNFTs()
 	} else if v, ok := val.(interface{ GetNFTDelegatorShares() math.LegacyDec }); ok {
 		// Fallback to GetNFTDelegatorShares
 		nftShares = v.GetNFTDelegatorShares()

@@ -15,7 +15,7 @@ func DefaultParams() Params {
 		WithdrawAddrEnabled:                true,
 		NftStakingRatio:                    math.LegacyNewDecWithPrec(75, 2), // 75% of staking rewards (56.25% of total)
 		NativeStakingRatio:                 math.LegacyNewDecWithPrec(25, 2), // 25% of staking rewards (18.75% of total)
-		MinCommitRatio:                     math.LegacyNewDecWithPrec(50, 2), // 50% minimum commit ratio
+		MinCommitRatio:                     math.LegacyNewDecWithPrec(10, 2), // 10% minimum commit ratio
 		EnablePerformanceBasedDistribution: true,                             // Enable performance-based distribution by default
 	}
 }
