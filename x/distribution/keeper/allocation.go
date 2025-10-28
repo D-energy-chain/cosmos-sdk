@@ -323,7 +323,13 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		return err
 	}
 
-	// Determine how to split the rewards
+	// Combine commissions from both reward types before delegator allocation
+	totalCommission := tokens.MulDec(val.GetCommission())
+
+	// Remaining rewards are shared by delegators (native + NFT)
+	tokensAfterCommission := tokens.Sub(totalCommission)
+
+	// Determine how to split the rewards (post-commission)
 	var nftRewards, nativeRewards sdk.DecCoins
 
 	k.Logger(ctx).Info(
@@ -333,31 +339,28 @@ func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.
 		"native_shares", nativeShares.String(),
 		"total_shares", totalShares.String(),
 		"assigned_tokens", tokens.String(),
+		"commission", totalCommission.String(),
+		"tokens_after_commission", tokensAfterCommission.String(),
 	)
 
 	// If there are no NFT shares, all rewards go to native token stakers
 	if nftShares.IsZero() {
-		// All rewards go to native token stakers
-		nativeRewards = tokens
-		if !tokens.IsZero() {
+		nativeRewards = tokensAfterCommission
+		if !tokensAfterCommission.IsZero() {
 			k.Logger(ctx).Info(
 				"skipping nft reward allocation due to zero nft shares",
 				"validator", val.GetOperator(),
-				"assigned_tokens", tokens.String(),
+				"assigned_tokens", tokensAfterCommission.String(),
 			)
 		}
 	} else if nativeShares.IsZero() {
 		// All rewards go to NFT stakers
-		nftRewards = tokens
+		nftRewards = tokensAfterCommission
 	} else {
-		// Split rewards based on the configured ratios
-		// Calculate rewards for each type based on the total staking allocation (80%)
-		nftRewards = tokens.MulDecTruncate(nftStakingRatio)
-		nativeRewards = tokens.MulDecTruncate(nativeStakingRatio)
+		// Split rewards based on the configured ratios (post-commission)
+		nftRewards = tokensAfterCommission.MulDecTruncate(nftStakingRatio)
+		nativeRewards = tokensAfterCommission.MulDecTruncate(nativeStakingRatio)
 	}
-
-	// Combine commissions from both reward types
-	totalCommission := tokens.MulDec(val.GetCommission())
 
 	// Log validator reward allocation details
 	k.logValidatorRewardAllocation(ctx, val, tokens, nftRewards, nativeRewards, totalCommission)
