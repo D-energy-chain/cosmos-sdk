@@ -23,6 +23,12 @@ const (
 
 	// RouterKey is the msg router key for the staking module
 	RouterKey = ModuleName
+
+	// EpochIncrementOffset represents how many epochs queued delegations are delayed by default.
+	EpochIncrementOffset = 1
+
+	// DefaultDelegationEpochIdentifier is the epoch identifier used for queued delegations.
+	DefaultDelegationEpochIdentifier = "inflation"
 )
 
 var (
@@ -56,6 +62,11 @@ var (
 	ParamsKey = []byte{0x51} // prefix for parameters for module x/staking
 
 	DelegationByValIndexKey = []byte{0x71} // key for delegations by a validator
+
+	QueuedDelegationKey           = []byte("QueuedDelegation-")
+	QueuedDelegationByValIndexKey = []byte("QueuedDelegationByValIndex-")
+	QueuedDelegationQueueKey      = []byte("QueuedDelegationQueue-")
+	QueuedDelegationIDKey         = []byte("QueuedDelegationID-")
 )
 
 // UnbondingType defines the type of unbonding operation

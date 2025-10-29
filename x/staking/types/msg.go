@@ -19,6 +19,7 @@ var (
 	_ sdk.Msg                            = &MsgUndelegate{}
 	_ sdk.Msg                            = &MsgBeginRedelegate{}
 	_ sdk.Msg                            = &MsgCancelUnbondingDelegation{}
+	_ sdk.Msg                            = &MsgCancelQueuedDelegation{}
 	_ sdk.Msg                            = &MsgUpdateParams{}
 )
 
@@ -176,4 +177,25 @@ func NewMsgCancelUnbondingDelegation(delAddr, valAddr string, creationHeight int
 		Amount:           amount,
 		CreationHeight:   creationHeight,
 	}
+}
+
+// NewMsgCancelQueuedDelegation creates a new MsgCancelQueuedDelegation instance.
+func NewMsgCancelQueuedDelegation(delAddr string, queueEntryID uint64) *MsgCancelQueuedDelegation {
+	return &MsgCancelQueuedDelegation{
+		DelegatorAddress: delAddr,
+		QueueEntryId:     queueEntryID,
+	}
+}
+
+// ValidateBasic implements sdk.Msg.
+func (msg MsgCancelQueuedDelegation) ValidateBasic() error {
+	if msg.DelegatorAddress == "" {
+		return sdkerrors.ErrInvalidAddress.Wrap("missing delegator address")
+	}
+
+	if msg.QueueEntryId == 0 {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "queue entry id must be greater than zero")
+	}
+
+	return nil
 }

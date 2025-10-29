@@ -10,6 +10,8 @@ const (
 	EventTypeUnbond                    = "unbond"
 	EventTypeCancelUnbondingDelegation = "cancel_unbonding_delegation"
 	EventTypeRedelegate                = "redelegate"
+	EventTypeQueueDelegation           = "queue_delegation"
+	EventTypeCancelQueueDelegation     = "cancel_queue_delegation"
 
 	AttributeKeyValidator         = "validator"
 	AttributeKeyCommissionRate    = "commission_rate"
@@ -20,4 +22,6 @@ const (
 	AttributeKeyCreationHeight    = "creation_height"
 	AttributeKeyCompletionTime    = "completion_time"
 	AttributeKeyNewShares         = "new_shares"
+	AttributeKeyQueueEntryID      = "queue_entry_id"
+	AttributeKeyActivationEpoch   = "activation_epoch"
 )

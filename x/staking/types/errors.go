@@ -49,4 +49,7 @@ var (
 	ErrBadRedelegationSrc              = errors.Register(ModuleName, 44, "redelegation source validator not found")
 	ErrNoUnbondingType                 = errors.Register(ModuleName, 45, "unbonding type not found")
 	ErrValidatorNotAllowed             = errors.Register(ModuleName, 46, "validator is not in the allowed validators list")
+	ErrMaxQueuedDelegationEntries      = errors.Register(ModuleName, 47, "maximum queued delegation entries reached")
+	ErrQueuedDelegationsDisabled       = errors.Register(ModuleName, 48, "queued delegations are disabled")
+	ErrQueuedDelegationNotFound        = errors.Register(ModuleName, 49, "queued delegation entry not found")
 )

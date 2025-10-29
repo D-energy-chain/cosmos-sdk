@@ -2,11 +2,13 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 
@@ -312,6 +314,57 @@ func (k Querier) DelegatorDelegations(ctx context.Context, req *types.QueryDeleg
 	}
 
 	return &types.QueryDelegatorDelegationsResponse{DelegationResponses: delegationResps, Pagination: pageRes}, nil
+}
+
+// QueuedDelegations queries queued delegations for a delegator, optionally filtered by validator.
+func (k Querier) QueuedDelegations(ctx context.Context, req *types.QueryQueuedDelegationsRequest) (*types.QueryQueuedDelegationsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.DelegatorAddr == "" {
+		return nil, status.Error(codes.InvalidArgument, "delegator address cannot be empty")
+	}
+
+	delAddrBz, err := k.authKeeper.AddressCodec().StringToBytes(req.DelegatorAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	delegator := sdk.AccAddress(delAddrBz)
+	queuedDelegations := make([]types.QueuedDelegation, 0)
+
+	if req.ValidatorAddr != "" {
+		valAddrBz, err := k.validatorAddressCodec.StringToBytes(req.ValidatorAddr)
+		if err != nil {
+			return nil, err
+		}
+
+		qd, err := k.getQueuedDelegation(ctx, delegator, sdk.ValAddress(valAddrBz))
+		if err != nil {
+			if errors.Is(err, collections.ErrNotFound) {
+				return &types.QueryQueuedDelegationsResponse{QueuedDelegations: []types.QueuedDelegation{}}, nil
+			}
+			return nil, err
+		}
+
+		queuedDelegations = append(queuedDelegations, qd)
+	} else {
+		rng := collections.NewPrefixedPairRange[sdk.AccAddress, sdk.ValAddress](delegator)
+		err := k.queuedDelegations.Walk(
+			ctx,
+			rng,
+			func(_ collections.Pair[sdk.AccAddress, sdk.ValAddress], value types.QueuedDelegation) (bool, error) {
+				queuedDelegations = append(queuedDelegations, value)
+				return false, nil
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &types.QueryQueuedDelegationsResponse{QueuedDelegations: queuedDelegations}, nil
 }
 
 // DelegatorValidator queries validator info for given delegator validator pair

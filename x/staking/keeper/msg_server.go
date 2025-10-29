@@ -294,10 +294,30 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		)
 	}
 
-	// NOTE: source funds are always unbonded
-	newShares, err := k.Keeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	delegatorAccAddr := sdk.AccAddress(delegatorAddress)
+
+	entry, activationEpoch, newShares, queued, err := k.EnqueueOrDelegate(ctx, delegatorAccAddr, validator, msg.Amount)
 	if err != nil {
-		return nil, err
+		return nil, wrapDelegationError(err)
+	}
+
+	if queued {
+		sdkCtx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeQueueDelegation,
+				sdk.NewAttribute(types.AttributeKeyValidator, msg.ValidatorAddress),
+				sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
+				sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
+				sdk.NewAttribute(types.AttributeKeyQueueEntryID, strconv.FormatUint(entry.Id, 10)),
+				sdk.NewAttribute(types.AttributeKeyActivationEpoch, activationEpoch.String()),
+			),
+		})
+
+		return &types.MsgDelegateResponse{
+			QueueEntryId:    entry.Id,
+			ActivationEpoch: activationEpoch,
+		}, nil
 	}
 
 	if msg.Amount.Amount.IsInt64() {
@@ -311,7 +331,6 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		}()
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeDelegate,
@@ -322,7 +341,53 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		),
 	})
 
-	return &types.MsgDelegateResponse{}, nil
+	return &types.MsgDelegateResponse{
+		QueueEntryId:    0,
+		ActivationEpoch: math.ZeroInt(),
+	}, nil
+}
+
+// CancelQueuedDelegation removes a queued delegation entry and refunds the escrowed tokens.
+func (k msgServer) CancelQueuedDelegation(ctx context.Context, msg *types.MsgCancelQueuedDelegation) (*types.MsgCancelQueuedDelegationResponse, error) {
+	enabled, err := k.QueuedDelegationsEnabled(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !enabled {
+		return nil, types.ErrQueuedDelegationsDisabled
+	}
+
+	delAddrBz, err := k.authKeeper.AddressCodec().StringToBytes(msg.DelegatorAddress)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
+	}
+
+	entry, valAddr, err := k.Keeper.CancelQueuedDelegation(ctx, sdk.AccAddress(delAddrBz), msg.QueueEntryId)
+	if err != nil {
+		return nil, err
+	}
+
+	valAddrStr, err := k.validatorAddressCodec.BytesToString(valAddr.Bytes())
+	if err != nil {
+		return nil, err
+	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCancelQueueDelegation,
+			sdk.NewAttribute(types.AttributeKeyValidator, valAddrStr),
+			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
+			sdk.NewAttribute(types.AttributeKeyQueueEntryID, strconv.FormatUint(msg.QueueEntryId, 10)),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, sdk.NewCoin(entry.Denom, entry.Amount).String()),
+		),
+	})
+
+	return &types.MsgCancelQueuedDelegationResponse{
+		QueueEntryId: msg.QueueEntryId,
+		Amount:       entry.Amount,
+		Denom:        entry.Denom,
+	}, nil
 }
 
 // BeginRedelegate defines a method for performing a redelegation of coins from a source validator to a destination validator of given delegator

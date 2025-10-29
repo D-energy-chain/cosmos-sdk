@@ -36,6 +36,11 @@ type Keeper struct {
 	// Collections schema and NFT delegation shares map
 	Schema       collections.Schema
 	NFTDelShares collections.Map[collections.Pair[sdk.AccAddress, sdk.ValAddress], types.NFTDelegationShares]
+	epochKeeper  types.EpochKeeper
+
+	queuedDelegations        collections.Map[collections.Pair[sdk.AccAddress, sdk.ValAddress], types.QueuedDelegation]
+	queuedDelegationByValIdx collections.Map[collections.Pair[sdk.ValAddress, sdk.AccAddress], []byte]
+	queuedDelegationQueue    collections.Map[int64, types.DVPairs]
 }
 
 // NewKeeper creates a new staking Keeper instance
@@ -77,6 +82,27 @@ func NewKeeper(
 		validatorAddressCodec: validatorAddressCodec,
 		consensusAddressCodec: consensusAddressCodec,
 		NFTDelShares:          collections.NewMap(sb, collections.NewPrefix(0xE1), "nft_delegation_shares", collections.PairKeyCodec(sdk.AccAddressKey, sdk.ValAddressKey), codec.CollValue[types.NFTDelegationShares](cdc)),
+		queuedDelegations: collections.NewMap(
+			sb,
+			types.QueuedDelegationKey,
+			"queued_delegation",
+			collections.PairKeyCodec(sdk.AccAddressKey, sdk.ValAddressKey),
+			codec.CollValue[types.QueuedDelegation](cdc),
+		),
+		queuedDelegationByValIdx: collections.NewMap(
+			sb,
+			types.QueuedDelegationByValIndexKey,
+			"queued_delegation_by_val_index",
+			collections.PairKeyCodec(sdk.ValAddressKey, sdk.AccAddressKey),
+			collections.BytesValue,
+		),
+		queuedDelegationQueue: collections.NewMap(
+			sb,
+			types.QueuedDelegationQueueKey,
+			"queued_delegation_queue",
+			collections.Int64Key,
+			codec.CollValue[types.DVPairs](cdc),
+		),
 	}
 	schema, err := sb.Build()
 	if err != nil {
@@ -110,6 +136,14 @@ func (k *Keeper) SetHooks(sh types.StakingHooks) {
 	}
 
 	k.hooks = sh
+}
+
+// SetEpochKeeper sets the epoch keeper dependency.
+func (k *Keeper) SetEpochKeeper(ek types.EpochKeeper) {
+	if k.epochKeeper != nil {
+		panic("cannot set epoch keeper twice")
+	}
+	k.epochKeeper = ek
 }
 
 // GetLastTotalPower loads the last total validator power.

@@ -61,6 +61,8 @@ type StakingKeeper interface {
 	GetNFTDelegatorShares(ctx context.Context, delegator sdk.AccAddress, validator sdk.ValAddress) (math.LegacyDec, error)
 	// GetNFTDelegations returns all NFT delegations for a specific delegator with a specific validator
 	GetNFTDelegations(ctx context.Context, delegator sdk.AccAddress, validator sdk.ValAddress) ([]*stakingtypes.NFTDelegation, error)
+
+	ProcessQueuedDelegations(ctx context.Context, epoch int64) error
 }
 
 // StakingHooks event hooks for staking validator object (noalias)

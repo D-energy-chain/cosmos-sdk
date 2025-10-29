@@ -11245,14 +11245,15 @@ func (x *_Params_7_list) IsValid() bool {
 }
 
 var (
-	md_Params                     protoreflect.MessageDescriptor
-	fd_Params_unbonding_time      protoreflect.FieldDescriptor
-	fd_Params_max_validators      protoreflect.FieldDescriptor
-	fd_Params_max_entries         protoreflect.FieldDescriptor
-	fd_Params_historical_entries  protoreflect.FieldDescriptor
-	fd_Params_bond_denom          protoreflect.FieldDescriptor
-	fd_Params_min_commission_rate protoreflect.FieldDescriptor
-	fd_Params_allowed_validators  protoreflect.FieldDescriptor
+	md_Params                           protoreflect.MessageDescriptor
+	fd_Params_unbonding_time            protoreflect.FieldDescriptor
+	fd_Params_max_validators            protoreflect.FieldDescriptor
+	fd_Params_max_entries               protoreflect.FieldDescriptor
+	fd_Params_historical_entries        protoreflect.FieldDescriptor
+	fd_Params_bond_denom                protoreflect.FieldDescriptor
+	fd_Params_min_commission_rate       protoreflect.FieldDescriptor
+	fd_Params_allowed_validators        protoreflect.FieldDescriptor
+	fd_Params_enable_queued_delegations protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -11265,6 +11266,7 @@ func init() {
 	fd_Params_bond_denom = md_Params.Fields().ByName("bond_denom")
 	fd_Params_min_commission_rate = md_Params.Fields().ByName("min_commission_rate")
 	fd_Params_allowed_validators = md_Params.Fields().ByName("allowed_validators")
+	fd_Params_enable_queued_delegations = md_Params.Fields().ByName("enable_queued_delegations")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -11374,6 +11376,12 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.EnableQueuedDelegations != false {
+		value := protoreflect.ValueOfBool(x.EnableQueuedDelegations)
+		if !f(fd_Params_enable_queued_delegations, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -11403,6 +11411,8 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.MinCommissionRate != ""
 	case "cosmos.staking.v1beta1.Params.allowed_validators":
 		return len(x.AllowedValidators) != 0
+	case "cosmos.staking.v1beta1.Params.enable_queued_delegations":
+		return x.EnableQueuedDelegations != false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Params"))
@@ -11433,6 +11443,8 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 		x.MinCommissionRate = ""
 	case "cosmos.staking.v1beta1.Params.allowed_validators":
 		x.AllowedValidators = nil
+	case "cosmos.staking.v1beta1.Params.enable_queued_delegations":
+		x.EnableQueuedDelegations = false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Params"))
@@ -11473,6 +11485,9 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 		}
 		listValue := &_Params_7_list{list: &x.AllowedValidators}
 		return protoreflect.ValueOfList(listValue)
+	case "cosmos.staking.v1beta1.Params.enable_queued_delegations":
+		value := x.EnableQueuedDelegations
+		return protoreflect.ValueOfBool(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Params"))
@@ -11509,6 +11524,8 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 		lv := value.List()
 		clv := lv.(*_Params_7_list)
 		x.AllowedValidators = *clv.list
+	case "cosmos.staking.v1beta1.Params.enable_queued_delegations":
+		x.EnableQueuedDelegations = value.Bool()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Params"))
@@ -11550,6 +11567,8 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field bond_denom of message cosmos.staking.v1beta1.Params is not mutable"))
 	case "cosmos.staking.v1beta1.Params.min_commission_rate":
 		panic(fmt.Errorf("field min_commission_rate of message cosmos.staking.v1beta1.Params is not mutable"))
+	case "cosmos.staking.v1beta1.Params.enable_queued_delegations":
+		panic(fmt.Errorf("field enable_queued_delegations of message cosmos.staking.v1beta1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Params"))
@@ -11579,6 +11598,8 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 	case "cosmos.staking.v1beta1.Params.allowed_validators":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Params_7_list{list: &list})
+	case "cosmos.staking.v1beta1.Params.enable_queued_delegations":
+		return protoreflect.ValueOfBool(false)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Params"))
@@ -11675,6 +11696,9 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if x.EnableQueuedDelegations {
+			n += 2
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -11703,6 +11727,16 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EnableQueuedDelegations {
+			i--
+			if x.EnableQueuedDelegations {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x40
 		}
 		if len(x.AllowedValidators) > 0 {
 			for iNdEx := len(x.AllowedValidators) - 1; iNdEx >= 0; iNdEx-- {
@@ -11994,6 +12028,1356 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				}
 				x.AllowedValidators = append(x.AllowedValidators, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EnableQueuedDelegations", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.EnableQueuedDelegations = bool(v != 0)
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueuedDelegation_3_list)(nil)
+
+type _QueuedDelegation_3_list struct {
+	list *[]*DelegationQueueEntry
+}
+
+func (x *_QueuedDelegation_3_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueuedDelegation_3_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_QueuedDelegation_3_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*DelegationQueueEntry)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueuedDelegation_3_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*DelegationQueueEntry)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueuedDelegation_3_list) AppendMutable() protoreflect.Value {
+	v := new(DelegationQueueEntry)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueuedDelegation_3_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueuedDelegation_3_list) NewElement() protoreflect.Value {
+	v := new(DelegationQueueEntry)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueuedDelegation_3_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueuedDelegation                   protoreflect.MessageDescriptor
+	fd_QueuedDelegation_delegator_address protoreflect.FieldDescriptor
+	fd_QueuedDelegation_validator_address protoreflect.FieldDescriptor
+	fd_QueuedDelegation_entries           protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_staking_v1beta1_staking_proto_init()
+	md_QueuedDelegation = File_cosmos_staking_v1beta1_staking_proto.Messages().ByName("QueuedDelegation")
+	fd_QueuedDelegation_delegator_address = md_QueuedDelegation.Fields().ByName("delegator_address")
+	fd_QueuedDelegation_validator_address = md_QueuedDelegation.Fields().ByName("validator_address")
+	fd_QueuedDelegation_entries = md_QueuedDelegation.Fields().ByName("entries")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueuedDelegation)(nil)
+
+type fastReflection_QueuedDelegation QueuedDelegation
+
+func (x *QueuedDelegation) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueuedDelegation)(x)
+}
+
+func (x *QueuedDelegation) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueuedDelegation_messageType fastReflection_QueuedDelegation_messageType
+var _ protoreflect.MessageType = fastReflection_QueuedDelegation_messageType{}
+
+type fastReflection_QueuedDelegation_messageType struct{}
+
+func (x fastReflection_QueuedDelegation_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueuedDelegation)(nil)
+}
+func (x fastReflection_QueuedDelegation_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueuedDelegation)
+}
+func (x fastReflection_QueuedDelegation_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueuedDelegation
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueuedDelegation) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueuedDelegation
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueuedDelegation) Type() protoreflect.MessageType {
+	return _fastReflection_QueuedDelegation_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueuedDelegation) New() protoreflect.Message {
+	return new(fastReflection_QueuedDelegation)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueuedDelegation) Interface() protoreflect.ProtoMessage {
+	return (*QueuedDelegation)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueuedDelegation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.DelegatorAddress != "" {
+		value := protoreflect.ValueOfString(x.DelegatorAddress)
+		if !f(fd_QueuedDelegation_delegator_address, value) {
+			return
+		}
+	}
+	if x.ValidatorAddress != "" {
+		value := protoreflect.ValueOfString(x.ValidatorAddress)
+		if !f(fd_QueuedDelegation_validator_address, value) {
+			return
+		}
+	}
+	if len(x.Entries) != 0 {
+		value := protoreflect.ValueOfList(&_QueuedDelegation_3_list{list: &x.Entries})
+		if !f(fd_QueuedDelegation_entries, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueuedDelegation) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.QueuedDelegation.delegator_address":
+		return x.DelegatorAddress != ""
+	case "cosmos.staking.v1beta1.QueuedDelegation.validator_address":
+		return x.ValidatorAddress != ""
+	case "cosmos.staking.v1beta1.QueuedDelegation.entries":
+		return len(x.Entries) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.QueuedDelegation"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.QueuedDelegation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueuedDelegation) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.QueuedDelegation.delegator_address":
+		x.DelegatorAddress = ""
+	case "cosmos.staking.v1beta1.QueuedDelegation.validator_address":
+		x.ValidatorAddress = ""
+	case "cosmos.staking.v1beta1.QueuedDelegation.entries":
+		x.Entries = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.QueuedDelegation"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.QueuedDelegation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueuedDelegation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.staking.v1beta1.QueuedDelegation.delegator_address":
+		value := x.DelegatorAddress
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.QueuedDelegation.validator_address":
+		value := x.ValidatorAddress
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.QueuedDelegation.entries":
+		if len(x.Entries) == 0 {
+			return protoreflect.ValueOfList(&_QueuedDelegation_3_list{})
+		}
+		listValue := &_QueuedDelegation_3_list{list: &x.Entries}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.QueuedDelegation"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.QueuedDelegation does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueuedDelegation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.QueuedDelegation.delegator_address":
+		x.DelegatorAddress = value.Interface().(string)
+	case "cosmos.staking.v1beta1.QueuedDelegation.validator_address":
+		x.ValidatorAddress = value.Interface().(string)
+	case "cosmos.staking.v1beta1.QueuedDelegation.entries":
+		lv := value.List()
+		clv := lv.(*_QueuedDelegation_3_list)
+		x.Entries = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.QueuedDelegation"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.QueuedDelegation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueuedDelegation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.QueuedDelegation.entries":
+		if x.Entries == nil {
+			x.Entries = []*DelegationQueueEntry{}
+		}
+		value := &_QueuedDelegation_3_list{list: &x.Entries}
+		return protoreflect.ValueOfList(value)
+	case "cosmos.staking.v1beta1.QueuedDelegation.delegator_address":
+		panic(fmt.Errorf("field delegator_address of message cosmos.staking.v1beta1.QueuedDelegation is not mutable"))
+	case "cosmos.staking.v1beta1.QueuedDelegation.validator_address":
+		panic(fmt.Errorf("field validator_address of message cosmos.staking.v1beta1.QueuedDelegation is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.QueuedDelegation"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.QueuedDelegation does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueuedDelegation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.QueuedDelegation.delegator_address":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.QueuedDelegation.validator_address":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.QueuedDelegation.entries":
+		list := []*DelegationQueueEntry{}
+		return protoreflect.ValueOfList(&_QueuedDelegation_3_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.QueuedDelegation"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.QueuedDelegation does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueuedDelegation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.staking.v1beta1.QueuedDelegation", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueuedDelegation) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueuedDelegation) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueuedDelegation) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueuedDelegation) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueuedDelegation)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.DelegatorAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ValidatorAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if len(x.Entries) > 0 {
+			for _, e := range x.Entries {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueuedDelegation)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Entries) > 0 {
+			for iNdEx := len(x.Entries) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Entries[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x1a
+			}
+		}
+		if len(x.ValidatorAddress) > 0 {
+			i -= len(x.ValidatorAddress)
+			copy(dAtA[i:], x.ValidatorAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ValidatorAddress)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.DelegatorAddress) > 0 {
+			i -= len(x.DelegatorAddress)
+			copy(dAtA[i:], x.DelegatorAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DelegatorAddress)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueuedDelegation)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueuedDelegation: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueuedDelegation: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ValidatorAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ValidatorAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Entries", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Entries = append(x.Entries, &DelegationQueueEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Entries[len(x.Entries)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_DelegationQueueEntry                  protoreflect.MessageDescriptor
+	fd_DelegationQueueEntry_id               protoreflect.FieldDescriptor
+	fd_DelegationQueueEntry_creation_epoch   protoreflect.FieldDescriptor
+	fd_DelegationQueueEntry_activation_epoch protoreflect.FieldDescriptor
+	fd_DelegationQueueEntry_amount           protoreflect.FieldDescriptor
+	fd_DelegationQueueEntry_denom            protoreflect.FieldDescriptor
+	fd_DelegationQueueEntry_bond_status      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_staking_v1beta1_staking_proto_init()
+	md_DelegationQueueEntry = File_cosmos_staking_v1beta1_staking_proto.Messages().ByName("DelegationQueueEntry")
+	fd_DelegationQueueEntry_id = md_DelegationQueueEntry.Fields().ByName("id")
+	fd_DelegationQueueEntry_creation_epoch = md_DelegationQueueEntry.Fields().ByName("creation_epoch")
+	fd_DelegationQueueEntry_activation_epoch = md_DelegationQueueEntry.Fields().ByName("activation_epoch")
+	fd_DelegationQueueEntry_amount = md_DelegationQueueEntry.Fields().ByName("amount")
+	fd_DelegationQueueEntry_denom = md_DelegationQueueEntry.Fields().ByName("denom")
+	fd_DelegationQueueEntry_bond_status = md_DelegationQueueEntry.Fields().ByName("bond_status")
+}
+
+var _ protoreflect.Message = (*fastReflection_DelegationQueueEntry)(nil)
+
+type fastReflection_DelegationQueueEntry DelegationQueueEntry
+
+func (x *DelegationQueueEntry) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_DelegationQueueEntry)(x)
+}
+
+func (x *DelegationQueueEntry) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_DelegationQueueEntry_messageType fastReflection_DelegationQueueEntry_messageType
+var _ protoreflect.MessageType = fastReflection_DelegationQueueEntry_messageType{}
+
+type fastReflection_DelegationQueueEntry_messageType struct{}
+
+func (x fastReflection_DelegationQueueEntry_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_DelegationQueueEntry)(nil)
+}
+func (x fastReflection_DelegationQueueEntry_messageType) New() protoreflect.Message {
+	return new(fastReflection_DelegationQueueEntry)
+}
+func (x fastReflection_DelegationQueueEntry_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_DelegationQueueEntry
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_DelegationQueueEntry) Descriptor() protoreflect.MessageDescriptor {
+	return md_DelegationQueueEntry
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_DelegationQueueEntry) Type() protoreflect.MessageType {
+	return _fastReflection_DelegationQueueEntry_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_DelegationQueueEntry) New() protoreflect.Message {
+	return new(fastReflection_DelegationQueueEntry)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_DelegationQueueEntry) Interface() protoreflect.ProtoMessage {
+	return (*DelegationQueueEntry)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_DelegationQueueEntry) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
+		if !f(fd_DelegationQueueEntry_id, value) {
+			return
+		}
+	}
+	if x.CreationEpoch != "" {
+		value := protoreflect.ValueOfString(x.CreationEpoch)
+		if !f(fd_DelegationQueueEntry_creation_epoch, value) {
+			return
+		}
+	}
+	if x.ActivationEpoch != "" {
+		value := protoreflect.ValueOfString(x.ActivationEpoch)
+		if !f(fd_DelegationQueueEntry_activation_epoch, value) {
+			return
+		}
+	}
+	if x.Amount != "" {
+		value := protoreflect.ValueOfString(x.Amount)
+		if !f(fd_DelegationQueueEntry_amount, value) {
+			return
+		}
+	}
+	if x.Denom != "" {
+		value := protoreflect.ValueOfString(x.Denom)
+		if !f(fd_DelegationQueueEntry_denom, value) {
+			return
+		}
+	}
+	if x.BondStatus != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.BondStatus))
+		if !f(fd_DelegationQueueEntry_bond_status, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_DelegationQueueEntry) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.id":
+		return x.Id != uint64(0)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.creation_epoch":
+		return x.CreationEpoch != ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.activation_epoch":
+		return x.ActivationEpoch != ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.amount":
+		return x.Amount != ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.denom":
+		return x.Denom != ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.bond_status":
+		return x.BondStatus != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.DelegationQueueEntry"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.DelegationQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DelegationQueueEntry) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.id":
+		x.Id = uint64(0)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.creation_epoch":
+		x.CreationEpoch = ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.activation_epoch":
+		x.ActivationEpoch = ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.amount":
+		x.Amount = ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.denom":
+		x.Denom = ""
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.bond_status":
+		x.BondStatus = 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.DelegationQueueEntry"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.DelegationQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_DelegationQueueEntry) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.id":
+		value := x.Id
+		return protoreflect.ValueOfUint64(value)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.creation_epoch":
+		value := x.CreationEpoch
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.activation_epoch":
+		value := x.ActivationEpoch
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.amount":
+		value := x.Amount
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.denom":
+		value := x.Denom
+		return protoreflect.ValueOfString(value)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.bond_status":
+		value := x.BondStatus
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.DelegationQueueEntry"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.DelegationQueueEntry does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DelegationQueueEntry) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.id":
+		x.Id = value.Uint()
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.creation_epoch":
+		x.CreationEpoch = value.Interface().(string)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.activation_epoch":
+		x.ActivationEpoch = value.Interface().(string)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.amount":
+		x.Amount = value.Interface().(string)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.denom":
+		x.Denom = value.Interface().(string)
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.bond_status":
+		x.BondStatus = (BondStatus)(value.Enum())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.DelegationQueueEntry"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.DelegationQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DelegationQueueEntry) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.id":
+		panic(fmt.Errorf("field id of message cosmos.staking.v1beta1.DelegationQueueEntry is not mutable"))
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.creation_epoch":
+		panic(fmt.Errorf("field creation_epoch of message cosmos.staking.v1beta1.DelegationQueueEntry is not mutable"))
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.activation_epoch":
+		panic(fmt.Errorf("field activation_epoch of message cosmos.staking.v1beta1.DelegationQueueEntry is not mutable"))
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.amount":
+		panic(fmt.Errorf("field amount of message cosmos.staking.v1beta1.DelegationQueueEntry is not mutable"))
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.denom":
+		panic(fmt.Errorf("field denom of message cosmos.staking.v1beta1.DelegationQueueEntry is not mutable"))
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.bond_status":
+		panic(fmt.Errorf("field bond_status of message cosmos.staking.v1beta1.DelegationQueueEntry is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.DelegationQueueEntry"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.DelegationQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_DelegationQueueEntry) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.creation_epoch":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.activation_epoch":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.amount":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.denom":
+		return protoreflect.ValueOfString("")
+	case "cosmos.staking.v1beta1.DelegationQueueEntry.bond_status":
+		return protoreflect.ValueOfEnum(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.DelegationQueueEntry"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.DelegationQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_DelegationQueueEntry) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.staking.v1beta1.DelegationQueueEntry", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_DelegationQueueEntry) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_DelegationQueueEntry) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_DelegationQueueEntry) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_DelegationQueueEntry) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*DelegationQueueEntry)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
+		}
+		l = len(x.CreationEpoch)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ActivationEpoch)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Amount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Denom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BondStatus != 0 {
+			n += 1 + runtime.Sov(uint64(x.BondStatus))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*DelegationQueueEntry)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.BondStatus != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BondStatus))
+			i--
+			dAtA[i] = 0x30
+		}
+		if len(x.Denom) > 0 {
+			i -= len(x.Denom)
+			copy(dAtA[i:], x.Denom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Denom)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.Amount) > 0 {
+			i -= len(x.Amount)
+			copy(dAtA[i:], x.Amount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.ActivationEpoch) > 0 {
+			i -= len(x.ActivationEpoch)
+			copy(dAtA[i:], x.ActivationEpoch)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ActivationEpoch)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.CreationEpoch) > 0 {
+			i -= len(x.CreationEpoch)
+			copy(dAtA[i:], x.CreationEpoch)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CreationEpoch)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*DelegationQueueEntry)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DelegationQueueEntry: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DelegationQueueEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				}
+				x.Id = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Id |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CreationEpoch", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.CreationEpoch = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActivationEpoch", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ActivationEpoch = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Amount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Denom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BondStatus", wireType)
+				}
+				x.BondStatus = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BondStatus |= BondStatus(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -12051,7 +13435,7 @@ func (x *DelegationResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DelegationResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[18]
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12565,7 +13949,7 @@ func (x *RedelegationEntryResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *RedelegationEntryResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[19]
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13115,7 +14499,7 @@ func (x *RedelegationResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *RedelegationResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[20]
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13637,7 +15021,7 @@ func (x *Pool) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Pool) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[21]
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14170,7 +15554,7 @@ func (x *ValidatorUpdates) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ValidatorUpdates) slowProtoReflect() protoreflect.Message {
-	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[22]
+	mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15846,6 +17230,9 @@ type Params struct {
 	// allowed_validators is the list of validator addresses that are allowed to create validators.
 	// If empty, any address can create a validator.
 	AllowedValidators []string `protobuf:"bytes,7,rep,name=allowed_validators,json=allowedValidators,proto3" json:"allowed_validators,omitempty"`
+	// enable_queued_delegations toggles delegation queueing. When enabled, new delegations enter
+	// an activation queue and become effective in the next epoch.
+	EnableQueuedDelegations bool `protobuf:"varint,8,opt,name=enable_queued_delegations,json=enableQueuedDelegations,proto3" json:"enable_queued_delegations,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -15917,6 +17304,150 @@ func (x *Params) GetAllowedValidators() []string {
 	return nil
 }
 
+func (x *Params) GetEnableQueuedDelegations() bool {
+	if x != nil {
+		return x.EnableQueuedDelegations
+	}
+	return false
+}
+
+// QueuedDelegation stores queued delegation requests that will activate in a future epoch.
+type QueuedDelegation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// delegator_address is the bech32-encoded address of the delegator.
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
+	// validator_address is the bech32-encoded address of the validator.
+	ValidatorAddress string `protobuf:"bytes,2,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty"`
+	// entries captures the queued delegation requests for this delegator/validator pair.
+	Entries []*DelegationQueueEntry `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries,omitempty"`
+}
+
+func (x *QueuedDelegation) Reset() {
+	*x = QueuedDelegation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueuedDelegation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueuedDelegation) ProtoMessage() {}
+
+// Deprecated: Use QueuedDelegation.ProtoReflect.Descriptor instead.
+func (*QueuedDelegation) Descriptor() ([]byte, []int) {
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *QueuedDelegation) GetDelegatorAddress() string {
+	if x != nil {
+		return x.DelegatorAddress
+	}
+	return ""
+}
+
+func (x *QueuedDelegation) GetValidatorAddress() string {
+	if x != nil {
+		return x.ValidatorAddress
+	}
+	return ""
+}
+
+func (x *QueuedDelegation) GetEntries() []*DelegationQueueEntry {
+	if x != nil {
+		return x.Entries
+	}
+	return nil
+}
+
+// DelegationQueueEntry defines a queued delegation object with relevant metadata.
+type DelegationQueueEntry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// id uniquely identifies the queued delegation entry.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// creation_epoch is the epoch in which the queue entry was created.
+	CreationEpoch string `protobuf:"bytes,2,opt,name=creation_epoch,json=creationEpoch,proto3" json:"creation_epoch,omitempty"`
+	// activation_epoch is the epoch in which the queue entry will be activated.
+	ActivationEpoch string `protobuf:"bytes,3,opt,name=activation_epoch,json=activationEpoch,proto3" json:"activation_epoch,omitempty"`
+	// amount is the amount of tokens being delegated when the entry activates.
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	// denom is the denomination of the delegated tokens.
+	Denom string `protobuf:"bytes,5,opt,name=denom,proto3" json:"denom,omitempty"`
+	// bond_status captures the validator bond status used when the delegation is activated.
+	BondStatus BondStatus `protobuf:"varint,6,opt,name=bond_status,json=bondStatus,proto3,enum=cosmos.staking.v1beta1.BondStatus" json:"bond_status,omitempty"`
+}
+
+func (x *DelegationQueueEntry) Reset() {
+	*x = DelegationQueueEntry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DelegationQueueEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DelegationQueueEntry) ProtoMessage() {}
+
+// Deprecated: Use DelegationQueueEntry.ProtoReflect.Descriptor instead.
+func (*DelegationQueueEntry) Descriptor() ([]byte, []int) {
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *DelegationQueueEntry) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *DelegationQueueEntry) GetCreationEpoch() string {
+	if x != nil {
+		return x.CreationEpoch
+	}
+	return ""
+}
+
+func (x *DelegationQueueEntry) GetActivationEpoch() string {
+	if x != nil {
+		return x.ActivationEpoch
+	}
+	return ""
+}
+
+func (x *DelegationQueueEntry) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *DelegationQueueEntry) GetDenom() string {
+	if x != nil {
+		return x.Denom
+	}
+	return ""
+}
+
+func (x *DelegationQueueEntry) GetBondStatus() BondStatus {
+	if x != nil {
+		return x.BondStatus
+	}
+	return BondStatus_BOND_STATUS_UNSPECIFIED
+}
+
 // DelegationResponse is equivalent to Delegation except that it contains a
 // balance in addition to shares which is more suitable for client responses.
 type DelegationResponse struct {
@@ -15931,7 +17462,7 @@ type DelegationResponse struct {
 func (x *DelegationResponse) Reset() {
 	*x = DelegationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[18]
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -15945,7 +17476,7 @@ func (*DelegationResponse) ProtoMessage() {}
 
 // Deprecated: Use DelegationResponse.ProtoReflect.Descriptor instead.
 func (*DelegationResponse) Descriptor() ([]byte, []int) {
-	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{18}
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DelegationResponse) GetDelegation() *Delegation {
@@ -15977,7 +17508,7 @@ type RedelegationEntryResponse struct {
 func (x *RedelegationEntryResponse) Reset() {
 	*x = RedelegationEntryResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[19]
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -15991,7 +17522,7 @@ func (*RedelegationEntryResponse) ProtoMessage() {}
 
 // Deprecated: Use RedelegationEntryResponse.ProtoReflect.Descriptor instead.
 func (*RedelegationEntryResponse) Descriptor() ([]byte, []int) {
-	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{19}
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *RedelegationEntryResponse) GetRedelegationEntry() *RedelegationEntry {
@@ -16023,7 +17554,7 @@ type RedelegationResponse struct {
 func (x *RedelegationResponse) Reset() {
 	*x = RedelegationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[20]
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -16037,7 +17568,7 @@ func (*RedelegationResponse) ProtoMessage() {}
 
 // Deprecated: Use RedelegationResponse.ProtoReflect.Descriptor instead.
 func (*RedelegationResponse) Descriptor() ([]byte, []int) {
-	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{20}
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *RedelegationResponse) GetRedelegation() *Redelegation {
@@ -16068,7 +17599,7 @@ type Pool struct {
 func (x *Pool) Reset() {
 	*x = Pool{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[21]
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -16082,7 +17613,7 @@ func (*Pool) ProtoMessage() {}
 
 // Deprecated: Use Pool.ProtoReflect.Descriptor instead.
 func (*Pool) Descriptor() ([]byte, []int) {
-	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{21}
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *Pool) GetNotBondedTokens() string {
@@ -16112,7 +17643,7 @@ type ValidatorUpdates struct {
 func (x *ValidatorUpdates) Reset() {
 	*x = ValidatorUpdates{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[22]
+		mi := &file_cosmos_staking_v1beta1_staking_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -16126,7 +17657,7 @@ func (*ValidatorUpdates) ProtoMessage() {}
 
 // Deprecated: Use ValidatorUpdates.ProtoReflect.Descriptor instead.
 func (*ValidatorUpdates) Descriptor() ([]byte, []int) {
-	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{22}
+	return file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ValidatorUpdates) GetUpdates() []*abci.ValidatorUpdate {
@@ -16479,7 +18010,7 @@ var file_cosmos_staking_v1beta1_staking_proto_rawDesc = []byte{
 	0x52, 0x65, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x6e, 0x74, 0x72,
 	0x79, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07, 0x65, 0x6e,
 	0x74, 0x72, 0x69, 0x65, 0x73, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22,
-	0xee, 0x03, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x4f, 0x0a, 0x0e, 0x75, 0x6e,
+	0xaa, 0x04, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x4f, 0x0a, 0x0e, 0x75, 0x6e,
 	0x62, 0x6f, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x0d, 0xc8,
@@ -16507,9 +18038,53 @@ var file_cosmos_staking_v1beta1_staking_proto_rawDesc = []byte{
 	0x20, 0x03, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
 	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x11, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64,
-	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x3a, 0x24, 0xe8, 0xa0, 0x1f, 0x01,
-	0x8a, 0xe7, 0xb0, 0x2a, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f,
-	0x78, 0x2f, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x3a, 0x0a, 0x19, 0x65, 0x6e,
+	0x61, 0x62, 0x6c, 0x65, 0x5f, 0x71, 0x75, 0x65, 0x75, 0x65, 0x64, 0x5f, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x17, 0x65,
+	0x6e, 0x61, 0x62, 0x6c, 0x65, 0x51, 0x75, 0x65, 0x75, 0x65, 0x64, 0x44, 0x65, 0x6c, 0x65, 0x67,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x24, 0xe8, 0xa0, 0x1f, 0x01, 0x8a, 0xe7, 0xb0, 0x2a,
+	0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x78, 0x2f, 0x73, 0x74,
+	0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0x86, 0x02, 0x0a,
+	0x10, 0x51, 0x75, 0x65, 0x75, 0x65, 0x64, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x45, 0x0a, 0x11, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4,
+	0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x51, 0x0a, 0x07, 0x65, 0x6e, 0x74, 0x72,
+	0x69, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65,
+	0x75, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0,
+	0x2a, 0x01, 0x52, 0x07, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x3a, 0x08, 0x88, 0xa0, 0x1f,
+	0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x22, 0xf8, 0x02, 0x0a, 0x14, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x75, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x52,
+	0x0a, 0x0e, 0x63, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x65, 0x70, 0x6f, 0x63, 0x68,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2b, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74,
+	0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x49, 0x6e, 0x74, 0x52, 0x0d, 0x63, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x70, 0x6f,
+	0x63, 0x68, 0x12, 0x56, 0x0a, 0x10, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x5f, 0x65, 0x70, 0x6f, 0x63, 0x68, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2b, 0xc8, 0xde,
+	0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,
+	0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0x52, 0x0f, 0x61, 0x63, 0x74, 0x69, 0x76,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x70, 0x6f, 0x63, 0x68, 0x12, 0x43, 0x0a, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2b, 0xc8, 0xde, 0x1f, 0x00,
+	0xda, 0xde, 0x1f, 0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
+	0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12,
+	0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x43, 0x0a, 0x0b, 0x62, 0x6f, 0x6e, 0x64, 0x5f, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x42, 0x6f, 0x6e, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x0a,
+	0x62, 0x6f, 0x6e, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01,
 	0x22, 0xa9, 0x01, 0x0a, 0x12, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4d, 0x0a, 0x0a, 0x64, 0x65, 0x6c, 0x65, 0x67,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x63, 0x6f,
@@ -16614,7 +18189,7 @@ func file_cosmos_staking_v1beta1_staking_proto_rawDescGZIP() []byte {
 }
 
 var file_cosmos_staking_v1beta1_staking_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_cosmos_staking_v1beta1_staking_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_cosmos_staking_v1beta1_staking_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_cosmos_staking_v1beta1_staking_proto_goTypes = []interface{}{
 	(BondStatus)(0),                   // 0: cosmos.staking.v1beta1.BondStatus
 	(Infraction)(0),                   // 1: cosmos.staking.v1beta1.Infraction
@@ -16636,47 +18211,51 @@ var file_cosmos_staking_v1beta1_staking_proto_goTypes = []interface{}{
 	(*RedelegationEntry)(nil),         // 17: cosmos.staking.v1beta1.RedelegationEntry
 	(*Redelegation)(nil),              // 18: cosmos.staking.v1beta1.Redelegation
 	(*Params)(nil),                    // 19: cosmos.staking.v1beta1.Params
-	(*DelegationResponse)(nil),        // 20: cosmos.staking.v1beta1.DelegationResponse
-	(*RedelegationEntryResponse)(nil), // 21: cosmos.staking.v1beta1.RedelegationEntryResponse
-	(*RedelegationResponse)(nil),      // 22: cosmos.staking.v1beta1.RedelegationResponse
-	(*Pool)(nil),                      // 23: cosmos.staking.v1beta1.Pool
-	(*ValidatorUpdates)(nil),          // 24: cosmos.staking.v1beta1.ValidatorUpdates
-	(*types.Header)(nil),              // 25: tendermint.types.Header
-	(*timestamppb.Timestamp)(nil),     // 26: google.protobuf.Timestamp
-	(*anypb.Any)(nil),                 // 27: google.protobuf.Any
-	(*durationpb.Duration)(nil),       // 28: google.protobuf.Duration
-	(*v1beta1.Coin)(nil),              // 29: cosmos.base.v1beta1.Coin
-	(*abci.ValidatorUpdate)(nil),      // 30: tendermint.abci.ValidatorUpdate
+	(*QueuedDelegation)(nil),          // 20: cosmos.staking.v1beta1.QueuedDelegation
+	(*DelegationQueueEntry)(nil),      // 21: cosmos.staking.v1beta1.DelegationQueueEntry
+	(*DelegationResponse)(nil),        // 22: cosmos.staking.v1beta1.DelegationResponse
+	(*RedelegationEntryResponse)(nil), // 23: cosmos.staking.v1beta1.RedelegationEntryResponse
+	(*RedelegationResponse)(nil),      // 24: cosmos.staking.v1beta1.RedelegationResponse
+	(*Pool)(nil),                      // 25: cosmos.staking.v1beta1.Pool
+	(*ValidatorUpdates)(nil),          // 26: cosmos.staking.v1beta1.ValidatorUpdates
+	(*types.Header)(nil),              // 27: tendermint.types.Header
+	(*timestamppb.Timestamp)(nil),     // 28: google.protobuf.Timestamp
+	(*anypb.Any)(nil),                 // 29: google.protobuf.Any
+	(*durationpb.Duration)(nil),       // 30: google.protobuf.Duration
+	(*v1beta1.Coin)(nil),              // 31: cosmos.base.v1beta1.Coin
+	(*abci.ValidatorUpdate)(nil),      // 32: tendermint.abci.ValidatorUpdate
 }
 var file_cosmos_staking_v1beta1_staking_proto_depIdxs = []int32{
-	25, // 0: cosmos.staking.v1beta1.HistoricalInfo.header:type_name -> tendermint.types.Header
+	27, // 0: cosmos.staking.v1beta1.HistoricalInfo.header:type_name -> tendermint.types.Header
 	7,  // 1: cosmos.staking.v1beta1.HistoricalInfo.valset:type_name -> cosmos.staking.v1beta1.Validator
 	3,  // 2: cosmos.staking.v1beta1.Commission.commission_rates:type_name -> cosmos.staking.v1beta1.CommissionRates
-	26, // 3: cosmos.staking.v1beta1.Commission.update_time:type_name -> google.protobuf.Timestamp
-	27, // 4: cosmos.staking.v1beta1.Validator.consensus_pubkey:type_name -> google.protobuf.Any
+	28, // 3: cosmos.staking.v1beta1.Commission.update_time:type_name -> google.protobuf.Timestamp
+	29, // 4: cosmos.staking.v1beta1.Validator.consensus_pubkey:type_name -> google.protobuf.Any
 	0,  // 5: cosmos.staking.v1beta1.Validator.status:type_name -> cosmos.staking.v1beta1.BondStatus
 	5,  // 6: cosmos.staking.v1beta1.Validator.description:type_name -> cosmos.staking.v1beta1.Description
-	26, // 7: cosmos.staking.v1beta1.Validator.unbonding_time:type_name -> google.protobuf.Timestamp
+	28, // 7: cosmos.staking.v1beta1.Validator.unbonding_time:type_name -> google.protobuf.Timestamp
 	4,  // 8: cosmos.staking.v1beta1.Validator.commission:type_name -> cosmos.staking.v1beta1.Commission
 	6,  // 9: cosmos.staking.v1beta1.Validator.nft_delegations:type_name -> cosmos.staking.v1beta1.NFTDelegation
 	9,  // 10: cosmos.staking.v1beta1.DVPairs.pairs:type_name -> cosmos.staking.v1beta1.DVPair
 	11, // 11: cosmos.staking.v1beta1.DVVTriplets.triplets:type_name -> cosmos.staking.v1beta1.DVVTriplet
 	16, // 12: cosmos.staking.v1beta1.UnbondingDelegation.entries:type_name -> cosmos.staking.v1beta1.UnbondingDelegationEntry
-	26, // 13: cosmos.staking.v1beta1.UnbondingDelegationEntry.completion_time:type_name -> google.protobuf.Timestamp
-	26, // 14: cosmos.staking.v1beta1.RedelegationEntry.completion_time:type_name -> google.protobuf.Timestamp
+	28, // 13: cosmos.staking.v1beta1.UnbondingDelegationEntry.completion_time:type_name -> google.protobuf.Timestamp
+	28, // 14: cosmos.staking.v1beta1.RedelegationEntry.completion_time:type_name -> google.protobuf.Timestamp
 	17, // 15: cosmos.staking.v1beta1.Redelegation.entries:type_name -> cosmos.staking.v1beta1.RedelegationEntry
-	28, // 16: cosmos.staking.v1beta1.Params.unbonding_time:type_name -> google.protobuf.Duration
-	13, // 17: cosmos.staking.v1beta1.DelegationResponse.delegation:type_name -> cosmos.staking.v1beta1.Delegation
-	29, // 18: cosmos.staking.v1beta1.DelegationResponse.balance:type_name -> cosmos.base.v1beta1.Coin
-	17, // 19: cosmos.staking.v1beta1.RedelegationEntryResponse.redelegation_entry:type_name -> cosmos.staking.v1beta1.RedelegationEntry
-	18, // 20: cosmos.staking.v1beta1.RedelegationResponse.redelegation:type_name -> cosmos.staking.v1beta1.Redelegation
-	21, // 21: cosmos.staking.v1beta1.RedelegationResponse.entries:type_name -> cosmos.staking.v1beta1.RedelegationEntryResponse
-	30, // 22: cosmos.staking.v1beta1.ValidatorUpdates.updates:type_name -> tendermint.abci.ValidatorUpdate
-	23, // [23:23] is the sub-list for method output_type
-	23, // [23:23] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	30, // 16: cosmos.staking.v1beta1.Params.unbonding_time:type_name -> google.protobuf.Duration
+	21, // 17: cosmos.staking.v1beta1.QueuedDelegation.entries:type_name -> cosmos.staking.v1beta1.DelegationQueueEntry
+	0,  // 18: cosmos.staking.v1beta1.DelegationQueueEntry.bond_status:type_name -> cosmos.staking.v1beta1.BondStatus
+	13, // 19: cosmos.staking.v1beta1.DelegationResponse.delegation:type_name -> cosmos.staking.v1beta1.Delegation
+	31, // 20: cosmos.staking.v1beta1.DelegationResponse.balance:type_name -> cosmos.base.v1beta1.Coin
+	17, // 21: cosmos.staking.v1beta1.RedelegationEntryResponse.redelegation_entry:type_name -> cosmos.staking.v1beta1.RedelegationEntry
+	18, // 22: cosmos.staking.v1beta1.RedelegationResponse.redelegation:type_name -> cosmos.staking.v1beta1.Redelegation
+	23, // 23: cosmos.staking.v1beta1.RedelegationResponse.entries:type_name -> cosmos.staking.v1beta1.RedelegationEntryResponse
+	32, // 24: cosmos.staking.v1beta1.ValidatorUpdates.updates:type_name -> tendermint.abci.ValidatorUpdate
+	25, // [25:25] is the sub-list for method output_type
+	25, // [25:25] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_cosmos_staking_v1beta1_staking_proto_init() }
@@ -16902,7 +18481,7 @@ func file_cosmos_staking_v1beta1_staking_proto_init() {
 			}
 		}
 		file_cosmos_staking_v1beta1_staking_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DelegationResponse); i {
+			switch v := v.(*QueuedDelegation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -16914,7 +18493,7 @@ func file_cosmos_staking_v1beta1_staking_proto_init() {
 			}
 		}
 		file_cosmos_staking_v1beta1_staking_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RedelegationEntryResponse); i {
+			switch v := v.(*DelegationQueueEntry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -16926,7 +18505,7 @@ func file_cosmos_staking_v1beta1_staking_proto_init() {
 			}
 		}
 		file_cosmos_staking_v1beta1_staking_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RedelegationResponse); i {
+			switch v := v.(*DelegationResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -16938,7 +18517,7 @@ func file_cosmos_staking_v1beta1_staking_proto_init() {
 			}
 		}
 		file_cosmos_staking_v1beta1_staking_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Pool); i {
+			switch v := v.(*RedelegationEntryResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -16950,6 +18529,30 @@ func file_cosmos_staking_v1beta1_staking_proto_init() {
 			}
 		}
 		file_cosmos_staking_v1beta1_staking_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RedelegationResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_staking_v1beta1_staking_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Pool); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_staking_v1beta1_staking_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ValidatorUpdates); i {
 			case 0:
 				return &v.state
@@ -16968,7 +18571,7 @@ func file_cosmos_staking_v1beta1_staking_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_cosmos_staking_v1beta1_staking_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   23,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

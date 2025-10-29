@@ -1,14 +1,19 @@
 package types
 
-import paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+import (
+	"fmt"
+
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+)
 
 var (
-	KeyUnbondingTime     = []byte("UnbondingTime")
-	KeyMaxValidators     = []byte("MaxValidators")
-	KeyMaxEntries        = []byte("MaxEntries")
-	KeyBondDenom         = []byte("BondDenom")
-	KeyHistoricalEntries = []byte("HistoricalEntries")
-	KeyMinCommissionRate = []byte("MinCommissionRate")
+	KeyUnbondingTime           = []byte("UnbondingTime")
+	KeyMaxValidators           = []byte("MaxValidators")
+	KeyMaxEntries              = []byte("MaxEntries")
+	KeyBondDenom               = []byte("BondDenom")
+	KeyHistoricalEntries       = []byte("HistoricalEntries")
+	KeyMinCommissionRate       = []byte("MinCommissionRate")
+	KeyEnableQueuedDelegations = []byte("EnableQueuedDelegations")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -28,5 +33,14 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyHistoricalEntries, &p.HistoricalEntries, validateHistoricalEntries),
 		paramtypes.NewParamSetPair(KeyBondDenom, &p.BondDenom, validateBondDenom),
 		paramtypes.NewParamSetPair(KeyMinCommissionRate, &p.MinCommissionRate, validateMinCommissionRate),
+		paramtypes.NewParamSetPair(KeyEnableQueuedDelegations, &p.EnableQueuedDelegations, validateBool),
 	}
+}
+
+func validateBool(i interface{}) error {
+	_, ok := i.(bool)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	return nil
 }

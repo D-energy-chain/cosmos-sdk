@@ -55,6 +55,7 @@ func NewTxCmd(valAddrCodec, ac address.Codec) *cobra.Command {
 		NewRedelegateCmd(valAddrCodec, ac),
 		NewUnbondCmd(valAddrCodec, ac),
 		NewCancelUnbondingDelegation(valAddrCodec, ac),
+		NewCancelQueuedDelegationCmd(ac),
 	)
 
 	return stakingTxCmd
@@ -386,6 +387,38 @@ $ %s tx staking cancel-unbond %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100stake
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewCancelQueuedDelegationCmd returns a CLI command handler for cancelling a queued delegation entry.
+func NewCancelQueuedDelegationCmd(ac address.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "cancel-queued-delegation [queue-entry-id]",
+		Short: "cancel a queued delegation request",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queueEntryID, err := strconv.ParseUint(strings.TrimSpace(args[0]), 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid queue entry id: %w", err)
+			}
+
+			msg := types.NewMsgCancelQueuedDelegation(clientCtx.GetFromAddress().String(), queueEntryID)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	_ = cmd.MarkFlagRequired(flags.FlagFrom)
 
 	return cmd
 }

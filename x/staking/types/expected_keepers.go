@@ -41,6 +41,11 @@ type BankKeeper interface {
 	BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
 }
 
+// EpochKeeper defines the expected epoch keeper interface.
+type EpochKeeper interface {
+	CurrentEpoch(ctx sdk.Context, identifier string) (math.Int, bool)
+}
+
 // ValidatorSet expected properties for the set of all validators (noalias)
 type ValidatorSet interface {
 	// iterate through validators by operator address, execute func for each validator

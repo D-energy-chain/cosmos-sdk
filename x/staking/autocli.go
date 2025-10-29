@@ -80,6 +80,15 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
+					RpcMethod: "QueuedDelegations",
+					Use:       "queued-delegations [delegator-addr] [validator-addr]",
+					Short:     "Query queued delegations for a delegator",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "delegator_addr"},
+						{ProtoField: "validator_addr", Optional: true},
+					},
+				},
+				{
 					RpcMethod: "DelegatorValidators",
 					Use:       "delegator-validators [delegator-addr]",
 					Short:     "Query all validators info for given delegator address",
@@ -172,6 +181,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Short:          "Cancel unbonding delegation and delegate back to the validator",
 					Example:        fmt.Sprintf(`%s tx staking cancel-unbond cosmosvaloper... 100stake 2 --from mykey`, version.AppName),
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "validator_address"}, {ProtoField: "amount"}, {ProtoField: "creation_height"}},
+				},
+				{
+					RpcMethod:      "CancelQueuedDelegation",
+					Use:            "cancel-queued-delegation [queue-entry-id]",
+					Short:          "Cancel a queued delegation request",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "queue_entry_id"}},
 				},
 				{
 					RpcMethod: "UpdateParams",
