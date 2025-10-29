@@ -26,6 +26,7 @@ const (
 	Query_Delegation_FullMethodName                    = "/cosmos.staking.v1beta1.Query/Delegation"
 	Query_UnbondingDelegation_FullMethodName           = "/cosmos.staking.v1beta1.Query/UnbondingDelegation"
 	Query_DelegatorDelegations_FullMethodName          = "/cosmos.staking.v1beta1.Query/DelegatorDelegations"
+	Query_QueuedDelegations_FullMethodName             = "/cosmos.staking.v1beta1.Query/QueuedDelegations"
 	Query_DelegatorUnbondingDelegations_FullMethodName = "/cosmos.staking.v1beta1.Query/DelegatorUnbondingDelegations"
 	Query_Redelegations_FullMethodName                 = "/cosmos.staking.v1beta1.Query/Redelegations"
 	Query_DelegatorValidators_FullMethodName           = "/cosmos.staking.v1beta1.Query/DelegatorValidators"
@@ -66,6 +67,8 @@ type QueryClient interface {
 	// When called from another module, this query might consume a high amount of
 	// gas if the pagination field is incorrectly set.
 	DelegatorDelegations(ctx context.Context, in *QueryDelegatorDelegationsRequest, opts ...grpc.CallOption) (*QueryDelegatorDelegationsResponse, error)
+	// QueuedDelegations queries queued delegation entries for a delegator, optionally filtered by validator.
+	QueuedDelegations(ctx context.Context, in *QueryQueuedDelegationsRequest, opts ...grpc.CallOption) (*QueryQueuedDelegationsResponse, error)
 	// DelegatorUnbondingDelegations queries all unbonding delegations of a given
 	// delegator address.
 	//
@@ -159,6 +162,15 @@ func (c *queryClient) UnbondingDelegation(ctx context.Context, in *QueryUnbondin
 func (c *queryClient) DelegatorDelegations(ctx context.Context, in *QueryDelegatorDelegationsRequest, opts ...grpc.CallOption) (*QueryDelegatorDelegationsResponse, error) {
 	out := new(QueryDelegatorDelegationsResponse)
 	err := c.cc.Invoke(ctx, Query_DelegatorDelegations_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueuedDelegations(ctx context.Context, in *QueryQueuedDelegationsRequest, opts ...grpc.CallOption) (*QueryQueuedDelegationsResponse, error) {
+	out := new(QueryQueuedDelegationsResponse)
+	err := c.cc.Invoke(ctx, Query_QueuedDelegations_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -259,6 +271,8 @@ type QueryServer interface {
 	// When called from another module, this query might consume a high amount of
 	// gas if the pagination field is incorrectly set.
 	DelegatorDelegations(context.Context, *QueryDelegatorDelegationsRequest) (*QueryDelegatorDelegationsResponse, error)
+	// QueuedDelegations queries queued delegation entries for a delegator, optionally filtered by validator.
+	QueuedDelegations(context.Context, *QueryQueuedDelegationsRequest) (*QueryQueuedDelegationsResponse, error)
 	// DelegatorUnbondingDelegations queries all unbonding delegations of a given
 	// delegator address.
 	//
@@ -312,6 +326,9 @@ func (UnimplementedQueryServer) UnbondingDelegation(context.Context, *QueryUnbon
 }
 func (UnimplementedQueryServer) DelegatorDelegations(context.Context, *QueryDelegatorDelegationsRequest) (*QueryDelegatorDelegationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegatorDelegations not implemented")
+}
+func (UnimplementedQueryServer) QueuedDelegations(context.Context, *QueryQueuedDelegationsRequest) (*QueryQueuedDelegationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueuedDelegations not implemented")
 }
 func (UnimplementedQueryServer) DelegatorUnbondingDelegations(context.Context, *QueryDelegatorUnbondingDelegationsRequest) (*QueryDelegatorUnbondingDelegationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegatorUnbondingDelegations not implemented")
@@ -469,6 +486,24 @@ func _Query_DelegatorDelegations_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).DelegatorDelegations(ctx, req.(*QueryDelegatorDelegationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueuedDelegations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryQueuedDelegationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueuedDelegations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_QueuedDelegations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueuedDelegations(ctx, req.(*QueryQueuedDelegationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -633,6 +668,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DelegatorDelegations",
 			Handler:    _Query_DelegatorDelegations_Handler,
+		},
+		{
+			MethodName: "QueuedDelegations",
+			Handler:    _Query_QueuedDelegations_Handler,
 		},
 		{
 			MethodName: "DelegatorUnbondingDelegations",

@@ -27,6 +27,9 @@ service Msg {
   // from a delegator to a validator.
   rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
 
+  // CancelQueuedDelegation removes a queued delegation entry and refunds the escrowed tokens.
+  rpc CancelQueuedDelegation(MsgCancelQueuedDelegation) returns (MsgCancelQueuedDelegationResponse);
+
   // BeginRedelegate defines a method for performing a redelegation
   // of coins from a delegator and source validator to a destination validator.
   rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
@@ -70,6 +73,33 @@ message MsgCreateValidator {
   string                   validator_address = 5 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   google.protobuf.Any      pubkey            = 6 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
   cosmos.base.v1beta1.Coin value             = 7 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // nft_contract_address is the NFT contract address.
+  string nft_contract_address = 8 [(amino.dont_omitempty) = true];
+  // token_id is the token identifier (as a cosmos.Int scalar).
+  string token_id = 9 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // amount is the amount being self delegated (as a cosmos.Int scalar).
+  string nft_amount = 10 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // min_self_nft_delegation
+  string min_self_nft_delegation = 11 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // watts is the power consumption of the node in watts
+  uint64 watts = 12;
+  // country is the country the validator node belongs to
+  string country = 13;
 }
 
 // MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
@@ -114,7 +144,44 @@ message MsgDelegate {
 }
 
 // MsgDelegateResponse defines the Msg/Delegate response type.
-message MsgDelegateResponse {}
+message MsgDelegateResponse {
+  // queue_entry_id is set when delegation queueing is enabled. A value of zero indicates
+  // the delegation was applied immediately.
+  uint64 queue_entry_id = 1;
+  // activation_epoch is set when delegation queueing is enabled. It represents the epoch
+  // when the delegation will become active.
+  string activation_epoch = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+// MsgCancelQueuedDelegation defines a SDK message for cancelling a queued delegation entry.
+message MsgCancelQueuedDelegation {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+  option (amino.name)           = "cosmos-sdk/MsgCancelQueuedDelegation";
+
+  // delegator_address is the delegator's address.
+  string delegator_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // queue_entry_id is the identifier of the queued delegation entry to cancel.
+  uint64 queue_entry_id = 2;
+}
+
+// MsgCancelQueuedDelegationResponse defines the response structure for cancelling a queued delegation.
+message MsgCancelQueuedDelegationResponse {
+  // queue_entry_id is the identifier of the cancelled queued delegation entry.
+  uint64 queue_entry_id = 1;
+  // amount is the amount refunded to the delegator.
+  string amount = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+  // denom is the denomination of the refunded tokens.
+  string denom = 3;
+}
 
 // MsgBeginRedelegate defines a SDK message for performing a redelegation
 // of coins from a delegator and source validator to a destination validator.
