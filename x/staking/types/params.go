@@ -30,6 +30,8 @@ const (
 	// value by not adding the staking module to the application module manager's
 	// SetOrderBeginBlockers.
 	DefaultHistoricalEntries uint32 = 10000
+
+	DefaultEnableQueuedDelegations = false
 )
 
 // DefaultMinCommissionRate is set to 0%
@@ -69,7 +71,7 @@ func DefaultParams() Params {
 		sdk.DefaultBondDenom,
 		DefaultMinCommissionRate,
 		DefaultAllowedValidators,
-		false,
+		DefaultEnableQueuedDelegations,
 	)
 }
 
