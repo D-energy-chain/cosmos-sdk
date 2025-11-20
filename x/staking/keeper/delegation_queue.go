@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/collections"
 	cosmossdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -439,7 +440,7 @@ func (k Keeper) getCurrentEpoch(ctx context.Context) (sdkmath.Int, bool) {
 	if k.epochKeeper == nil {
 		return sdkmath.Int{}, false
 	}
-	return k.epochKeeper.CurrentEpoch(sdk.UnwrapSDKContext(ctx), epochIdentifier)
+	return math.NewInt(k.epochKeeper.GetCurrentEpochNumber(sdk.UnwrapSDKContext(ctx), epochIdentifier)), true
 }
 
 // QueuedDelegationsEnabled returns whether queued delegations are active.

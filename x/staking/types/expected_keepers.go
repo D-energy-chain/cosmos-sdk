@@ -43,7 +43,7 @@ type BankKeeper interface {
 
 // EpochKeeper defines the expected epoch keeper interface.
 type EpochKeeper interface {
-	CurrentEpoch(ctx sdk.Context, identifier string) (math.Int, bool)
+	GetCurrentEpochNumber(ctx sdk.Context, identifier string) int64
 }
 
 // ValidatorSet expected properties for the set of all validators (noalias)
