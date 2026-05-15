@@ -86,8 +86,8 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 			return err
 		}
 
-		if remaining.IsAllGTE(reward) {
-			remaining = remaining.Sub(reward)
+		if newRemaining, hasNeg := remaining.SafeSub(reward); !hasNeg {
+			remaining = newRemaining
 		} else {
 			remaining = sdk.DecCoins{}
 		}
@@ -253,8 +253,8 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 			continue // Continue with other validators
 		}
 
-		if remaining.IsAllGTE(reward) {
-			remaining = remaining.Sub(reward)
+		if newRemaining, hasNeg := remaining.SafeSub(reward); !hasNeg {
+			remaining = newRemaining
 		} else {
 			remaining = sdk.DecCoins{}
 		}
