@@ -36,6 +36,12 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
+## [v0.3.1-beta](https://github.com/D-energy-chain/cosmos-sdk/releases/tag/v0.3.1-beta) - 2026-05-15
+
+### State Machine Breaking
+
+- (x/distribution) Fix consensus failure panic at epoch end. `AllocateTokensWithPerformance`: changed `powerFraction` from `Quo` (rounds nearest, can overshoot) to `QuoTruncate` (always floors) so power fractions never sum above 1. Added `IsAllGTE` guard before every `remaining.Sub(reward)` in both `AllocateTokens` and `AllocateTokensWithPerformance` so residual decimal dust from rounding goes to community pool rather than panicking. Resolves mainnet halt at block 4746087 (epoch 2 end, `"negative coin amount"` panic).
+
 ## [v0.50.9-evmos](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-evmos) - 2024-08-07
 
 
