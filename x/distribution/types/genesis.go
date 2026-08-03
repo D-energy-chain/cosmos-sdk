@@ -7,6 +7,7 @@ import (
 func NewGenesisState(
 	params Params, fp FeePool, dwis []DelegatorWithdrawInfo, pp sdk.ConsAddress, r []ValidatorOutstandingRewardsRecord,
 	acc []ValidatorAccumulatedCommissionRecord, historical []ValidatorHistoricalRewardsRecord,
+	historicalNFT []ValidatorHistoricalNFTRewardsRecord,
 	cur []ValidatorCurrentRewardsRecord, curNFT []ValidatorCurrentNFTRewardsRecord, dels []DelegatorStartingInfoRecord, nftDels []NFTDelegatorStartingInfoRecord, slashes []ValidatorSlashEventRecord,
 ) *GenesisState {
 	return &GenesisState{
@@ -17,6 +18,7 @@ func NewGenesisState(
 		OutstandingRewards:              r,
 		ValidatorAccumulatedCommissions: acc,
 		ValidatorHistoricalRewards:      historical,
+		ValidatorHistoricalNftRewards:   historicalNFT,
 		ValidatorCurrentRewards:         cur,
 		ValidatorCurrentNftRewards:      curNFT,
 		DelegatorStartingInfos:          dels,
@@ -35,6 +37,7 @@ func DefaultGenesisState() *GenesisState {
 		OutstandingRewards:              []ValidatorOutstandingRewardsRecord{},
 		ValidatorAccumulatedCommissions: []ValidatorAccumulatedCommissionRecord{},
 		ValidatorHistoricalRewards:      []ValidatorHistoricalRewardsRecord{},
+		ValidatorHistoricalNftRewards:   []ValidatorHistoricalNFTRewardsRecord{},
 		ValidatorCurrentRewards:         []ValidatorCurrentRewardsRecord{},
 		ValidatorCurrentNftRewards:      []ValidatorCurrentNFTRewardsRecord{},
 		DelegatorStartingInfos:          []DelegatorStartingInfoRecord{},

@@ -188,6 +188,13 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 		return 0, err
 	}
 
+	// a validator with no NFT reward records reads back as period 0; seed them before any
+	// arithmetic touches Period-1
+	rewards, err = k.ensureValidatorNFTRewardsInitialized(ctx, valBz, rewards)
+	if err != nil {
+		return 0, err
+	}
+
 	// calculate current ratio
 	var current sdk.DecCoins
 	if val.GetTotalNFTs().IsZero() {
@@ -274,6 +281,44 @@ func (k Keeper) IncrementValidatorNFTPeriod(ctx context.Context, val stakingtype
 	}
 
 	return rewards.Period, nil
+}
+
+// ensureValidatorNFTRewardsInitialized backfills the NFT reward records for a validator that
+// never received them from initializeValidator. The known case is a chain restored from an
+// exported genesis: staking InitGenesis skips AfterValidatorCreated when data.Exported is set,
+// so nothing writes these records for pre-existing validators.
+//
+// A missing record unmarshals to the zero value, so period 0 is the signal - it is never valid
+// for an initialized validator, whose current period starts at 1. Without this backfill,
+// IncrementValidatorNFTPeriod computes Period-1 on a uint64 zero, wraps to 2^64-1, finds no
+// historical record there, and decrementNFTReferenceCount panics with "cannot set negative
+// reference count", halting the chain from BeginBlocker.
+//
+// Rewards already accrued against the uninitialized record are carried over.
+func (k Keeper) ensureValidatorNFTRewardsInitialized(
+	ctx context.Context, valAddr sdk.ValAddress, rewards types.ValidatorCurrentRewards,
+) (types.ValidatorCurrentRewards, error) {
+	if rewards.Period != 0 {
+		return rewards, nil
+	}
+
+	err := k.SetValidatorHistoricalNFTRewards(ctx, valAddr, 0, types.NewValidatorHistoricalNFTRewards(sdk.DecCoins{}, 1))
+	if err != nil {
+		return rewards, err
+	}
+
+	rewards = types.NewValidatorCurrentNFTRewards(rewards.Rewards, 1)
+	if err := k.SetValidatorCurrentNFTRewards(ctx, valAddr, rewards); err != nil {
+		return rewards, err
+	}
+
+	k.Logger(ctx).Info(
+		"backfilled missing validator NFT reward records",
+		"validator", valAddr.String(),
+		"carried_rewards", rewards.Rewards.String(),
+	)
+
+	return rewards, nil
 }
 
 // increment the reference count for a historical rewards value

@@ -81,6 +81,21 @@ message ValidatorCurrentRewardsRecord {
   ValidatorCurrentRewards rewards = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
+// ValidatorHistoricalNFTRewardsRecord is used for import / export via genesis json.
+message ValidatorHistoricalNFTRewardsRecord {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // validator_address is the address of the validator.
+  string validator_address = 1 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+
+  // period defines the period the historical NFT rewards apply to.
+  uint64 period = 2;
+
+  // rewards defines the historical NFT rewards of a validator.
+  ValidatorHistoricalNFTRewards rewards = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
 // ValidatorCurrentNFTRewardsRecord is used for import / export via genesis json.
 message ValidatorCurrentNFTRewardsRecord {
   option (gogoproto.equal)           = false;
@@ -186,5 +201,9 @@ message GenesisState {
 
   // fee_pool defines the validator slash events at genesis.
   repeated ValidatorSlashEventRecord validator_slash_events = 12
+      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+
+  // fee_pool defines the historical nft rewards of all validators at genesis.
+  repeated ValidatorHistoricalNFTRewardsRecord validator_historical_nft_rewards = 13
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
