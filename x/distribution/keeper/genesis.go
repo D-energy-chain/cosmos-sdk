@@ -79,6 +79,16 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data types.GenesisState) {
 			panic(err)
 		}
 	}
+	for _, his := range data.ValidatorHistoricalNftRewards {
+		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(his.ValidatorAddress)
+		if err != nil {
+			panic(err)
+		}
+		err = k.SetValidatorHistoricalNFTRewards(ctx, valAddr, his.Period, his.Rewards)
+		if err != nil {
+			panic(err)
+		}
+	}
 	for _, cur := range data.ValidatorCurrentRewards {
 		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(cur.ValidatorAddress)
 		if err != nil {
@@ -86,6 +96,21 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data types.GenesisState) {
 		}
 		// Period 0 is a logical baseline and doesn't need to be stored in the database
 		err = k.SetValidatorCurrentRewards(ctx, valAddr, cur.Rewards)
+		if err != nil {
+			panic(err)
+		}
+	}
+	// NFT reward state must be restored alongside the native state. Without this, a chain
+	// restored from an exported genesis has no ValidatorCurrentNFTRewards for any validator:
+	// staking InitGenesis skips AfterValidatorCreated (and therefore initializeValidator)
+	// when data.Exported is set, so nothing else ever writes these records. The missing key
+	// reads back as period 0, and IncrementValidatorNFTPeriod then underflows Period-1.
+	for _, cur := range data.ValidatorCurrentNftRewards {
+		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(cur.ValidatorAddress)
+		if err != nil {
+			panic(err)
+		}
+		err = k.SetValidatorCurrentNFTRewards(ctx, valAddr, cur.Rewards)
 		if err != nil {
 			panic(err)
 		}
@@ -101,6 +126,21 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data types.GenesisState) {
 		}
 
 		err = k.SetDelegatorStartingInfo(ctx, valAddr, delegatorAddress, del.StartingInfo)
+		if err != nil {
+			panic(err)
+		}
+	}
+	for _, del := range data.NftDelegatorStartingInfos {
+		valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(del.ValidatorAddress)
+		if err != nil {
+			panic(err)
+		}
+		delegatorAddress, err := k.authKeeper.AddressCodec().StringToBytes(del.DelegatorAddress)
+		if err != nil {
+			panic(err)
+		}
+
+		err = k.SetNFTDelegatorStartingInfo(ctx, valAddr, delegatorAddress, del.StartingInfo)
 		if err != nil {
 			panic(err)
 		}
@@ -206,6 +246,18 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		},
 	)
 
+	hisNFT := make([]types.ValidatorHistoricalNFTRewardsRecord, 0)
+	k.IterateValidatorHistoricalNFTRewards(ctx,
+		func(val sdk.ValAddress, period uint64, rewards types.ValidatorHistoricalNFTRewards) (stop bool) {
+			hisNFT = append(hisNFT, types.ValidatorHistoricalNFTRewardsRecord{
+				ValidatorAddress: val.String(),
+				Period:           period,
+				Rewards:          rewards,
+			})
+			return false
+		},
+	)
+
 	curNFT := make([]types.ValidatorCurrentNFTRewardsRecord, 0)
 	k.IterateValidatorCurrentNFTRewards(ctx,
 		func(val sdk.ValAddress, rewards types.ValidatorCurrentRewards) (stop bool) {
@@ -254,5 +306,5 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		},
 	)
 
-	return types.NewGenesisState(params, feePool, dwi, pp, outstanding, acc, his, cur, curNFT, dels, nftDels, slashes)
+	return types.NewGenesisState(params, feePool, dwi, pp, outstanding, acc, his, hisNFT, cur, curNFT, dels, nftDels, slashes)
 }

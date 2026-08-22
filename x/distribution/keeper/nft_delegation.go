@@ -18,9 +18,18 @@ func (k Keeper) initializeNFTDelegation(ctx context.Context, val sdk.ValAddress,
 	if err != nil {
 		return err
 	}
+
+	// guards the same Period-1 underflow handled in IncrementValidatorNFTPeriod
+	valNFTCurrentRewards, err = k.ensureValidatorNFTRewardsInitialized(ctx, val, valNFTCurrentRewards)
+	if err != nil {
+		return err
+	}
+
 	previousPeriod := valNFTCurrentRewards.Period - 1
 	// increment reference count for the period we're going to track
-	k.incrementNFTReferenceCount(ctx, val, previousPeriod)
+	if err := k.incrementNFTReferenceCount(ctx, val, previousPeriod); err != nil {
+		return err
+	}
 
 	validator, err := k.stakingKeeper.Validator(ctx, val)
 	if err != nil {

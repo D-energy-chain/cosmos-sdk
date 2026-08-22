@@ -86,7 +86,11 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 			return err
 		}
 
-		remaining = remaining.Sub(reward)
+		if newRemaining, hasNeg := remaining.SafeSub(reward); !hasNeg {
+			remaining = newRemaining
+		} else {
+			remaining = sdk.DecCoins{}
+		}
 		validatorsProcessed++
 	}
 
@@ -224,7 +228,7 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 		// Use the same performance adjustment formula as above
 		performanceFactor := baseWeight.Add(performanceWeight.Mul(performance.CommitRatio))
 		weightedPower := performance.AveragePower.Mul(performanceFactor)
-		powerFraction := weightedPower.Quo(totalWeightedPower)
+		powerFraction := weightedPower.QuoTruncate(totalWeightedPower)
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
 		// Log validator performance metrics and reward calculation
@@ -249,7 +253,11 @@ func (k Keeper) AllocateTokensWithPerformance(ctx context.Context, epochIdentifi
 			continue // Continue with other validators
 		}
 
-		remaining = remaining.Sub(reward)
+		if newRemaining, hasNeg := remaining.SafeSub(reward); !hasNeg {
+			remaining = newRemaining
+		} else {
+			remaining = sdk.DecCoins{}
+		}
 		validatorsProcessed++
 	}
 

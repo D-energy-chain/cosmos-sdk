@@ -113,21 +113,10 @@ func (k msgServer) WithdrawNFTDelegatorReward(ctx context.Context, msg *types.Ms
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
 	}
 
-	// fetch validator and NFT delegation shares
-	val, err := k.stakingKeeper.Validator(ctx, valAddr)
-	if err != nil {
-		return nil, err
-	}
-	if val == nil {
-		return nil, errors.Wrapf(types.ErrNoValidatorExists, msg.ValidatorAddress)
-	}
-
-	nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delegatorAddress, valAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	amount, err := k.withdrawNFTDelegationRewards(ctx, val, nftDel)
+	// Withdraw through the exported wrapper, which re-initialises the delegation
+	// afterwards. Calling withdrawNFTDelegationRewards directly would leave the
+	// delegation with shares and no starting info, permanently breaking it.
+	amount, err := k.Keeper.WithdrawNFTDelegationRewards(ctx, delegatorAddress, valAddr)
 	if err != nil {
 		return nil, err
 	}
