@@ -104,6 +104,49 @@ func (k Keeper) SetWithdrawAddr(ctx context.Context, delegatorAddr, withdrawAddr
 }
 
 // withdraw rewards from a delegation
+// WithdrawNFTDelegationRewards withdraws a certificate delegation's accumulated
+// rewards and re-initialises the delegation, mirroring WithdrawDelegationRewards.
+//
+// The unexported withdrawNFTDelegationRewards deliberately does not
+// re-initialise. On the hook path it is called from
+// BeforeNFTDelegationSharesModified, and AfterNFTDelegationModified performs the
+// re-initialisation immediately afterwards; doing it in both places would
+// increment the period reference count twice against a single decrement, so the
+// historical reward snapshots would never be pruned.
+//
+// This wrapper exists for callers that have no such partner hook — the withdraw
+// message being the only one today. Without it the delegation is left holding
+// shares with no starting info, and every later operation that touches it fails.
+func (k Keeper) WithdrawNFTDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
+	val, err := k.stakingKeeper.Validator(ctx, valAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	if val == nil {
+		return nil, types.ErrNoValidatorDistInfo
+	}
+
+	nftDel, err := k.stakingKeeper.NFTDelegationShares(ctx, delAddr, valAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	// withdraw rewards
+	rewards, err := k.withdrawNFTDelegationRewards(ctx, val, nftDel)
+	if err != nil {
+		return nil, err
+	}
+
+	// reinitialize the delegation
+	err = k.initializeNFTDelegation(ctx, valAddr, delAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	return rewards, nil
+}
+
 func (k Keeper) WithdrawDelegationRewards(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
 	val, err := k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
